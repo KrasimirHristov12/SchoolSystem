@@ -4,9 +4,9 @@ namespace SchoolSystem.Data.Models
     using System;
     using System.Collections.Generic;
 
-    using SchoolSystem.Data.Common.Models;
-
     using Microsoft.AspNetCore.Identity;
+
+    using SchoolSystem.Data.Common.Models;
 
     public class ApplicationUser : IdentityUser, IAuditInfo, IDeletableEntity
     {

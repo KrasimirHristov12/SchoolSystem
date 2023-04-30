@@ -1,11 +1,13 @@
 ﻿namespace SchoolSystem.Data.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
     using SchoolSystem.Common;
+    using SchoolSystem.Data.Common.Models;
 
-    public class Teacher
+    public class Teacher : IDeletableEntity, IAuditInfo
     {
         public Teacher()
         {
@@ -35,5 +37,13 @@
         public bool IsClassTeacher { get; set; }
 
         public ICollection<SchoolClass> Classes { get; set; }
+
+        public DateTime CreatedOn { get; set; }
+
+        public DateTime? ModifiedOn { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public DateTime? DeletedOn { get; set; }
     }
 }
