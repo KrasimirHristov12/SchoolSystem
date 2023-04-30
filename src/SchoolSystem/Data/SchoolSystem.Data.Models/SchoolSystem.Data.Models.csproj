@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SchoolSystem.Common\SchoolSystem.Common.csproj" />
     <ProjectReference Include="..\SchoolSystem.Data.Common\SchoolSystem.Data.Common.csproj" />
   </ItemGroup>
   

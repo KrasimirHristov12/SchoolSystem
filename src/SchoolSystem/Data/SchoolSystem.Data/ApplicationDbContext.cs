@@ -6,11 +6,10 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    using SchoolSystem.Data.Common.Models;
-    using SchoolSystem.Data.Models;
-
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
+    using SchoolSystem.Data.Common.Models;
+    using SchoolSystem.Data.Models;
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
@@ -25,6 +24,12 @@
         }
 
         public DbSet<Setting> Settings { get; set; }
+
+        public DbSet<Student> Students { get; set; }
+
+        public DbSet<Teacher> Teachers { get; set; }
+
+        public DbSet<SchoolClass> Classes { get; set; }
 
         public override int SaveChanges() => this.SaveChanges(true);
 
