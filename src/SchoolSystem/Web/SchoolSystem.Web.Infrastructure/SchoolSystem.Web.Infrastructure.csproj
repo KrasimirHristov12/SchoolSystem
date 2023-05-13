@@ -18,4 +18,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\SchoolSystem.Data\SchoolSystem.Data.csproj" />
+    <ProjectReference Include="..\..\SchoolSystem.Common\SchoolSystem.Common.csproj" />
+  </ItemGroup>
+
 </Project>

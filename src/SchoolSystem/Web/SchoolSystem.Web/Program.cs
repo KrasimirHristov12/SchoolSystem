@@ -4,12 +4,13 @@
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-
+    using SchoolSystem.Common;
     using SchoolSystem.Data;
     using SchoolSystem.Data.Common;
     using SchoolSystem.Data.Common.Repositories;
@@ -17,9 +18,11 @@
     using SchoolSystem.Data.Repositories;
     using SchoolSystem.Data.Seeding;
     using SchoolSystem.Services.Data;
+    using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Mapping;
     using SchoolSystem.Services.Messaging;
     using SchoolSystem.Web.ViewModels;
+    using SchoolSystem.Web.WebServices;
 
     public class Program
     {
@@ -39,6 +42,13 @@
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = GlobalConstants.PasswordMinLength;
+                options.Password.RequireNonAlphanumeric = false;
+                options.User.RequireUniqueEmail = true;
+            });
 
             services.Configure<CookiePolicyOptions>(
                 options =>
@@ -65,6 +75,8 @@
             // Application services
             services.AddTransient<IEmailSender, NullMessageSender>();
             services.AddTransient<ISettingsService, SettingsService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ISchoolClassService, SchoolClassService>();
         }
 
         private static void Configure(WebApplication app)

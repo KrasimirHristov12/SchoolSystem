@@ -40,4 +40,8 @@
     <ProjectReference Include="..\SchoolSystem.Web.Infrastructure\SchoolSystem.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\SchoolSystem.Web.ViewModels\SchoolSystem.Web.ViewModels.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Validation\" />
+  </ItemGroup>
 </Project>

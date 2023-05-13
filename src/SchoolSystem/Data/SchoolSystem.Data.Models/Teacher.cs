@@ -17,8 +17,12 @@
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(GlobalConstants.EgnLength)]
+        [MaxLength(GlobalConstants.EgnPhoneLength)]
         public string Egn { get; set; }
+
+        [Required]
+        [MaxLength(GlobalConstants.PhoneNumberMaxLength)]
+        public string PhoneNumber { get; set; }
 
         [Required]
         [MaxLength(GlobalConstants.NameMaxLength)]
@@ -35,6 +39,8 @@
         public int YearsOfExperience { get; set; }
 
         public bool IsClassTeacher { get; set; }
+
+        public string ClassName { get; set; }
 
         public ICollection<SchoolClass> Classes { get; set; }
 

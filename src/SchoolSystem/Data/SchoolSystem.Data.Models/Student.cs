@@ -11,8 +11,12 @@
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(GlobalConstants.EgnLength)]
+        [MaxLength(GlobalConstants.EgnPhoneLength)]
         public string Egn { get; set; }
+
+        [Required]
+        [MaxLength(GlobalConstants.PhoneNumberMaxLength)]
+        public string PhoneNumber { get; set; }
 
         [Required]
         [MaxLength(GlobalConstants.NameMaxLength)]
