@@ -16,7 +16,16 @@
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
 
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+            // while (userManager.Users.Count() > 0)
+            // {
+            //     var users = userManager.Users.ToList();
+            //     await userManager.DeleteAsync(users[users.Count - 1]);
+            // }
             await SeedRoleAsync(roleManager, GlobalConstants.AdministratorRoleName);
+            await SeedRoleAsync(roleManager, GlobalConstants.Teacher.TeacherRoleName);
+            await SeedRoleAsync(roleManager, GlobalConstants.Student.StudentRoleName);
         }
 
         private static async Task SeedRoleAsync(RoleManager<ApplicationRole> roleManager, string roleName)

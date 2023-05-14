@@ -97,17 +97,23 @@
 
             if ((int)model.TeacherStudent == 0)
             {
-                await this.CreateStudentAsync(model);
+                var student = await this.CreateStudentAsync(model, registerUser);
+
+                await this.userManager.AddToRoleAsync(student.User, GlobalConstants.Student.StudentRoleName);
             }
             else if ((int)model.TeacherStudent == 1)
             {
                 if (model.IsClassTeacher)
                 {
-                    await this.CreateTeacherAsync(model, teacherClassName, (int)model.TeacherClassId);
+                    var teacher = await this.CreateTeacherAsync(model, registerUser, teacherClassName, (int)model.TeacherClassId);
+
+                    await this.userManager.AddToRoleAsync(teacher.User, GlobalConstants.Teacher.TeacherRoleName);
                 }
                 else
                 {
-                    await this.CreateTeacherAsync(model);
+                    var teacher = await this.CreateTeacherAsync(model, registerUser);
+
+                    await this.userManager.AddToRoleAsync(teacher.User, GlobalConstants.Teacher.TeacherRoleName);
                 }
             }
 
@@ -137,7 +143,12 @@
             return true;
         }
 
-        private async Task CreateStudentAsync(RegisterInputModel model)
+        public async Task LogoutAsync()
+        {
+            await this.signInManager.SignOutAsync();
+        }
+
+        private async Task<Student> CreateStudentAsync(RegisterInputModel model, ApplicationUser user)
         {
             var student = new Student()
             {
@@ -147,12 +158,14 @@
                 LastName = model.LastName,
                 PhoneNumber = model.PhoneNumber,
                 ClassId = (int)model.StudentClassId,
+                User = user,
             };
             await this.db.Students.AddAsync(student);
             await this.db.SaveChangesAsync();
+            return student;
         }
 
-        private async Task CreateTeacherAsync(RegisterInputModel model, string teacherClassName, int teacherClassId)
+        private async Task<Teacher> CreateTeacherAsync(RegisterInputModel model, ApplicationUser user, string teacherClassName, int teacherClassId)
         {
             var teacher = new Teacher()
             {
@@ -164,14 +177,16 @@
                 IsClassTeacher = model.IsClassTeacher,
                 ClassName = teacherClassName,
                 PhoneNumber = model.PhoneNumber,
+                User = user,
             };
             await this.db.Teachers.AddAsync(teacher);
             var foundClass = await this.db.Classes.FindAsync(teacherClassId);
             teacher.Classes.Add(foundClass);
             await this.db.SaveChangesAsync();
+            return teacher;
         }
 
-        private async Task CreateTeacherAsync(RegisterInputModel model)
+        private async Task<Teacher> CreateTeacherAsync(RegisterInputModel model, ApplicationUser user)
         {
             var teacher = new Teacher()
             {
@@ -182,9 +197,11 @@
                 YearsOfExperience = (int)model.TeacherYearsOfExperience,
                 IsClassTeacher = false,
                 PhoneNumber = model.PhoneNumber,
+                User = user,
             };
             await this.db.Teachers.AddAsync(teacher);
             await this.db.SaveChangesAsync();
+            return teacher;
         }
     }
 }

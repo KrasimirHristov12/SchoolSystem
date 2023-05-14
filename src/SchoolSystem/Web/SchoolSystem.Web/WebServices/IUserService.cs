@@ -10,5 +10,7 @@
         Task<RegisterResult> RegisterAsync(RegisterInputModel model);
 
         Task<bool> LoginAsync(LoginInputModel model);
+
+        Task LogoutAsync();
     }
 }

@@ -1,6 +1,12 @@
 ﻿@model LoginInputModel
 
+@{
+    this.ViewData["Title"] = "Вход";
+}
+
 <form method="post">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="mb-3">
         <label asp-for="Email"></label>

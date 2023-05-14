@@ -36,6 +36,12 @@
         [MaxLength(GlobalConstants.NameMaxLength)]
         public string LastName { get; set; }
 
+        [Required]
+        public ApplicationUser User { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
         public int YearsOfExperience { get; set; }
 
         public bool IsClassTeacher { get; set; }

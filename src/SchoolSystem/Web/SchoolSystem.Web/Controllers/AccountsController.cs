@@ -81,5 +81,11 @@
 
             return this.Redirect("/");
         }
+
+        public async Task<IActionResult> Logout()
+        {
+            await this.userService.LogoutAsync();
+            return this.Redirect("/");
+        }
     }
 }

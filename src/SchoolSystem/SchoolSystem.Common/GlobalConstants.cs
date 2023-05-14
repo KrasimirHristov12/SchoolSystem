@@ -32,7 +32,9 @@
 
         public const string PhoneNumberDisplay = "Телефонен номер:";
 
-        public const int PhoneNumberMaxLength = 10;
+        public const int PhoneNumberMinLength = 10;
+
+        public const int PhoneNumberMaxLength = 13;
 
         public const string PhoneRegexPattern = "^(\\+359|0)\\s?8(\\d{2}\\s\\d{3}\\d{3}|[789]\\d{7})$";
 
@@ -42,6 +44,7 @@
 
         public static class Teacher
         {
+            public const string TeacherRoleName = "Teacher";
             public const int MinYearsOfExperience = 1;
             public const int MaxYearsOfExperience = 40;
             public const string IsTeacherDisplay = "Учител ли сте?";
@@ -53,6 +56,7 @@
 
         public static class Student
         {
+            public const string StudentRoleName = "Student";
             public const string StudentDisplay = "Ученик";
             public const string StudentClassDisplay = "Клас:";
         }
@@ -70,6 +74,8 @@
             public const string EgnErrorMessage = "Това не е валидно ЕГН.";
 
             public const string EgnMustBeUnique = "Вече има потребител с това ЕГН";
+
+            public const string PhoneMustBeUnique = "Вече има потребител с този телефонен номер";
 
             public const string InvalidEmail = "Това не е валиден имейл адрес.";
 
@@ -107,7 +113,7 @@
 
             public const string TeacherAlreadyHeadForThisClass = "Има регистриран класен ръководител за този клас в системата.";
 
-            public const string ClassDoesNotExist = "Такъв клас не съществува";
+            public const string ClassDoesNotExist = "Такъв клас не съществува.";
         }
     }
 }

@@ -31,6 +31,12 @@
         public string LastName { get; set; }
 
         [Required]
+        public ApplicationUser User { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
+        [Required]
         public SchoolClass Class { get; set; }
 
         public int ClassId { get; set; }

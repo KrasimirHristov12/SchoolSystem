@@ -18,7 +18,7 @@
         [RequiredWithErrorMessage]
         [RegularExpression(GlobalConstants.EgnRegexPattern, ErrorMessage = GlobalConstants.ErrorMessage.EgnErrorMessage)]
         [StringLength(GlobalConstants.EgnPhoneLength, MinimumLength = GlobalConstants.EgnPhoneLength, ErrorMessage = GlobalConstants.ErrorMessage.EgnErrorMessage)]
-        [UniqueEGN]
+        [UniqueValue(UniqueProperty = UniqueProperty.EGN)]
         [Display(Name = GlobalConstants.EgnDisplay)]
         public string Egn { get; set; }
 
@@ -30,7 +30,8 @@
 
         [RequiredWithErrorMessage]
         [RegularExpression(GlobalConstants.PhoneRegexPattern, ErrorMessage = GlobalConstants.ErrorMessage.PhoneNumberErrorMessage)]
-        [StringLength(GlobalConstants.EgnPhoneLength, MinimumLength = GlobalConstants.EgnPhoneLength, ErrorMessage = GlobalConstants.ErrorMessage.PhoneNumberErrorMessage)]
+        [StringLength(GlobalConstants.PhoneNumberMaxLength, MinimumLength = GlobalConstants.PhoneNumberMinLength, ErrorMessage = GlobalConstants.ErrorMessage.PhoneNumberErrorMessage)]
+        [UniqueValue(UniqueProperty = UniqueProperty.PhoneNumber)]
         [Display(Name = GlobalConstants.PhoneNumberDisplay)]
         public string PhoneNumber { get; set; }
 
@@ -86,7 +87,7 @@
         {
             if ((int)this.TeacherStudent == 0)
             {
-                if (this.StudentClassId == -1)
+                if (this.StudentClassId == null)
                 {
                     yield return new ValidationResult(GlobalConstants.ErrorMessage.StudentShouldHaveClass, new List<string> { nameof(this.StudentClassId) });
                 }
