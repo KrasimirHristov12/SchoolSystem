@@ -12,6 +12,7 @@
         public Teacher()
         {
             this.Classes = new HashSet<SchoolClass>();
+            this.Subjects = new HashSet<Subject>();
         }
 
         public int Id { get; set; }
@@ -49,6 +50,8 @@
         public string ClassName { get; set; }
 
         public ICollection<SchoolClass> Classes { get; set; }
+
+        public ICollection<Subject> Subjects { get; set; }
 
         public DateTime CreatedOn { get; set; }
 

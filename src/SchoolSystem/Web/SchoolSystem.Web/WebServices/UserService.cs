@@ -9,8 +9,8 @@
     using SchoolSystem.Data;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Services.Data.SchoolClass;
+    using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Accounts;
-    using SchoolSystem.Web.WebModels;
 
     public class UserService : IUserService
     {
@@ -27,7 +27,7 @@
             this.schoolClassService = schoolClassService;
         }
 
-        public async Task<RegisterResult> RegisterAsync(RegisterInputModel model)
+        public async Task<CRUDResult> RegisterAsync(RegisterInputModel model)
         {
             string teacherClassName = null;
 
@@ -42,7 +42,7 @@
             {
                 if (!this.db.Classes.Any(c => c.Id == model.StudentClassId))
                 {
-                    return new RegisterResult()
+                    return new CRUDResult()
                     {
                         Succeeded = false,
                         ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.ClassDoesNotExist },
@@ -56,7 +56,7 @@
                     teacherClassName = await this.schoolClassService.GetClassNameById((int)model.TeacherClassId);
                     if (teacherClassName == string.Empty)
                     {
-                        return new RegisterResult()
+                        return new CRUDResult()
                         {
                             Succeeded = false,
                             ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.ClassDoesNotExist },
@@ -65,7 +65,7 @@
 
                     if (this.db.Teachers.Any(t => t.ClassName == teacherClassName))
                     {
-                        return new RegisterResult()
+                        return new CRUDResult()
                         {
                             Succeeded = false,
                             ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.TeacherAlreadyHeadForThisClass },
@@ -88,7 +88,7 @@
                     }
                 }
 
-                return new RegisterResult()
+                return new CRUDResult()
                 {
                     Succeeded = false,
                     ErrorMessages = errorMessages,
@@ -117,7 +117,7 @@
                 }
             }
 
-            return new RegisterResult()
+            return new CRUDResult()
             {
                 Succeeded = true,
                 ErrorMessages = null,

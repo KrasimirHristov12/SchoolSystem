@@ -19,6 +19,8 @@
     using SchoolSystem.Data.Seeding;
     using SchoolSystem.Services.Data;
     using SchoolSystem.Services.Data.SchoolClass;
+    using SchoolSystem.Services.Data.Subjects;
+    using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Services.Mapping;
     using SchoolSystem.Services.Messaging;
     using SchoolSystem.Web.ViewModels;
@@ -57,6 +59,11 @@
                     options.MinimumSameSitePolicy = SameSiteMode.None;
                 });
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Accounts/Login";
+            });
+
             services.AddControllersWithViews(
                 options =>
                 {
@@ -77,6 +84,8 @@
             services.AddTransient<ISettingsService, SettingsService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ISchoolClassService, SchoolClassService>();
+            services.AddTransient<ITeacherService, TeacherService>();
+            services.AddTransient<ISubjectService, SubjectService>();
         }
 
         private static void Configure(WebApplication app)

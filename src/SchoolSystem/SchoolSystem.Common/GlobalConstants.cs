@@ -67,6 +67,14 @@
             public const int ClassMaxLength = 3;
         }
 
+        public static class Subject
+        {
+            public const int SubjectMinLength = 5;
+            public const int SubjectMaxLength = 50;
+            public const string SubjectNameDisplay = "Избери предмет:";
+            public const string SubjectSuccessfullyAdded = "Предметът беше успешно добавен във вашия списък.";
+        }
+
         public static class ErrorMessage
         {
             public const string RequiredErrorMessage = "Това поле е задължително.";
@@ -114,6 +122,8 @@
             public const string TeacherAlreadyHeadForThisClass = "Има регистриран класен ръководител за този клас в системата.";
 
             public const string ClassDoesNotExist = "Такъв клас не съществува.";
+
+            public const string SubjectAlreadyExistsInTeacherCollection = "Вече имате този предмет в списъка с предметите, които преподавате.";
         }
     }
 }

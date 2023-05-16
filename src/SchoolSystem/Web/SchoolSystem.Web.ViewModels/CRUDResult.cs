@@ -1,8 +1,8 @@
-﻿namespace SchoolSystem.Web.WebModels
+﻿namespace SchoolSystem.Web.ViewModels
 {
     using System.Collections.Generic;
 
-    public class RegisterResult
+    public class CRUDResult
     {
         public bool Succeeded { get; set; }
 

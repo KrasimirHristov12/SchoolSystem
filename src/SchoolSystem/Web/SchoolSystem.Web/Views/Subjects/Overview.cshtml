@@ -1,0 +1,30 @@
+﻿@model IEnumerable<SubjectsViewModel>
+@if (this.TempData.ContainsKey("SuccessfullyAdded"))
+{
+    <div class="alert alert-success" role="alert">
+        @this.TempData["SuccessfullyAdded"]
+    </div>
+}
+
+
+<div>teacher subjects:</div>
+
+<ul>
+    @foreach (var subject in Model)
+    {
+        <li>@subject.Name</li>
+    }
+</ul>
+
+<vc:add-subject teacher-id="@int.Parse(this.ViewData["teacherId"].ToString())"></vc:add-subject>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            setTimeout(function () {
+                $(".alert-success").hide();
+            }, 5000)
+            
+        });
+    </script>
+}

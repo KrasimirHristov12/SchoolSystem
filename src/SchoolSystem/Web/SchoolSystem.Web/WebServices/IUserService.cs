@@ -2,12 +2,12 @@
 {
     using System.Threading.Tasks;
 
+    using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Accounts;
-    using SchoolSystem.Web.WebModels;
 
     public interface IUserService
     {
-        Task<RegisterResult> RegisterAsync(RegisterInputModel model);
+        Task<CRUDResult> RegisterAsync(RegisterInputModel model);
 
         Task<bool> LoginAsync(LoginInputModel model);
 
