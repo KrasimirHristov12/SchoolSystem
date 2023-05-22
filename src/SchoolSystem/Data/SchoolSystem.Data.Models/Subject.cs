@@ -12,6 +12,7 @@
         public Subject()
         {
             this.Teachers = new HashSet<Teacher>();
+            this.Grades = new HashSet<Grade>();
         }
 
         public int Id { get; set; }
@@ -21,6 +22,8 @@
         public string Name { get; set; }
 
         public ICollection<Teacher> Teachers { get; set; }
+
+        public ICollection<Grade> Grades { get; set; }
 
         public bool IsDeleted { get; set; }
 

@@ -1,0 +1,71 @@
+﻿@model GradesInputModel
+
+@{
+    this.ViewData["Title"] = "Добавяне на оценка";
+}
+<h5>@this.ViewData["Title"]</h5>
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="SubjectId"></label>
+        <select asp-for="SubjectId" class="form-select" asp-items="@(new SelectList(Model.GradeModel.Subjects, "Id", "Name"))">
+         <option selected="selected" value="">Моля избери</option>
+        </select>
+        <div>
+            <span asp-validation-for="SubjectId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ClassId"></label>
+        <select class="form-select select-class" asp-for="ClassId" class="form-select" asp-items="@(new SelectList(Model.GradeModel.Classes, "Id", "Name"))">
+            <option selected="selected" value="">Моля избери</option>
+        </select>
+        <div>
+            <span asp-validation-for="ClassId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StudentId"></label>
+        <select class="form-select select-student" asp-for="StudentId" class="form-select">
+            <option selected="selected" value="">Моля избери</option>
+            @foreach (var st in Model.GradeModel.Students)
+            {
+                <option value="@st.Id" class="school-class-@(st.ClassId)">@st.FullName</option>
+            }
+        </select>
+        <div>
+            <span asp-validation-for="StudentId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Value"></label>
+        <input asp-for="Value" class="form-control"/>
+        <div>
+            <span asp-validation-for="Value" class="text-danger"></span>
+        </div>
+    </div>
+<button class="btn btn-primary" type="submit">Добавяне</button>
+
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("select.select-class").change(function () {
+                selectedClass = $(this).val();
+                $("select.select-student option:not(:first)").each(function () {
+                    if (!$(this).hasClass(`school-class-${selectedClass}`)) {
+                        $(this).hide();
+                    }
+                    else {
+                        $(this).show();
+                    }
+                });
+            });
+        });
+    </script>
+}

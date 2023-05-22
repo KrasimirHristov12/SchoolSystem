@@ -1,0 +1,42 @@
+﻿@model ClassInputModel
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    @for (int i = 0; i < 10; i++)
+    {
+        <div class="classes-container mb-3 @(i > 0 ? "d-none" : "")">
+            <label asp-for="@(Model.ClassesIds[i])">Клас @(i + 1)</label>
+            <select class="form-select" asp-for="@(Model.ClassesIds[i])" asp-items="@(new SelectList(Model.Classes, "Id", "Name"))">
+                <option selected="selected" value="">Моля избери</option>
+            </select>
+        </div>
+    }
+    <a class="add-more" style="cursor: pointer">Добавяне на още класове</a>
+    <div class="btn-container mt-2">
+        <button class="btn btn-primary" type="submit">Запамети</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("select:not(:first)").each(function () {
+                if ($(this).val()) {
+                    $(this).closest(".classes-container").removeClass("d-none");
+                }
+            });
+
+            $("a.add-more").click(function () {
+                if ($(".classes-container.d-none").length > 0) {
+                    $(".classes-container.d-none:first").removeClass("d-none");
+                    if ($(".classes-container.d-none").length == 0) {
+                        $(this).addClass("d-none");
+                    }
+                }
+                
+            });
+
+
+        });
+    </script>
+}

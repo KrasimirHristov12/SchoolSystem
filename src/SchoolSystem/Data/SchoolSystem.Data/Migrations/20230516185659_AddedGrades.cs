@@ -5,18 +5,21 @@ namespace SchoolSystem.Data.Migrations
 
     using Microsoft.EntityFrameworkCore.Migrations;
     /// <inheritdoc />
-    public partial class AddedSubject : Migration
+    public partial class AddedGrades : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Subject",
+                name: "Grade",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Value = table.Column<double>(type: "float", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    TeacherId = table.Column<int>(type: "int", nullable: false),
+                    SubjectId = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -24,52 +27,53 @@ namespace SchoolSystem.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subject", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SubjectTeacher",
-                columns: table => new
-                {
-                    SubjectsId = table.Column<int>(type: "int", nullable: false),
-                    TeachersId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubjectTeacher", x => new { x.SubjectsId, x.TeachersId });
+                    table.PrimaryKey("PK_Grade", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubjectTeacher_Subject_SubjectsId",
-                        column: x => x.SubjectsId,
-                        principalTable: "Subject",
+                        name: "FK_Grade_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_SubjectTeacher_Teachers_TeachersId",
-                        column: x => x.TeachersId,
+                        name: "FK_Grade_Subjects_SubjectId",
+                        column: x => x.SubjectId,
+                        principalTable: "Subjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Grade_Teachers_TeacherId",
+                        column: x => x.TeacherId,
                         principalTable: "Teachers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subject_IsDeleted",
-                table: "Subject",
+                name: "IX_Grade_IsDeleted",
+                table: "Grade",
                 column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubjectTeacher_TeachersId",
-                table: "SubjectTeacher",
-                column: "TeachersId");
+                name: "IX_Grade_StudentId",
+                table: "Grade",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Grade_SubjectId",
+                table: "Grade",
+                column: "SubjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Grade_TeacherId",
+                table: "Grade",
+                column: "TeacherId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SubjectTeacher");
-
-            migrationBuilder.DropTable(
-                name: "Subject");
+                name: "Grade");
         }
     }
 }

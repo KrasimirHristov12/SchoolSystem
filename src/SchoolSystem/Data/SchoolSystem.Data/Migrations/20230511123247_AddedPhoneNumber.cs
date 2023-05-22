@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-
-#nullable disable
+﻿#nullable disable
 
 namespace SchoolSystem.Data.Migrations
 {
+    using Microsoft.EntityFrameworkCore.Migrations;
     /// <inheritdoc />
     public partial class AddedPhoneNumber : Migration
     {

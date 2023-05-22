@@ -1,5 +1,6 @@
 ﻿namespace SchoolSystem.Web.WebServices
 {
+    using System.Security.Claims;
     using System.Threading.Tasks;
 
     using SchoolSystem.Web.ViewModels;
@@ -7,6 +8,8 @@
 
     public interface IUserService
     {
+        string GetUserId(ClaimsPrincipal user);
+
         Task<CRUDResult> RegisterAsync(RegisterInputModel model);
 
         Task<bool> LoginAsync(LoginInputModel model);

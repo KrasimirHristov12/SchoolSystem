@@ -57,7 +57,7 @@
         public static class Student
         {
             public const string StudentRoleName = "Student";
-            public const string StudentDisplay = "Ученик";
+            public const string StudentDisplay = "Ученик:";
             public const string StudentClassDisplay = "Клас:";
         }
 
@@ -73,6 +73,15 @@
             public const int SubjectMaxLength = 50;
             public const string SubjectNameDisplay = "Избери предмет:";
             public const string SubjectSuccessfullyAdded = "Предметът беше успешно добавен във вашия списък.";
+        }
+
+        public static class Grade
+        {
+            public const string GradeDisplay = "Оценка:";
+
+            public const double GradeMinimum = 2.0;
+
+            public const double GradeMaximum = 6.0;
         }
 
         public static class ErrorMessage
@@ -107,6 +116,8 @@
 
             public const string StudentShouldHaveClass = "Моля въведи кой клас си.";
 
+            public const string StudentDoesNotExist = "Няма такъв ученик в системата.";
+
             public const string StudentCannotBeHeadTeacher = "Ученикът не може да е класен ръководител.";
 
             public const string StudentCannotHaveYearsOfExperience = "Ученикът не може да има стаж.";
@@ -124,6 +135,19 @@
             public const string ClassDoesNotExist = "Такъв клас не съществува.";
 
             public const string SubjectAlreadyExistsInTeacherCollection = "Вече имате този предмет в списъка с предметите, които преподавате.";
+
+            public const string GradeErrorMessage = "Оценката трябва да е между 2.00 и 6.00";
+
+            public const string ClassShouldBeUnique = "Избрали сте един клас повече от веднъж.";
+
+            public const string ClassAlreadyInTeacherList = "Вече преподавате на този клас.";
+
+            public const string StudentNotInClass = "Ученикът не е в този клас.";
+
+            public const string SubjectDoesNotExist = "Предметът не съществува в системата.";
+
+            public const string SubjectNotInTeacherList = "Текущо логнатият учител не преподава този предмет";
+
         }
     }
 }

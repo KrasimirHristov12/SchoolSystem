@@ -18,7 +18,9 @@
     using SchoolSystem.Data.Repositories;
     using SchoolSystem.Data.Seeding;
     using SchoolSystem.Services.Data;
+    using SchoolSystem.Services.Data.Grades;
     using SchoolSystem.Services.Data.SchoolClass;
+    using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Subjects;
     using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Services.Mapping;
@@ -86,6 +88,8 @@
             services.AddTransient<ISchoolClassService, SchoolClassService>();
             services.AddTransient<ITeacherService, TeacherService>();
             services.AddTransient<ISubjectService, SubjectService>();
+            services.AddTransient<IStudentService, StudentService>();
+            services.AddTransient<IGradesService, GradesService>();
         }
 
         private static void Configure(WebApplication app)

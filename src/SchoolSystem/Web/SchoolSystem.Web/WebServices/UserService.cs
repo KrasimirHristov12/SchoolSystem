@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Identity;
@@ -25,6 +26,11 @@
             this.signInManager = signInManager;
             this.db = db;
             this.schoolClassService = schoolClassService;
+        }
+
+        public string GetUserId(ClaimsPrincipal user)
+        {
+            return user.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
         }
 
         public async Task<CRUDResult> RegisterAsync(RegisterInputModel model)

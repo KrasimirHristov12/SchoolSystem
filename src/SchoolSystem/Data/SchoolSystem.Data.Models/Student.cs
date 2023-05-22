@@ -1,6 +1,7 @@
 ﻿namespace SchoolSystem.Data.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
     using SchoolSystem.Common;
@@ -8,6 +9,11 @@
 
     public class Student : IDeletableEntity, IAuditInfo
     {
+        public Student()
+        {
+            this.Grades = new HashSet<Grade>();
+        }
+
         public int Id { get; set; }
 
         [Required]
@@ -38,6 +44,8 @@
 
         [Required]
         public SchoolClass Class { get; set; }
+
+        public ICollection<Grade> Grades { get; set; }
 
         public int ClassId { get; set; }
 

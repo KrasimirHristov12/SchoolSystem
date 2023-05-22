@@ -13,6 +13,7 @@
         {
             this.Classes = new HashSet<SchoolClass>();
             this.Subjects = new HashSet<Subject>();
+            this.Grades = new HashSet<Grade>();
         }
 
         public int Id { get; set; }
@@ -52,6 +53,8 @@
         public ICollection<SchoolClass> Classes { get; set; }
 
         public ICollection<Subject> Subjects { get; set; }
+
+        public ICollection<Grade> Grades { get; set; }
 
         public DateTime CreatedOn { get; set; }
 
