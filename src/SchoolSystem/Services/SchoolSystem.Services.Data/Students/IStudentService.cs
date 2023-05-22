@@ -6,6 +6,8 @@
 
     public interface IStudentService
     {
-        public IEnumerable<StudentsViewModel> GetAll();
+        int GetIdByUserId(string userId);
+
+        IEnumerable<StudentsViewModel> GetAll();
     }
 }

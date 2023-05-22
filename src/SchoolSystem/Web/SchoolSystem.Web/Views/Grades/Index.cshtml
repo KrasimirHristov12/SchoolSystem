@@ -1,0 +1,24 @@
+﻿@model IEnumerable<GradesViewModel>
+
+@{
+    this.ViewData["Title"] = "Бележник";
+}
+
+<table class="table table-striped table-hover">
+    <tr>
+        <th>Учител</th>
+        <th>Предмет</th>
+        <th>Оценка</th>
+        <th>Дата</th>
+    </tr>
+    @foreach (var grade in Model)
+    {
+        <tr>
+            <td>@grade.TeacherName</td>
+            <td>@grade.SubjectName</td>
+            <td>@grade.Value</td>
+            <td>@grade.Date</td>
+        </tr>
+    }
+
+</table>

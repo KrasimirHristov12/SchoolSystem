@@ -24,5 +24,16 @@
                 ClassId = s.ClassId,
             }).ToList();
         }
+
+        public int GetIdByUserId(string userId)
+        {
+            var student = this.db.Students.FirstOrDefault(s => s.UserId == userId);
+            if (student == null)
+            {
+                return -1;
+            }
+
+            return student.Id;
+        }
     }
 }

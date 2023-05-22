@@ -1,6 +1,7 @@
 ﻿namespace SchoolSystem.Services.Data.Grades
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -18,6 +19,22 @@
         public GradesService(ApplicationDbContext db)
         {
             this.db = db;
+        }
+
+        public IEnumerable<GradesViewModel> GetForStudent(int studentId)
+        {
+            var student = this.db.Students.Where(s => s.Id == studentId);
+            var cultureInfo = new CultureInfo("bg-BG");
+
+            var grades = this.db.Students.Where(s => s.Id == studentId).Select(s => s.Grades.Select(g => new GradesViewModel
+            {
+                TeacherName = g.Teacher.FirstName + " " + g.Teacher.LastName,
+                Date = g.CreatedOn.Date.ToString("d", cultureInfo),
+                SubjectName = g.Subject.Name,
+                Value = g.Value.ToString("F2"),
+            })).First().ToList();
+
+            return grades;
         }
 
         public async Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId)

@@ -1,5 +1,6 @@
 ﻿namespace SchoolSystem.Services.Data.Grades
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     using SchoolSystem.Web.ViewModels;
@@ -8,5 +9,7 @@
     public interface IGradesService
     {
         Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId);
+
+        IEnumerable<GradesViewModel> GetForStudent(int studentId);
     }
 }

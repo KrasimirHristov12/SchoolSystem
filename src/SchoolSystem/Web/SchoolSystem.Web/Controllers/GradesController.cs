@@ -13,6 +13,7 @@
     using SchoolSystem.Services.Data.Subjects;
     using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Web.ViewModels.Grades;
+    using SchoolSystem.Web.WebServices;
 
     [Authorize]
     public class GradesController : Controller
@@ -22,20 +23,31 @@
         private readonly ISchoolClassService classService;
         private readonly IStudentService studentService;
         private readonly IGradesService gradesService;
+        private readonly IUserService userService;
 
-        public GradesController(ISubjectService subjectService, ITeacherService teacherService, ISchoolClassService classService, IStudentService studentService, IGradesService gradesService)
+        public GradesController(ISubjectService subjectService, ITeacherService teacherService, ISchoolClassService classService, IStudentService studentService, IGradesService gradesService, IUserService userService)
         {
             this.subjectService = subjectService;
             this.teacherService = teacherService;
             this.classService = classService;
             this.studentService = studentService;
             this.gradesService = gradesService;
+            this.userService = userService;
+        }
+
+        [Authorize(Roles = $"{GlobalConstants.Student.StudentRoleName}")]
+        public IActionResult Index()
+        {
+            var userId = this.userService.GetUserId(this.User);
+            var studentId = this.studentService.GetIdByUserId(userId);
+            var grades = this.gradesService.GetForStudent(studentId);
+            return this.View(grades);
         }
 
         [Authorize(Roles = $"{GlobalConstants.Teacher.TeacherRoleName}")]
         public async Task<IActionResult> Add()
         {
-            var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var userId = this.userService.GetUserId(this.User);
             var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
 
             var model = new GradesInputModel()
@@ -54,7 +66,7 @@
         [HttpPost]
         public async Task<IActionResult> Add(GradesInputModel model)
         {
-            var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var userId = this.userService.GetUserId(this.User);
             var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
             model.GradeModel = new AddGradeViewModel
             {
