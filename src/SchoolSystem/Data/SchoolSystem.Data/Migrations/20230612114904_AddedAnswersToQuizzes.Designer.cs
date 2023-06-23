@@ -9,11 +9,11 @@ using SchoolSystem.Data;
 
 #nullable disable
 
-namespace SchoolSystem.Data.Migration
+namespace SchoolSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230522124527_AlteredGrades")]
-    partial class AlteredGrades
+    [Migration("20230612114904_AddedAnswersToQuizzes")]
+    partial class AddedAnswersToQuizzes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -129,6 +129,21 @@ namespace SchoolSystem.Data.Migration
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("QuizSchoolClass", b =>
+                {
+                    b.Property<int>("ClassesId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuizzesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ClassesId", "QuizzesId");
+
+                    b.HasIndex("QuizzesId");
+
+                    b.ToTable("QuizSchoolClass");
                 });
 
             modelBuilder.Entity("SchoolClassTeacher", b =>
@@ -309,6 +324,63 @@ namespace SchoolSystem.Data.Migration
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Grades");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Answers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateTaken")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("QuizType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("Quizzes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.SchoolClass", b =>
@@ -604,6 +676,21 @@ namespace SchoolSystem.Data.Migration
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("QuizSchoolClass", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.SchoolClass", null)
+                        .WithMany()
+                        .HasForeignKey("ClassesId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSystem.Data.Models.Quiz", null)
+                        .WithMany()
+                        .HasForeignKey("QuizzesId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SchoolClassTeacher", b =>
                 {
                     b.HasOne("SchoolSystem.Data.Models.SchoolClass", null)
@@ -640,6 +727,25 @@ namespace SchoolSystem.Data.Migration
                         .IsRequired();
 
                     b.Navigation("Student");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Subject", "Subject")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSystem.Data.Models.Teacher", "Teacher")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Subject");
 
@@ -713,11 +819,15 @@ namespace SchoolSystem.Data.Migration
             modelBuilder.Entity("SchoolSystem.Data.Models.Subject", b =>
                 {
                     b.Navigation("Grades");
+
+                    b.Navigation("Quizzes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
                 {
                     b.Navigation("Grades");
+
+                    b.Navigation("Quizzes");
                 });
 #pragma warning restore 612, 618
         }

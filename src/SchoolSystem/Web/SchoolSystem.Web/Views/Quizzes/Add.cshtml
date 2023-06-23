@@ -1,0 +1,330 @@
+﻿@model QuizzesInputModel
+
+<form method="post">
+
+    <div class="mb-3">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <div>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SubjectId"></label>
+        <select asp-for="SubjectId" class="form-select" asp-items="@(new SelectList(Model.ViewModel.Subjects, "Id", "Name"))">
+            <option selected="selected" value="">Моля избери</option>
+        </select>
+        <div>
+            <span asp-validation-for="SubjectId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ClassesId"></label>
+        <select asp-for="ClassesId" class="form-select" asp-items="@(new SelectList(Model.ViewModel.Classes, "Id", "Name"))" data-bs-toggle="tooltip" data-bs-placement="top"
+                data-bs-custom-class="custom-tooltip"
+                data-bs-title="Може да изберете повече от един клас.">
+            <option selected="selected" value="">Моля избери</option>
+        </select>
+        <div>
+            <span asp-validation-for="ClassesId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="QuizType"></label>
+        <select asp-for="QuizType" class="form-select" asp-items="@Html.GetEnumSelectList<QuizType>()">
+            <option selected="selected" value="">Моля избери</option>
+        </select>
+        <div>
+            <span asp-validation-for="QuizType" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DateTaken"></label>
+        <input asp-for="DateTaken" type="text" autocomplete="off" class="form-control" placeholder="Натисни върху полето, за да избереш дата и час." />
+        <div>
+            <span asp-validation-for="DateTaken" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 duration">
+            <label asp-for="Duration"></label>
+            <input asp-for="Duration" class="form-control" min="10" max="180" />
+            <div>
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary display-question">Добавяне на въпрос</button>
+
+    <button type="button" class="btn btn-primary view-test" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Преглед
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Преглед на теста</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="quiz-div"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Затвори</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="question-container d-none">
+        <label for="question-title">Условие на въпроса</label>
+        <input id="question-title" class="form-control" />
+        <label for="question-type">Тип на въпроса</label>
+        <select id="question-type" class="form-select">
+            <option value="radio" selected="selected">С един верен отговор</option>
+            <option value="checkbox">С повече от един верен отговор</option>
+            <option value="text">Със свободен отговор</option>
+        </select>
+        <div id="options-container" class="mb-3">
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th>Отговор</th>
+                    <th style="text-align: center;">Маркирай като верен отговор</th>
+                </tr>
+                <tr>
+                    <td><label for="option_a">А)</label></td>
+                    <td class="option_a_container">
+                        <input id="option_a" class="form-control ms-2" />
+                    </td>
+
+                    <td>
+                        <div style="text-align:center;"><input type="checkbox" name="option_a_correct" /></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="option_b">Б)</label></td>
+                    <td class="option_b_container">
+                        <input id="option_b" class="form-control ms-2" />
+                    </td>
+                    <td>
+                        <div style="text-align:center;"><input type="checkbox" name="option_b_correct" /></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="option_c">В)</label></td>
+                    <td class="option_c_container">
+                        <input id="option_c" class="form-control ms-2" />
+                    </td>
+
+                    <td>
+                        <div style="text-align:center;"><input type="checkbox" name="option_c_correct" /></div>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td><label for="option_d">Г)</label></td>
+                    <td class="option_d_container">
+                        <input id="option_d" class="form-control ms-2" />
+                    </td>
+                    <td>
+                        <div style="text-align:center;"><input type="checkbox" name="option_d_correct" /></div>
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+
+        <button class="btn btn-primary save-question mt-2">Запазване на въпроса</button>
+    </div>
+
+    <div class="mb-3 d-none">
+        <label asp-for="Content"></label>
+        <textarea asp-for="Content" class="content-textarea"></textarea>
+        <div>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3 d-none">
+        <label asp-for="Answers"></label>
+        <textarea asp-for="Answers" class="answers-textarea"></textarea>
+        <div>
+            <span asp-validation-for="Answers" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary mt-2">Добавяне на тест</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        //var quiz = new Quiz('quiz-div', ['a', 'b', 'c'])
+        //function myAnswerCheckMethod() {
+        //    quiz.checkAnswers(false);
+        //    console.log("Correct answers: " + quiz.result.score);
+        //}
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+        $.datetimepicker.setLocale('bg');
+        jQuery("input#DateTaken").datetimepicker();
+
+        jQuery.extend(jQuery.validator.messages, {
+            max: jQuery.validator.format("Моля въведете стойност по-малка или равна на {0}."),
+            min: jQuery.validator.format("Моля въведете стойност по-голяма или равна на {0}.")
+        });
+
+        let answersArr = [];
+
+        let isValid = true;
+        let testContent = "";
+        let currentQuestion = 1;
+        let questionType = "";
+        $(document).ready(function () {
+
+            $("#question-type").change(function () {
+
+                questionType = $(this).val();
+            }).trigger("change");
+
+            $("input:checkbox").change(function () {
+
+                if (questionType == 'radio' && $(this).prop("checked")) {
+                    $("input:checkbox").not($(this)).prop("checked", false);
+                }
+            }).trigger("change");
+
+            $(".display-question").click(function (e) {
+                e.preventDefault();
+                $(".question-container").removeClass("d-none");
+            });
+            $(".save-question").click(function (e) {
+                e.preventDefault();
+                let questionTitle = $("input#question-title").val();
+
+                let option_a = $("input#option_a").val();
+                let option_a_checked = $('input[name="option_a_correct"]').prop("checked");
+                let option_b = $("input#option_b").val();
+                let option_b_checked = $('input[name="option_b_correct"]').prop("checked");
+                let option_c = $("input#option_c").val();
+                let option_c_checked = $('input[name="option_c_correct"]').prop("checked");
+                let option_d = $("input#option_d").val();
+                let option_d_checked = $('input[name="option_d_correct"]').prop("checked");
+
+
+                $.ajax({
+                    url: `/api/results/ValidateQuestion?questionTitle=${questionTitle}&option_a=${option_a}&option_a_checked=${option_a_checked}&option_b=${option_b}&option_b_checked=${option_b_checked}&option_c=${option_c}&option_c_checked=${option_c_checked}&option_d=${option_d}&option_d_checked=${option_d_checked}`,
+                    type: "GET",
+                    contentType: "application/json",
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
+                        if (Object.keys(data).length > 0) {
+                            isValid = false;
+                            for (const k in data) {
+                                if (k !== 'checked') {
+                                    if (k == 'questionTitle') {
+                                        $(`<span id="${k}_errorMessage" class="text-danger">${data[k]}</span>`).insertAfter("input#question-title");
+                                    }
+                                    else {
+                                        $(`td.${k}_container`).append(`<span id="${k}_errorMessage" class="text-danger">${data[k]}</span>`);
+                                    }
+                                    
+
+                                }
+                                else {
+                                    //TODO
+                                }
+                            }
+
+                        }
+                        else {
+                            isValid = true;
+                            $("span#option_a_errorMessage").remove();
+                            $("span#option_b_errorMessage").remove();
+                            $("span#option_c_errorMessage").remove();
+                            $("span#option_d_errorMessage").remove();
+                            $("span#questionTitle_errorMessage").remove();
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr);
+                        console.log(status);
+                    }
+                });
+
+                let answers = [];
+
+                if (isValid) {
+                    $("input:checkbox:checked").each(function () {
+
+                        let selectedOpt = $(this).attr("name").split("_")[1];
+                        answers.push(selectedOpt);
+                        $(this).prop("checked", false);
+                    });
+
+                    answersArr.push({ question: currentQuestion.toString(), answers: answers });
+
+                    console.log(answersArr);
+
+                    let nonTextCode = `<ul>
+                                                    <li><label><input type="${questionType}" name="q${currentQuestion}" value="a"/>${option_a}</label></li>
+                                                    <li><label><input type="${questionType}" name="q${currentQuestion}" value="b"/>${option_b}</label></li>
+                                                    <li><label><input type="${questionType}" name="q${currentQuestion}" value="c"/>${option_c}</label></li>
+                                                    <li><label><input type="${questionType}" name="q${currentQuestion}" value="d"/>${option_d}</label></li>
+                                                   </ul>`;
+                    let textCode = `<input type="text" name="q${currentQuestion}"/>`;
+
+
+                    $("input#question-title").val('');
+                    $("input#option_a").val('');
+                    $("input#option_b").val('');
+                    $("input#option_c").val('');
+                    $("input#option_d").val('');
+
+                    testContent += `<div class="quizlib-question">
+                                                                    <div class="quizlib-question-title">${currentQuestion}. ${questionTitle}</div>
+                                                            <div class="quizlib-question-answers">`
+                        + (questionType !== 'text' ? nonTextCode : textCode) +
+                        `</div>
+                                                        </div>`;
+                    $(".content-textarea").val(testContent);
+                    $(".answers-textarea").val(JSON.stringify(answersArr));
+                    $(".question-container").addClass("d-none");
+                    currentQuestion += 1;
+                }
+            });
+
+            $(".view-test").click(function (e) {
+                e.preventDefault();
+                $(".modal .modal-body #quiz-div").empty();
+                $(".modal .modal-body #quiz-div").append(testContent);
+                //window.open(``, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+
+            });
+
+            $("#question-type").change(function () {
+                if ($(this).val() !== "text") {
+                    $("#options-container").fadeIn();
+                }
+                else {
+                    $("#options-container").fadeOut();
+                }
+            })
+
+
+        });
+    </script>
+}

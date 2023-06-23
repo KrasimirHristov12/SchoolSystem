@@ -13,6 +13,7 @@
         {
             this.Teachers = new HashSet<Teacher>();
             this.Grades = new HashSet<Grade>();
+            this.Quizzes = new HashSet<Quiz>();
         }
 
         public int Id { get; set; }
@@ -24,6 +25,8 @@
         public ICollection<Teacher> Teachers { get; set; }
 
         public ICollection<Grade> Grades { get; set; }
+
+        public ICollection<Quiz> Quizzes { get; set; }
 
         public bool IsDeleted { get; set; }
 

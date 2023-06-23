@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSystem.Data;
 
@@ -11,9 +12,11 @@ using SchoolSystem.Data;
 namespace SchoolSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230609211049_RemoveClassId")]
+    partial class RemoveClassId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,7 +143,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("QuizzesId");
 
-                    b.ToTable("QuizSchoolClass", (string)null);
+                    b.ToTable("QuizSchoolClass");
                 });
 
             modelBuilder.Entity("SchoolClassTeacher", b =>
@@ -155,7 +158,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeachersId");
 
-                    b.ToTable("SchoolClassTeacher", (string)null);
+                    b.ToTable("SchoolClassTeacher");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.ApplicationRole", b =>
@@ -320,7 +323,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Grades", (string)null);
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
@@ -328,10 +331,6 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Answers")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -366,18 +365,13 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted");
 
                     b.HasIndex("SubjectId");
 
-                    b.HasIndex("TeacherId");
-
-                    b.ToTable("Quizzes", (string)null);
+                    b.ToTable("Quizzes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.SchoolClass", b =>
@@ -409,7 +403,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Classes", (string)null);
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Setting", b =>
@@ -442,7 +436,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Settings", (string)null);
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Student", b =>
@@ -505,36 +499,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Students", (string)null);
-                });
-
-            modelBuilder.Entity("SchoolSystem.Data.Models.StudentsQuizzes", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsTaken")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("QuizId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuizId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("StudentsQuizzes", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Subject", b =>
@@ -566,7 +531,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Subjects", (string)null);
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
@@ -633,7 +598,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Teachers", (string)null);
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("SubjectTeacher", b =>
@@ -648,7 +613,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeachersId");
 
-                    b.ToTable("SubjectTeacher", (string)null);
+                    b.ToTable("SubjectTeacher");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -767,15 +732,7 @@ namespace SchoolSystem.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SchoolSystem.Data.Models.Teacher", "Teacher")
-                        .WithMany("Quizzes")
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Subject");
-
-                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Student", b =>
@@ -795,25 +752,6 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Class");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SchoolSystem.Data.Models.StudentsQuizzes", b =>
-                {
-                    b.HasOne("SchoolSystem.Data.Models.Quiz", "Quiz")
-                        .WithMany("StudentsQuizzes")
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SchoolSystem.Data.Models.Student", "Student")
-                        .WithMany("StudentsQuizzes")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Quiz");
-
-                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
@@ -851,11 +789,6 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Roles");
                 });
 
-            modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
-                {
-                    b.Navigation("StudentsQuizzes");
-                });
-
             modelBuilder.Entity("SchoolSystem.Data.Models.SchoolClass", b =>
                 {
                     b.Navigation("Students");
@@ -864,8 +797,6 @@ namespace SchoolSystem.Data.Migrations
             modelBuilder.Entity("SchoolSystem.Data.Models.Student", b =>
                 {
                     b.Navigation("Grades");
-
-                    b.Navigation("StudentsQuizzes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Subject", b =>
@@ -878,8 +809,6 @@ namespace SchoolSystem.Data.Migrations
             modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
                 {
                     b.Navigation("Grades");
-
-                    b.Navigation("Quizzes");
                 });
 #pragma warning restore 612, 618
         }

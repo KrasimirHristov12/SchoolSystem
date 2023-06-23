@@ -58,7 +58,7 @@
         {
             public const string StudentRoleName = "Student";
             public const string StudentDisplay = "Ученик:";
-            public const string StudentClassDisplay = "Клас:";
+            public const string StudentClassDisplay = "Класове:";
         }
 
         public static class SchoolClass
@@ -82,6 +82,34 @@
             public const double GradeMinimum = 2.0;
 
             public const double GradeMaximum = 6.0;
+        }
+
+        public static class Quiz
+        {
+            public const string EntryLevelDisplay = "Входно ниво";
+
+            public const string MidLevelDisplay = "Междинен тест";
+
+            public const string PlacementDisplay = "Изходно ниво";
+
+            public const string NameDisplay = "Име на теста:";
+
+            public const string TypeDisplay = "Тип на теста:";
+
+            public const string DateTakenDisplay = "Дата и час на провеждане:";
+
+            public const string QuestionTitleDisplay = "Условие на въпроса";
+
+            public const string DurationDisplay = "Продължителност (в минути):";
+
+            public const int NameMinLength = 10;
+
+            public const int NameMaxLength = 100;
+
+            public const int DurationMinNumber = 10;
+
+            public const int DurationMaxNumber = 180;
+
         }
 
         public static class ErrorMessage
@@ -147,6 +175,20 @@
             public const string SubjectDoesNotExist = "Предметът не съществува в системата.";
 
             public const string SubjectNotInTeacherList = "Текущо логнатият учител не преподава този предмет";
+
+            public const string QuizNameLengthErrorMessage = "Името на теста трябва да съдържа между {2} и {1} символи.";
+
+            public const string InvalidDurationOfQuiz = "Продължителността, която сте въвели е невалидно. Трябва да бъде между 10 минути и 180 минути.";
+
+            public const string QuizAlreadyTaken = "Вече си предал теста. Нямаш право на повече от един опит.";
+
+            public const string QuizDoesNotExist = "Тестът, който се опитваш да достъпиш не съществува.";
+
+            public const string QuizDue = "Не си направил теста, когато е трябвало. Имаш служебна двойка.";
+
+            public const string QuizNotStartedYetHours = "Изпитът започва след около {0} час/а";
+
+            public const string QuizNotStartedYetMinutes = "Изпитът започва след около {0} минути/а";
 
         }
     }

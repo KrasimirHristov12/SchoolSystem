@@ -35,6 +35,10 @@
 
         public DbSet<Grade> Grades { get; set; }
 
+        public DbSet<Quiz> Quizzes { get; set; }
+
+        public DbSet<StudentsQuizzes> StudentsQuizzes { get; set; }
+
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

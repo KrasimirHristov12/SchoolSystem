@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSystem.Data;
 
@@ -11,9 +12,11 @@ using SchoolSystem.Data;
 namespace SchoolSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230621151619_AddedMappingTableBetweenStudentsAndQuizzes")]
+    partial class AddedMappingTableBetweenStudentsAndQuizzes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,7 +143,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("QuizzesId");
 
-                    b.ToTable("QuizSchoolClass", (string)null);
+                    b.ToTable("QuizSchoolClass");
                 });
 
             modelBuilder.Entity("SchoolClassTeacher", b =>
@@ -155,7 +158,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeachersId");
 
-                    b.ToTable("SchoolClassTeacher", (string)null);
+                    b.ToTable("SchoolClassTeacher");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.ApplicationRole", b =>
@@ -320,7 +323,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Grades", (string)null);
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
@@ -377,7 +380,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Quizzes", (string)null);
+                    b.ToTable("Quizzes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.SchoolClass", b =>
@@ -409,7 +412,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Classes", (string)null);
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Setting", b =>
@@ -442,7 +445,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Settings", (string)null);
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Student", b =>
@@ -505,7 +508,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.StudentsQuizzes", b =>
@@ -519,9 +522,6 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<bool>("IsTaken")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("QuizId")
                         .HasColumnType("uniqueidentifier");
 
@@ -534,7 +534,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentsQuizzes", (string)null);
+                    b.ToTable("StudentsQuizzes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Subject", b =>
@@ -566,7 +566,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Subjects", (string)null);
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
@@ -633,7 +633,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Teachers", (string)null);
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("SubjectTeacher", b =>
@@ -648,7 +648,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeachersId");
 
-                    b.ToTable("SubjectTeacher", (string)null);
+                    b.ToTable("SubjectTeacher");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

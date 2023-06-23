@@ -12,6 +12,7 @@
         public Student()
         {
             this.Grades = new HashSet<Grade>();
+            this.StudentsQuizzes = new HashSet<StudentsQuizzes>();
         }
 
         public int Id { get; set; }
@@ -46,6 +47,8 @@
         public SchoolClass Class { get; set; }
 
         public ICollection<Grade> Grades { get; set; }
+
+        public ICollection<StudentsQuizzes> StudentsQuizzes { get; set; }
 
         public int ClassId { get; set; }
 

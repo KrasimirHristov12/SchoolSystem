@@ -1,0 +1,95 @@
+﻿@model TakeQuizViewModel
+
+<p id="demo"></p>
+
+@Html.Raw(Model.Content)
+
+<button class="btn btn-primary submit-exam">Завърши изпит</button>
+
+@section Scripts {
+    <script>
+        var countDownDate = new Date("@(Model.QuizEnd.ToString("O"))").getTime();
+
+        var x = setInterval(function () {
+            const now = new Date();
+
+            const utcYear = now.getUTCFullYear();
+            const utcMonth = now.getUTCMonth() + 1;
+            const utcDay = now.getUTCDate();
+            const utcHours = now.getUTCHours();
+            const utcMinutes = now.getUTCMinutes();
+            const utcSeconds = now.getUTCSeconds();
+            const utcMilliseconds = now.getUTCMilliseconds();
+
+            const utcDate = new Date(`${utcYear}-${utcMonth}-${utcDay}
+                                    ${utcHours}:${utcMinutes}:${utcSeconds}.${utcMilliseconds}`).getTime();
+
+            var distance = countDownDate - utcDate;
+            
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById("demo").innerHTML = days + "d " + hours + "h "
+                + minutes + "m " + seconds + "s ";
+            
+            if (distance < 0) {
+                clearInterval(x);
+                $(".submit-exam").click();
+            }
+        }, 1000);
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $(".submit-exam").click(function (e) {
+                let answers = [];
+                e.preventDefault();
+                let questions = $(".quizlib-question");
+
+                for (let i = 0; i < questions.length; i++) {
+                    let selectedOptions = questions.eq(i).find("input:checked");
+                    if (selectedOptions.length == 0) {
+                        console.log("empty");
+                    }
+                    else 
+                    {
+                        selectedOptions.each(function (index) {
+                            let questionNumber = (i + 1).toString();
+                            let currentVal = selectedOptions.eq(index).val();
+                            if (index == 0) {
+                                answers.push({ question: questionNumber, answers: [currentVal] });
+                            }
+                            else {
+                                answers[answers.length - 1]["answers"].push(currentVal);
+                            }
+                        });
+
+  
+                    }
+
+                }
+                console.log(answers);
+             
+                $.ajax({
+                    url: `/api/results`,
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify({QuizId: "@Model.Id", StudentId: @Model.StudentId, AnswersViewModel: answers }),
+                    success: function (data) {
+                        $("body").html(`<h2>Вие успешно предадохте теста!</h2>
+                                        <h3>Резултат: ${data} Точки</h3>`);
+                        
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr);
+                        console.log(status);
+                    }
+                });
+
+            });
+        });
+    </script>
+}
