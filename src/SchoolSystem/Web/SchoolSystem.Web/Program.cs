@@ -19,6 +19,7 @@
     using SchoolSystem.Data.Seeding;
     using SchoolSystem.Services.Data;
     using SchoolSystem.Services.Data.Grades;
+    using SchoolSystem.Services.Data.Quizzes;
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Subjects;
@@ -69,7 +70,7 @@
             services.AddControllersWithViews(
                 options =>
                 {
-                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                    //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                 }).AddRazorRuntimeCompilation();
             services.AddRazorPages();
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -90,6 +91,7 @@
             services.AddTransient<ISubjectService, SubjectService>();
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<IGradesService, GradesService>();
+            services.AddTransient<IQuizzesService, QuizzesService>();
         }
 
         private static void Configure(WebApplication app)

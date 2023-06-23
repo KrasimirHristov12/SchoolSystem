@@ -40,4 +40,10 @@
     <ProjectReference Include="..\SchoolSystem.Web.Infrastructure\SchoolSystem.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\SchoolSystem.Web.ViewModels\SchoolSystem.Web.ViewModels.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\js\datepicker-bg.js">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
