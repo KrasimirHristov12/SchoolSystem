@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
+
     using SchoolSystem.Common;
     using SchoolSystem.Data;
     using SchoolSystem.Data.Models;
@@ -26,8 +27,6 @@
             var quiz = new Quiz()
             {
                 SubjectId = (int)model.SubjectId,
-                Content = model.Content,
-                Answers = model.Answers,
                 Classes = classes,
                 Name = model.Name,
                 Duration = TimeSpan.FromMinutes((double)model.Duration),
@@ -36,6 +35,43 @@
                 TeacherId = teacherId,
             };
 
+            var questions = new List<Question>();
+
+            foreach (var q in model.Questions)
+            {
+                var question = new Question
+                {
+                    Title = q.Title,
+                    Type = (QuestionType)q.QuestionType,
+                };
+
+                question.Answers.Add(new Answer
+                {
+                    Content = q.Answers.FirstAnswerContent,
+                    IsCorrect = q.Answers.IsFirstAnswerCorrect,
+                });
+
+                question.Answers.Add(new Answer
+                {
+                    Content = q.Answers.SecondAnswerContent,
+                    IsCorrect = q.Answers.IsSecondAnswerCorrect,
+                });
+
+                question.Answers.Add(new Answer
+                {
+                    Content = q.Answers.ThirdAnswerContent,
+                    IsCorrect = q.Answers.IsThirdAnswerCorrect,
+                });
+
+                question.Answers.Add(new Answer
+                {
+                    Content = q.Answers.FourthAnswerContent,
+                    IsCorrect = q.Answers.IsFourthAnswerCorrect,
+                });
+                questions.Add(question);
+            }
+
+            quiz.Questions = questions;
             this.db.Quizzes.Add(quiz);
             await this.db.SaveChangesAsync();
         }
@@ -54,7 +90,7 @@
                 Id = q.Id,
                 Name = q.Name,
                 DateTaken = q.DateTaken,
-                Duration = q.Duration.Minutes,
+                Duration = (int)q.Duration.TotalMinutes,
                 SubjectName = q.Subject.Name,
                 TeacherName = $"{q.Teacher.FirstName} {q.Teacher.LastName}",
                 IsTaken = this.db.StudentsQuizzes.Where(sq => sq.StudentId == studentId && sq.QuizId == q.Id).Select(sq => sq.IsTaken).FirstOrDefault(),
@@ -69,9 +105,9 @@
             var quiz = this.db.Quizzes.Where(q => q.Id == id).Select(q => new TakeQuizViewModel
             {
                 Id = id,
-                Content = q.Content,
+                //Content = q.Content,
                 StudentId = studentId,
-                Duration = q.Duration.Minutes,
+                Duration = (int)q.Duration.TotalMinutes,
                 DateTaken = q.DateTaken,
 
             }).FirstOrDefault();
@@ -121,21 +157,21 @@
             };
         }
 
-        public async Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id)
-        {
-            var quiz = await this.db.Quizzes.FindAsync(id);
-            if (quiz == null)
-            {
-                return null;
-            }
+        //public async Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id)
+        //{
+        //    var quiz = await this.db.Quizzes.FindAsync(id);
+        //    if (quiz == null)
+        //    {
+        //        return null;
+        //    }
 
-            return JsonSerializer.Deserialize<IEnumerable<AnswersViewModel>>(quiz.Answers, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            });
-        }
+        //    return JsonSerializer.Deserialize<IEnumerable<AnswersViewModel>>(quiz.Answers, new JsonSerializerOptions
+        //    {
+        //        PropertyNameCaseInsensitive = true,
+        //    });
+        //}
 
-        public async Task RecordAsDoneAsync(int studentId, Guid quizId, int points)
+        public async Task RecordAsDoneAsync(int studentId, Guid quizId, int points, IEnumerable<AnswersViewModel> answers)
         {
             var studentQuiz = new StudentsQuizzes
             {
@@ -143,10 +179,47 @@
                 QuizId = quizId,
                 IsTaken = true,
                 Points = points,
+                Answers = JsonSerializer.Serialize(answers, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                }),
             };
             await this.db.StudentsQuizzes.AddAsync(studentQuiz);
 
             await this.db.SaveChangesAsync();
+        }
+
+        public ReviewQuizViewModel GetReviewQuiz(Guid quizId, int studentId)
+        {
+            //string quizContent = this.db.Quizzes.Where(q => q.Id == quizId).Select(q => q.Content).FirstOrDefault();
+            //string correctAnswers = this.db.Quizzes.Where(q => q.Id == quizId).Select(q => q.Answers).FirstOrDefault();
+            //var givenAnswers = this.db.StudentsQuizzes.Where(q => q.QuizId == quizId && q.StudentId == studentId).Select(q => q.Answers).FirstOrDefault();
+            //if (quizContent == null || correctAnswers == null || givenAnswers == null)
+            //{
+            //    return null;
+            //}
+
+            //return new ReviewQuizViewModel
+            //{
+            //    Content = quizContent,
+            //    CorrectAnswers = correctAnswers,
+            //    GivenAnswers = givenAnswers,
+            //};
+
+            return null;
+        }
+
+        public async Task<int?> MarkAsCorrectAsync(Guid quizId, int studentId)
+        {
+            var studentQuiz = this.db.StudentsQuizzes.FirstOrDefault(sq => sq.QuizId == quizId && sq.StudentId == studentId);
+            if (studentQuiz == null)
+            {
+                return null;
+            }
+
+            studentQuiz.Points += 1;
+            await this.db.SaveChangesAsync();
+            return studentQuiz.Points;
         }
     }
 }

@@ -84,6 +84,22 @@
             public const double GradeMaximum = 6.0;
         }
 
+        public static class Question
+        {
+            public const int TitleMaxLength = 500;
+
+            public const string RadioDisplay = "С един верен отговор";
+
+            public const string CheckboxDisplay = "С повече от един верен отговор";
+
+            public const string TextDisplay = "Със свободен отговор";
+        }
+
+        public static class Answer
+        {
+            public const int ContentMaxLength = 200;
+        }
+
         public static class Quiz
         {
             public const string EntryLevelDisplay = "Входно ниво";
@@ -189,6 +205,10 @@
             public const string QuizNotStartedYetHours = "Изпитът започва след около {0} час/а";
 
             public const string QuizNotStartedYetMinutes = "Изпитът започва след около {0} минути/а";
+
+            public const string NoAnswerSelected = "Изберете отговор на въпроса.";
+
+            public const string CheckAtLeastOneAnswer = "Изберете поне един от тиковете.";
 
         }
     }

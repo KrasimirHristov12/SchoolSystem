@@ -1,7 +1,7 @@
 ﻿@model QuizzesInputModel
 
 <form method="post">
-
+    <div asp-validation-summary="All" class="text-danger"></div>
     <div class="mb-3">
         <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" />
@@ -60,72 +60,74 @@
 
     <button class="btn btn-primary display-question">Добавяне на въпрос</button>
 
-    <button type="button" class="btn btn-primary view-test" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Преглед
-    </button>
+    <div class="questions-buttons-container" style="margin-top: 10px;"></div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Преглед на теста</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="quiz-div"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Затвори</button>
-                </div>
-            </div>
+    <div id="question-container-0" class="question-container" style="display: none;">
+        <label asp-for="Questions[0].Title">Условие на въпроса</label>
+        <input asp-for="Questions[0].Title" class="form-control" />
+
+        <div>
+            <span asp-validation-for="Questions[0].Title" class="text-danger"></span>
         </div>
-    </div>
+        <label asp-for="Questions[0].QuestionType">Тип на въпроса</label>
+        <select asp-for="Questions[0].QuestionType" asp-items="Html.GetEnumSelectList<QuestionType>()" class="form-select"></select>
+        <div>
+            <span asp-validation-for="Questions[0].QuestionType" class="text-danger"></span>
+        </div>
 
 
-    <div class="question-container d-none">
-        <label for="question-title">Условие на въпроса</label>
-        <input id="question-title" class="form-control" />
-        <label for="question-type">Тип на въпроса</label>
-        <select id="question-type" class="form-select">
-            <option value="radio" selected="selected">С един верен отговор</option>
-            <option value="checkbox">С повече от един верен отговор</option>
-            <option value="text">Със свободен отговор</option>
-        </select>
-        <div id="options-container" class="mb-3">
+
+        <div id="answers-container" class="mb-3">
             <table class="table">
                 <tr>
                     <th></th>
                     <th>Отговор</th>
-                    <th style="text-align: center;">Маркирай като верен отговор</th>
+                    <th style="text-align: center;">
+                        Маркирай като верен отговор
+                        <div>
+                            <span asp-validation-for="Questions[0].Answers.IsFirstAnswerCorrect" class="text-danger"></span>
+                        </div>
+
+
+                    </th>
                 </tr>
                 <tr>
                     <td><label for="option_a">А)</label></td>
                     <td class="option_a_container">
-                        <input id="option_a" class="form-control ms-2" />
+                        <input asp-for="Questions[0].Answers.FirstAnswerContent" class="form-control ms-2" />
+
+                        <div>
+                            <span asp-validation-for="Questions[0].Answers.FirstAnswerContent" class="text-danger"></span>
+                        </div>
                     </td>
 
                     <td>
-                        <div style="text-align:center;"><input type="checkbox" name="option_a_correct" /></div>
+                        <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="Questions[0].Answers.IsFirstAnswerCorrect" /></div>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="option_b">Б)</label></td>
                     <td class="option_b_container">
-                        <input id="option_b" class="form-control ms-2" />
+                        <input asp-for="Questions[0].Answers.SecondAnswerContent" class="form-control ms-2" />
+                        <div>
+                            <span asp-validation-for="Questions[0].Answers.SecondAnswerContent" class="text-danger"></span>
+                        </div>
                     </td>
                     <td>
-                        <div style="text-align:center;"><input type="checkbox" name="option_b_correct" /></div>
+                        <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="Questions[0].Answers.IsSecondAnswerCorrect" /></div>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="option_c">В)</label></td>
                     <td class="option_c_container">
-                        <input id="option_c" class="form-control ms-2" />
+                        <input asp-for="Questions[0].Answers.ThirdAnswerContent" class="form-control ms-2" />
+                        <div>
+                            <span asp-validation-for="Questions[0].Answers.ThirdAnswerContent" class="text-danger"></span>
+                        </div>
                     </td>
 
                     <td>
-                        <div style="text-align:center;"><input type="checkbox" name="option_c_correct" /></div>
+                        <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="Questions[0].Answers.IsThirdAnswerCorrect" /></div>
                     </td>
 
 
@@ -133,10 +135,13 @@
                 <tr>
                     <td><label for="option_d">Г)</label></td>
                     <td class="option_d_container">
-                        <input id="option_d" class="form-control ms-2" />
+                        <input asp-for="Questions[0].Answers.FourthAnswerContent" class="form-control ms-2" />
+                        <div>
+                            <span asp-validation-for="Questions[0].Answers.FourthAnswerContent" class="text-danger"></span>
+                        </div>
                     </td>
                     <td>
-                        <div style="text-align:center;"><input type="checkbox" name="option_d_correct" /></div>
+                        <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="Questions[0].Answers.IsFourthAnswerCorrect" /></div>
                     </td>
 
                 </tr>
@@ -146,185 +151,258 @@
         <button class="btn btn-primary save-question mt-2">Запазване на въпроса</button>
     </div>
 
-    <div class="mb-3 d-none">
-        <label asp-for="Content"></label>
-        <textarea asp-for="Content" class="content-textarea"></textarea>
-        <div>
-            <span asp-validation-for="Content" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="mb-3 d-none">
-        <label asp-for="Answers"></label>
-        <textarea asp-for="Answers" class="answers-textarea"></textarea>
-        <div>
-            <span asp-validation-for="Answers" class="text-danger"></span>
-        </div>
-    </div>
 
     <div class="text-center">
-        <button type="submit" class="btn btn-primary mt-2">Добавяне на тест</button>
+        <button type="submit" class="btn add-test btn-primary mt-2">Добавяне на тест</button>
     </div>
 </form>
 
 @section Scripts {
+
+    
+
     <script>
-        //var quiz = new Quiz('quiz-div', ['a', 'b', 'c'])
-        //function myAnswerCheckMethod() {
-        //    quiz.checkAnswers(false);
-        //    console.log("Correct answers: " + quiz.result.score);
-        //}
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
         $.datetimepicker.setLocale('bg');
         jQuery("input#DateTaken").datetimepicker();
+    </script>
 
-        jQuery.extend(jQuery.validator.messages, {
-            max: jQuery.validator.format("Моля въведете стойност по-малка или равна на {0}."),
-            min: jQuery.validator.format("Моля въведете стойност по-голяма или равна на {0}.")
-        });
+    <script>
+        //for (let i = 0; i < localStorage.length; i++) {
+        //    let curElement = localStorage.getItem(localStorage.key(i));
+        //    if (localStorage.key(i).includes("Questions_html")) {
+        //        let questionIndex = parseInt($(curElement).attr("id").split("-")[2]);
+        //        $(curElement).insertAfter($(".question-container").eq(-1));
 
-        let answersArr = [];
+        //        itemsArr = [`Questions_${questionIndex}__Title`, `Questions_${questionIndex}__QuestionType`, `Questions_${questionIndex}__Answers_FirstAnswerContent`
+        //            , `Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`, `Questions_${questionIndex}__Answers_SecondAnswerContent`, `Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`
+        //            , `Questions_${questionIndex}__Answers_ThirdAnswerContent`, `Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`, `Questions_${questionIndex}__Answers_FourthAnswerContent`
+        //            , `Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`];
 
-        let isValid = true;
-        let testContent = "";
-        let currentQuestion = 1;
-        let questionType = "";
-        $(document).ready(function () {
+        //        for (const item of itemsArr) {
+        //            if (!item.endsWith("Correct")) {
+        //                $(".question-container").eq(-1).find(`#${item}`).val(localStorage.getItem(item));
+        //            }
+        //            else {
+        //                $(".question-container").eq(-1).find(`#${item}`).prop("checked", localStorage.getItem(item) == "true");
+        //            }
 
-            $("#question-type").change(function () {
-
-                questionType = $(this).val();
-            }).trigger("change");
-
-            $("input:checkbox").change(function () {
-
-                if (questionType == 'radio' && $(this).prop("checked")) {
-                    $("input:checkbox").not($(this)).prop("checked", false);
-                }
-            }).trigger("change");
-
-            $(".display-question").click(function (e) {
-                e.preventDefault();
-                $(".question-container").removeClass("d-none");
-            });
-            $(".save-question").click(function (e) {
-                e.preventDefault();
-                let questionTitle = $("input#question-title").val();
-
-                let option_a = $("input#option_a").val();
-                let option_a_checked = $('input[name="option_a_correct"]').prop("checked");
-                let option_b = $("input#option_b").val();
-                let option_b_checked = $('input[name="option_b_correct"]').prop("checked");
-                let option_c = $("input#option_c").val();
-                let option_c_checked = $('input[name="option_c_correct"]').prop("checked");
-                let option_d = $("input#option_d").val();
-                let option_d_checked = $('input[name="option_d_correct"]').prop("checked");
+        //            //localStorage.removeItem(item);
 
 
-                $.ajax({
-                    url: `/api/results/ValidateQuestion?questionTitle=${questionTitle}&option_a=${option_a}&option_a_checked=${option_a_checked}&option_b=${option_b}&option_b_checked=${option_b_checked}&option_c=${option_c}&option_c_checked=${option_c_checked}&option_d=${option_d}&option_d_checked=${option_d_checked}`,
-                    type: "GET",
-                    contentType: "application/json",
-                    dataType: "json",
-                    async: false,
-                    success: function (data) {
-                        if (Object.keys(data).length > 0) {
-                            isValid = false;
-                            for (const k in data) {
-                                if (k !== 'checked') {
-                                    if (k == 'questionTitle') {
-                                        $(`<span id="${k}_errorMessage" class="text-danger">${data[k]}</span>`).insertAfter("input#question-title");
-                                    }
-                                    else {
-                                        $(`td.${k}_container`).append(`<span id="${k}_errorMessage" class="text-danger">${data[k]}</span>`);
-                                    }
-                                    
+        //        }
+        //        localStorage.removeItem(`Questions_html_${questionIndex}`);
+        //        $(".questions-buttons-container").append(`<button id="question-button-${questionIndex}" class="question-button" style="margin-right: 10px;">${questionIndex + 1}</button>`);
+        //    }
 
-                                }
-                                else {
-                                    //TODO
-                                }
-                            }
+        //}
 
-                        }
-                        else {
-                            isValid = true;
-                            $("span#option_a_errorMessage").remove();
-                            $("span#option_b_errorMessage").remove();
-                            $("span#option_c_errorMessage").remove();
-                            $("span#option_d_errorMessage").remove();
-                            $("span#questionTitle_errorMessage").remove();
-                        }
 
-                    },
-                    error: function (xhr, status, error) {
-                        console.log(xhr);
-                        console.log(status);
-                    }
+
+        if ($(".validation-summary-errors").length > 0) {
+
+            $(".questions-buttons-container").append(`<button id="question-button-0" class="question-button" style="margin-right: 10px;">1</button>`);
+        }
+
+        //CLONE AND ATTACH CLIENT VALIDATION TO THE CLONED ELEMENTS.
+
+        let isFirst = true
+
+        $(".display-question").click(function (e) {
+            e.preventDefault();
+            $(".questions-buttons-container button").removeClass("bg-success");
+            if (isFirst) {
+                $(".question-container").eq(-1).fadeIn();
+                isFirst = false;
+            }
+            else if ($(".question-container").eq(-1).hasClass("submitted")) {
+                $(".question-container").hide();
+
+                let cloning = $(".question-container").eq(-1).clone(true, true).removeClass("submitted").fadeIn();
+                cloning.find(".save-question").text("Запазване на въпроса");
+                let prevContainerIndex = parseInt($(".question-container").eq(-1).attr("id").split("-")[2]);
+
+                cloning.attr("id", `question-container-${prevContainerIndex + 1}`)
+
+
+
+                cloning.find("label").each(function () {
+                    let labelForUpdated = $(this).attr("for").replace(`_${prevContainerIndex}__`, `_${prevContainerIndex + 1}__`);
+
+                    $(this).attr("for", labelForUpdated);
+
                 });
 
-                let answers = [];
+                cloning.find("input:text").each(function () {
+                    let ariaDescribedByUpdated = $(this).attr("aria-describedby").replace(`_${prevContainerIndex}__`, `_${prevContainerIndex + 1}__`);
+                    $(this).attr("aria-describedby", ariaDescribedByUpdated);
 
-                if (isValid) {
-                    $("input:checkbox:checked").each(function () {
+                });
 
-                        let selectedOpt = $(this).attr("name").split("_")[1];
-                        answers.push(selectedOpt);
+                cloning.find("input:checkbox").each(function () {
+                    let ariaDescribedByUpdated = $(this).attr("aria-describedby").replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`);
+                    $(this).attr("aria-describedby", ariaDescribedByUpdated);
+
+                });
+
+                let updatedValMsg = cloning.find("table tr").eq(0).find("th").eq(2).find("span.text-danger").attr("data-valmsg-for").replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`);
+
+                cloning.find("table tr").eq(0).find("th").eq(2).find("span.text-danger").attr("data-valmsg-for", updatedValMsg);
+
+                cloning.find("input,select").each(function () {
+                   if ($(this).is(":text")) {
+                        $(this).val('');
+                   }
+                   else if ($(this).is(":checkbox")) {
                         $(this).prop("checked", false);
-                    });
+                   }
+                   else {
+                       $(this).val("0");
+                   }
+                    
+                    $(this).attr("id", $(this).attr("id").replace(`_${prevContainerIndex}__`, `_${prevContainerIndex + 1}__`));
+                    $(this).attr("name", $(this).attr("name").replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`));
+                    if ($(this).is(':not(:checkbox)')) {
+                        $(this).next().find("span").eq(0).attr("data-valmsg-for", $(this).next().find("span").eq(0).attr("data-valmsg-for").replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`));
+                    }
 
-                    answersArr.push({ question: currentQuestion.toString(), answers: answers });
+                });
 
-                    console.log(answersArr);
+                cloning.insertAfter($(".question-container").eq(-1));
 
-                    let nonTextCode = `<ul>
-                                                    <li><label><input type="${questionType}" name="q${currentQuestion}" value="a"/>${option_a}</label></li>
-                                                    <li><label><input type="${questionType}" name="q${currentQuestion}" value="b"/>${option_b}</label></li>
-                                                    <li><label><input type="${questionType}" name="q${currentQuestion}" value="c"/>${option_c}</label></li>
-                                                    <li><label><input type="${questionType}" name="q${currentQuestion}" value="d"/>${option_d}</label></li>
-                                                   </ul>`;
-                    let textCode = `<input type="text" name="q${currentQuestion}"/>`;
+            }
+            else if ($(".question-container").eq(-1).is(":hidden")) {
+                $(".question-container").hide();
+                $(".question-container").eq(-1).fadeIn();
+            }
 
 
-                    $("input#question-title").val('');
-                    $("input#option_a").val('');
-                    $("input#option_b").val('');
-                    $("input#option_c").val('');
-                    $("input#option_d").val('');
-
-                    testContent += `<div class="quizlib-question">
-                                                                    <div class="quizlib-question-title">${currentQuestion}. ${questionTitle}</div>
-                                                            <div class="quizlib-question-answers">`
-                        + (questionType !== 'text' ? nonTextCode : textCode) +
-                        `</div>
-                                                        </div>`;
-                    $(".content-textarea").val(testContent);
-                    $(".answers-textarea").val(JSON.stringify(answersArr));
-                    $(".question-container").addClass("d-none");
-                    currentQuestion += 1;
-                }
-            });
-
-            $(".view-test").click(function (e) {
-                e.preventDefault();
-                $(".modal .modal-body #quiz-div").empty();
-                $(".modal .modal-body #quiz-div").append(testContent);
-                //window.open(``, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-
-            });
-
-            $("#question-type").change(function () {
-                if ($(this).val() !== "text") {
-                    $("#options-container").fadeIn();
-                }
-                else {
-                    $("#options-container").fadeOut();
-                }
-            })
+            //WITHOUT THIS, CLIENT VALIDATION DOES NOT WORK ON CLONINGS!!!
+            $("form").removeData('validator').removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($("form"));
 
 
         });
+
+        // LIMIT TO ONE ALLOWED CHECK IF RADIO
+        $("input:checkbox").change(function () {
+            if ($(this).closest(".question-container").find("select").val() == '0') {
+                if ($(this).is(":checked") && $(this).closest("#answers-container").find("input:checkbox:checked").length > 1) {
+                    $(this).closest("#answers-container").find("input:checkbox:checked").not($(this)).prop("checked", false);
+                }
+            }
+        });
+
+    </script>
+
+    <script>
+
+        //TRIGGER VALIDATION ON EACH DISPLAYED CHECKBOX, IF ONE OF THE CHECKBOXES IS CHECKED THE RULE checkatleastone WILL RETURN TRUE FOR ALL OF THEM WHICH WILL HIDE THE ERROR MESSAGE
+
+
+        $(".question-container").find("#answers-container").find("input:checkbox").change(function () {
+            $(".question-container").find("#answers-container").find("input:checkbox").each(function () {
+
+                console.log($(this));
+
+                $("form").validate().element('#' + $(this).attr("id"));
+            });
+            
+        });
+
+        $(".question-container").find("#answers-container").find("input:text").on("keyup", function () {
+            $("form").validate().element('#' + $(this).attr("id"));
+        });
+
+
+
+
+        $(".save-question").click(function (e) {
+
+            e.preventDefault();
+
+            let answerContainer = $(".question-container:not(:hidden)").find("#answers-container");
+
+            let currentQuestion = answerContainer.closest("div.question-container").attr("id").split("-")[2];
+
+            console.log(currentQuestion);
+
+            $("form").validate().element(`input#Questions_${currentQuestion}__Title`);
+
+            //PERFORM VALIDATION ON ANSWERS INPUT INDIVIDUALLY
+            answerContainer.find("input").each(function () {
+                console.log($(this));
+
+                $("form").validate().element('#' + $(this).attr("id"));
+            });
+
+
+
+            
+
+            answerContainer.find("input:checkbox").each(function () {
+
+                $("form").validate().element('#' + $(this).attr("id"));
+            });
+
+
+
+
+            if (answerContainer.find("input.input-validation-error").length === 0 && !$(`input#Questions_${currentQuestion}__Title`).hasClass("input-validation-error")) {
+                let questionNumber = parseInt(answerContainer.closest(".question-container").attr("id").split("-")[2]) + 1;
+                if ($(`#question-button-${questionNumber - 1}`).length == 0) {
+                    $(".questions-buttons-container").append(`<button id="question-button-${questionNumber - 1}" class="question-button" style="margin-right: 10px;">${questionNumber}</button>`);
+
+                }
+
+                answerContainer.closest(".question-container").hide();
+                if (!answerContainer.closest(".question-container").hasClass("submitted")) {
+                    answerContainer.closest(".question-container").addClass("submitted"); 
+                }
+                $(`#question-button-${questionNumber - 1}`).removeClass("bg-success");
+
+            }
+        });
+
+        $(".questions-buttons-container").on("click", ".question-button", function (e) {
+            e.preventDefault();
+            let questionIndex = parseInt($(this).text()) - 1;
+
+            $(".questions-buttons-container button").removeClass("bg-success");
+
+            $(this).addClass("bg-success");
+
+            $(".question-container").hide();
+            $(`#question-container-${questionIndex}`).fadeIn();
+            $(`#question-container-${questionIndex}`).find(".save-question").text("Редактиране на въпроса");
+        })
+
+    </script>
+
+    <script>
+        //$(".add-test").click(function (e) {
+            //e.preventDefault();
+            //$('.question-container:not(":first")').each(function () {
+                //let questionIndex = parseInt($(this).attr("id").split("-")[2]);
+                //localStorage.setItem(`Questions_html_${questionIndex}`, $(this).prop("outerHTML"));
+                //localStorage.setItem(`Questions_${questionIndex}__Title`, $(this).find(`#Questions_${questionIndex}__Title`).val());
+                //localStorage.setItem(`Questions_${questionIndex}__QuestionType`, $(this).find(`#Questions_${questionIndex}__QuestionType`).val());
+                //localStorage.setItem(`Questions_${questionIndex}__Answers_FirstAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FirstAnswerContent`).val());
+                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`).prop("checked"));
+                //localStorage.setItem(`Questions_${questionIndex}__Answers_SecondAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_SecondAnswerContent`).val());
+                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`).prop("checked"));
+                //localStorage.setItem(`Questions_${questionIndex}__Answers_ThirdAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_ThirdAnswerContent`).val());
+                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`).prop("checked"));
+                //localStorage.setItem(`Questions_${questionIndex}__Answers_FourthAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FourthAnswerContent`).val());
+                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`).prop("checked"));
+
+            //});
+            //$(".add-test").unbind("click");
+            //$(".add-test").click();
+
+
+        //});
     </script>
 }

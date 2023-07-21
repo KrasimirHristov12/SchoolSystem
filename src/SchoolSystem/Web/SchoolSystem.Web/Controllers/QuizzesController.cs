@@ -73,6 +73,11 @@
             int teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
             if (!this.ModelState.IsValid)
             {
+                model.ViewModel = new QuizzesViewModel
+                {
+                    Subjects = this.subjectService.GetAllTaughtForTeacher(teacherId),
+                    Classes = this.classService.GetAllClassesForTeacher(teacherId),
+                };
                 return this.View(model);
             }
 
@@ -93,6 +98,20 @@
             }
 
             return this.View(quiz.Model);
+        }
+
+        public IActionResult Review(Guid quizId, int studentId)
+        {
+            var model = this.quizzesService.GetReviewQuiz(quizId, studentId);
+            if (model == null)
+            {
+                return this.NotFound();
+            }
+
+            model.QuizId = quizId;
+            model.StudentId = studentId;
+
+            return this.View(model);
         }
     }
 }

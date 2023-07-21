@@ -6,6 +6,10 @@
     {
         public string Question { get; set; }
 
+        public string QuestionType { get; set; }
+
         public IEnumerable<string> Answers { get; set; }
+
+        public int MyProperty { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using SchoolSystem.Data;
 namespace SchoolSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230430164426_AddedInitialModels")]
-    partial class AddedInitialModels
+    [Migration("20230713195502_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -131,6 +131,21 @@ namespace SchoolSystem.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("QuizSchoolClass", b =>
+                {
+                    b.Property<int>("ClassesId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuizzesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ClassesId", "QuizzesId");
+
+                    b.HasIndex("QuizzesId");
+
+                    b.ToTable("QuizSchoolClass");
+                });
+
             modelBuilder.Entity("SchoolClassTeacher", b =>
                 {
                     b.Property<int>("ClassesId")
@@ -144,6 +159,32 @@ namespace SchoolSystem.Data.Migrations
                     b.HasIndex("TeachersId");
 
                     b.ToTable("SchoolClassTeacher");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.ApplicationRole", b =>
@@ -266,6 +307,135 @@ namespace SchoolSystem.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("SchoolSystem.Data.Models.Grade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("Grades");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuizId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Answers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateTaken")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("QuizType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("Quizzes");
+                });
+
             modelBuilder.Entity("SchoolSystem.Data.Models.SchoolClass", b =>
                 {
                     b.Property<int>("Id")
@@ -274,12 +444,26 @@ namespace SchoolSystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("Classes");
                 });
@@ -328,6 +512,12 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Egn")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -338,21 +528,107 @@ namespace SchoolSystem.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClassId");
 
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.StudentsQuizzes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsTaken")
+                        .IsRequired()
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Points")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuizId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("StudentsQuizzes");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Subject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
@@ -362,6 +638,15 @@ namespace SchoolSystem.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClassName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Egn")
                         .IsRequired()
@@ -376,22 +661,56 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<bool>("IsClassTeacher")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("YearsOfExperience")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Teachers");
+                });
+
+            modelBuilder.Entity("SubjectTeacher", b =>
+                {
+                    b.Property<int>("SubjectsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeachersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubjectsId", "TeachersId");
+
+                    b.HasIndex("TeachersId");
+
+                    b.ToTable("SubjectTeacher");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -445,6 +764,21 @@ namespace SchoolSystem.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("QuizSchoolClass", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.SchoolClass", null)
+                        .WithMany()
+                        .HasForeignKey("ClassesId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSystem.Data.Models.Quiz", null)
+                        .WithMany()
+                        .HasForeignKey("QuizzesId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SchoolClassTeacher", b =>
                 {
                     b.HasOne("SchoolSystem.Data.Models.SchoolClass", null)
@@ -460,6 +794,74 @@ namespace SchoolSystem.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SchoolSystem.Data.Models.Answer", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Grade", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Student", "Student")
+                        .WithMany("Grades")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSystem.Data.Models.Subject", "Subject")
+                        .WithMany("Grades")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSystem.Data.Models.Teacher", "Teacher")
+                        .WithMany("Grades")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Quiz", "Quiz")
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Subject", "Subject")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSystem.Data.Models.Teacher", "Teacher")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("SchoolSystem.Data.Models.Student", b =>
                 {
                     b.HasOne("SchoolSystem.Data.Models.SchoolClass", "Class")
@@ -468,7 +870,60 @@ namespace SchoolSystem.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SchoolSystem.Data.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Class");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.StudentsQuizzes", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Quiz", "Quiz")
+                        .WithMany("StudentsQuizzes")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSystem.Data.Models.Student", "Student")
+                        .WithMany("StudentsQuizzes")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SubjectTeacher", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Subject", null)
+                        .WithMany()
+                        .HasForeignKey("SubjectsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolSystem.Data.Models.Teacher", null)
+                        .WithMany()
+                        .HasForeignKey("TeachersId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.ApplicationUser", b =>
@@ -480,9 +935,40 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Roles");
                 });
 
+            modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
+                {
+                    b.Navigation("StudentsQuizzes");
+                });
+
             modelBuilder.Entity("SchoolSystem.Data.Models.SchoolClass", b =>
                 {
                     b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Student", b =>
+                {
+                    b.Navigation("Grades");
+
+                    b.Navigation("StudentsQuizzes");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Subject", b =>
+                {
+                    b.Navigation("Grades");
+
+                    b.Navigation("Quizzes");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
+                {
+                    b.Navigation("Grades");
+
+                    b.Navigation("Quizzes");
                 });
 #pragma warning restore 612, 618
         }

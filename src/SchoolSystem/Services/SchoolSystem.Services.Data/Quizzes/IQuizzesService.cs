@@ -14,8 +14,12 @@
 
         GetQuizResult GetQuiz(Guid id, int studentId);
 
-        Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id);
+        //Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id);
 
-        Task RecordAsDoneAsync(int studentId, Guid quizId, int points);
+        Task RecordAsDoneAsync(int studentId, Guid quizId, int points, IEnumerable<AnswersViewModel> answers);
+
+        ReviewQuizViewModel GetReviewQuiz(Guid quizId, int studentId);
+
+        Task<int?> MarkAsCorrectAsync(Guid quizId, int studentId);
     }
 }

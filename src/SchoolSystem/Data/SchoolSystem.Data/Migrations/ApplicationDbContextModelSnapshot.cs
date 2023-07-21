@@ -140,7 +140,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("QuizzesId");
 
-                    b.ToTable("QuizSchoolClass", (string)null);
+                    b.ToTable("QuizSchoolClass");
                 });
 
             modelBuilder.Entity("SchoolClassTeacher", b =>
@@ -155,7 +155,33 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeachersId");
 
-                    b.ToTable("SchoolClassTeacher", (string)null);
+                    b.ToTable("SchoolClassTeacher");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.ApplicationRole", b =>
@@ -320,7 +346,34 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Grades", (string)null);
+                    b.ToTable("Grades");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuizId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
@@ -328,14 +381,6 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Answers")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -377,7 +422,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Quizzes", (string)null);
+                    b.ToTable("Quizzes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.SchoolClass", b =>
@@ -409,7 +454,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Classes", (string)null);
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Setting", b =>
@@ -442,7 +487,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Settings", (string)null);
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Student", b =>
@@ -505,7 +550,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.StudentsQuizzes", b =>
@@ -516,10 +561,16 @@ namespace SchoolSystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsTaken")
+                    b.Property<string>("Answers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsTaken")
+                        .IsRequired()
                         .HasColumnType("bit");
 
-                    b.Property<int>("Points")
+                    b.Property<int?>("Points")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<Guid>("QuizId")
@@ -534,7 +585,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentsQuizzes", (string)null);
+                    b.ToTable("StudentsQuizzes");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Subject", b =>
@@ -566,7 +617,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
-                    b.ToTable("Subjects", (string)null);
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
@@ -633,7 +684,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Teachers", (string)null);
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("SubjectTeacher", b =>
@@ -648,7 +699,7 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("TeachersId");
 
-                    b.ToTable("SubjectTeacher", (string)null);
+                    b.ToTable("SubjectTeacher");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -732,6 +783,17 @@ namespace SchoolSystem.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SchoolSystem.Data.Models.Answer", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("SchoolSystem.Data.Models.Grade", b =>
                 {
                     b.HasOne("SchoolSystem.Data.Models.Student", "Student")
@@ -757,6 +819,17 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Subject");
 
                     b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Quiz", "Quiz")
+                        .WithMany("Questions")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
@@ -851,8 +924,15 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Roles");
                 });
 
+            modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
             modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>
                 {
+                    b.Navigation("Questions");
+
                     b.Navigation("StudentsQuizzes");
                 });
 

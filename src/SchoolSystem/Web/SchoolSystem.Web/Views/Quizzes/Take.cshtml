@@ -22,18 +22,18 @@
             const utcMilliseconds = now.getUTCMilliseconds();
 
             const utcDate = new Date(`${utcYear}-${utcMonth}-${utcDay}
-                                    ${utcHours}:${utcMinutes}:${utcSeconds}.${utcMilliseconds}`).getTime();
+                                            ${utcHours}:${utcMinutes}:${utcSeconds}.${utcMilliseconds}`).getTime();
 
             var distance = countDownDate - utcDate;
-            
+
             var days = Math.floor(distance / (1000 * 60 * 60 * 24));
             var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            
+
             document.getElementById("demo").innerHTML = days + "d " + hours + "h "
                 + minutes + "m " + seconds + "s ";
-            
+
             if (distance < 0) {
                 clearInterval(x);
                 $(".submit-exam").click();
@@ -49,29 +49,48 @@
                 let questions = $(".quizlib-question");
 
                 for (let i = 0; i < questions.length; i++) {
+                    let questionType = '';
+                    if (questions.eq(i).find("input:radio").length > 0) {
+                        questionType = "radio";
+                    }
+                    else if (questions.eq(i).find("input:checkbox").length > 0) {
+                        questionType = "checkbox";
+                    }
+                    else {
+                        questionType = "text";
+                    }
+                    let questionNumber = (i + 1).toString();
+                    let oeResponse = questions.eq(i).find("input:text");
                     let selectedOptions = questions.eq(i).find("input:checked");
-                    if (selectedOptions.length == 0) {
-                        console.log("empty");
+                    if (oeResponse.length === 0) {
+                        if (selectedOptions.length > 0) {
+                            selectedOptions.each(function (index) {
+                                let currentVal = selectedOptions.eq(index).val();
+                                if (index == 0) {
+                                    answers.push({ question: questionNumber, questionType: questionType, answers: [currentVal] });
+                                }
+                                else {
+                                    answers[answers.length - 1]["answers"].push(currentVal);
+                                }
+                            });
+                        }
+                        else {
+                            answers.push({ question: questionNumber, questionType: questionType, answers: [] });
+                        }
                     }
-                    else 
-                    {
-                        selectedOptions.each(function (index) {
-                            let questionNumber = (i + 1).toString();
-                            let currentVal = selectedOptions.eq(index).val();
-                            if (index == 0) {
-                                answers.push({ question: questionNumber, answers: [currentVal] });
-                            }
-                            else {
-                                answers[answers.length - 1]["answers"].push(currentVal);
-                            }
-                        });
+                    else {
+                        if (oeResponse.val() !== '') {
+                            answers.push({ question: questionNumber, questionType: questionType, answers: [oeResponse.val()] })
+                        }
+                        else {
+                            answers.push({ question: questionNumber, questionType: questionType, answers: [] })
+                        }
+                        
+                    }
 
-  
-                    }
 
                 }
-                console.log(answers);
-             
+
                 $.ajax({
                     url: `/api/results`,
                     type: "POST",
@@ -79,9 +98,13 @@
                     dataType: "json",
                     data: JSON.stringify({QuizId: "@Model.Id", StudentId: @Model.StudentId, AnswersViewModel: answers }),
                     success: function (data) {
-                        $("body").html(`<h2>Вие успешно предадохте теста!</h2>
-                                        <h3>Резултат: ${data} Точки</h3>`);
-                        
+                        if (data.answers.some(a => a.questionType == "text")) {
+                            $("body").html(`<h2>Вие успешно предадохте теста и ще получите известие, когато е проверен от учител.</h2>`);
+                        }
+                        else {
+                            $("body").html(`<h2>Вие успешно предадохте теста!</h2>
+                                                                    <h3>Резултат: ${data.points} Точки</h3>`);
+                        }
                     },
                     error: function(xhr, status, error) {
                         console.log(xhr);

@@ -7,6 +7,7 @@
     using SchoolSystem.Common;
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Web.Infrastructure.ValidationAttributes;
+    using SchoolSystem.Web.ViewModels.Questions;
 
     public class QuizzesInputModel
     {
@@ -31,11 +32,7 @@
         [Display(Name = GlobalConstants.Quiz.DateTakenDisplay)]
         public DateTime? DateTaken { get; set; }
 
-        [RequiredWithErrorMessage]
-        public string Content { get; set; }
-
-        [RequiredWithErrorMessage]
-        public string Answers { get; set; }
+        public List<QuestionsInputModel> Questions { get; set; }
 
         [RequiredWithErrorMessage]
         [Range(GlobalConstants.Quiz.DurationMinNumber, GlobalConstants.Quiz.DurationMaxNumber, ErrorMessage = GlobalConstants.ErrorMessage.InvalidDurationOfQuiz)]

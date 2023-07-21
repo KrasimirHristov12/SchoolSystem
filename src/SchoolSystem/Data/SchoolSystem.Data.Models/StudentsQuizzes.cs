@@ -22,5 +22,8 @@
 
         [Required]
         public int? Points { get; set; }
+
+        [Required]
+        public string Answers { get; set; }
     }
 }

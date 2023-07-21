@@ -14,6 +14,7 @@
         {
             this.Classes = new HashSet<SchoolClass>();
             this.StudentsQuizzes = new HashSet<StudentsQuizzes>();
+            this.Questions = new HashSet<Question>();
         }
 
         public Guid Id { get; set; }
@@ -26,6 +27,8 @@
 
         [Required]
         public Subject Subject { get; set; }
+
+        public ICollection<Question> Questions { get; set; }
 
         public ICollection<SchoolClass> Classes { get; set; }
 
@@ -41,12 +44,6 @@
         public DateTime DateTaken { get; set; }
 
         public TimeSpan Duration { get; set; }
-
-        [Required]
-        public string Content { get; set; }
-
-        [Required]
-        public string Answers { get; set; }
 
         public DateTime CreatedOn { get; set; }
 
