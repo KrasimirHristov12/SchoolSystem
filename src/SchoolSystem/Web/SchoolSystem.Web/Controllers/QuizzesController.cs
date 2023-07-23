@@ -13,6 +13,7 @@
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Subjects;
     using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
     using SchoolSystem.Web.WebServices;
 
@@ -98,6 +99,26 @@
             }
 
             return this.View(quiz.Model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = GlobalConstants.Student.StudentRoleName)]
+        public async Task<IActionResult> Take(Guid id, List<TakeQuestionsViewModel> model)
+        {
+            var userId = this.userService.GetUserId(this.User);
+            var studentId = this.studentService.GetIdByUserId(userId);
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(model);
+            }
+
+            var result = await this.quizzesService.RecordAnswersAsync(id, studentId, model);
+            if (!result)
+            {
+                return this.NotFound();
+            }
+
+            return this.Redirect("/");
         }
 
         public IActionResult Review(Guid quizId, int studentId)

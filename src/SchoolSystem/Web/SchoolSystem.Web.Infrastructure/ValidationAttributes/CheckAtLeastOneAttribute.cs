@@ -24,9 +24,9 @@
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var properties = value.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+            var properties = validationContext.ObjectInstance.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
 
-            var boolProperties = properties.Where(p => p.PropertyType == typeof(bool)).Select(p => (bool)p.GetValue(value)).ToList();
+            var boolProperties = properties.Where(p => p.PropertyType == typeof(bool)).Select(p => (bool)p.GetValue(validationContext.ObjectInstance)).ToList();
 
             if (!boolProperties.Any(p => p == true))
             {

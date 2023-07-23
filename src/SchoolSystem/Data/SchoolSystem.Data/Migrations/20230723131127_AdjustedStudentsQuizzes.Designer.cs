@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSystem.Data;
 
@@ -11,9 +12,11 @@ using SchoolSystem.Data;
 namespace SchoolSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230723131127_AdjustedStudentsQuizzes")]
+    partial class AdjustedStudentsQuizzes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,6 +159,46 @@ namespace SchoolSystem.Data.Migrations
                     b.HasIndex("TeachersId");
 
                     b.ToTable("SchoolClassTeacher");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.ApplicationRole", b =>
@@ -335,29 +378,7 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<DateTime?>("DeletedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FirstAnswerContent")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("FourthAnswerContent")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFirstAnswerCorrect")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFourthAnswerCorrect")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSecondAnswerCorrect")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsThirdAnswerCorrect")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedOn")
@@ -368,16 +389,6 @@ namespace SchoolSystem.Data.Migrations
 
                     b.Property<Guid>("QuizId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SecondAnswerContent")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ThirdAnswerContent")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -590,16 +601,16 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsFirstAnswerChecked")
+                    b.Property<bool>("IsFirstChecked")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsFourthAnswerChecked")
+                    b.Property<bool>("IsFourthChecked")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsSecondAnswerChecked")
+                    b.Property<bool>("IsSecondChecked")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsThirdAnswerChecked")
+                    b.Property<bool>("IsThirdChecked")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedOn")
@@ -846,6 +857,17 @@ namespace SchoolSystem.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SchoolSystem.Data.Models.Answer", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("SchoolSystem.Data.Models.Grade", b =>
                 {
                     b.HasOne("SchoolSystem.Data.Models.Student", "Student")
@@ -993,6 +1015,11 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Logins");
 
                     b.Navigation("Roles");
+                });
+
+            modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
+                {
+                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Quiz", b =>

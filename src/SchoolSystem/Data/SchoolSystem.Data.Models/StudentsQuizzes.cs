@@ -17,13 +17,9 @@
         [Required]
         public Quiz Quiz { get; set; }
 
-        [Required]
-        public bool? IsTaken { get; set; }
+        public bool IsTaken { get; set; }
 
-        [Required]
-        public int? Points { get; set; }
+        public int Points { get; set; }
 
-        [Required]
-        public string Answers { get; set; }
     }
 }

@@ -10,6 +10,8 @@
     using SchoolSystem.Data;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
+    using SchoolSystem.Web.ViewModels.Answers;
+    using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
 
     public class QuizzesService : IQuizzesService
@@ -43,31 +45,16 @@
                 {
                     Title = q.Title,
                     Type = (QuestionType)q.QuestionType,
+                    FirstAnswerContent = q.Answers.FirstAnswerContent,
+                    IsFirstAnswerCorrect = q.Answers.IsFirstAnswerCorrect,
+                    SecondAnswerContent = q.Answers.SecondAnswerContent,
+                    IsSecondAnswerCorrect = q.Answers.IsSecondAnswerCorrect,
+                    ThirdAnswerContent = q.Answers.ThirdAnswerContent,
+                    IsThirdAnswerCorrect = q.Answers.IsThirdAnswerCorrect,
+                    FourthAnswerContent = q.Answers.FourthAnswerContent,
+                    IsFourthAnswerCorrect = q.Answers.IsFourthAnswerCorrect,
                 };
 
-                question.Answers.Add(new Answer
-                {
-                    Content = q.Answers.FirstAnswerContent,
-                    IsCorrect = q.Answers.IsFirstAnswerCorrect,
-                });
-
-                question.Answers.Add(new Answer
-                {
-                    Content = q.Answers.SecondAnswerContent,
-                    IsCorrect = q.Answers.IsSecondAnswerCorrect,
-                });
-
-                question.Answers.Add(new Answer
-                {
-                    Content = q.Answers.ThirdAnswerContent,
-                    IsCorrect = q.Answers.IsThirdAnswerCorrect,
-                });
-
-                question.Answers.Add(new Answer
-                {
-                    Content = q.Answers.FourthAnswerContent,
-                    IsCorrect = q.Answers.IsFourthAnswerCorrect,
-                });
                 questions.Add(question);
             }
 
@@ -105,8 +92,18 @@
             var quiz = this.db.Quizzes.Where(q => q.Id == id).Select(q => new TakeQuizViewModel
             {
                 Id = id,
-                //Content = q.Content,
-                StudentId = studentId,
+                Questions = this.db.Questions.Where(qu => qu.QuizId == id).Select(qu => new TakeQuestionsViewModel
+                {
+                    Id = qu.Id,
+                    Title = qu.Title,
+                    Type = qu.Type,
+                    FirstAnswerContent = qu.FirstAnswerContent,
+                    SecondAnswerContent = qu.SecondAnswerContent,
+                    ThirdAnswerContent = qu.ThirdAnswerContent,
+                    FourthAnswerContent = qu.FourthAnswerContent,
+                    Points = qu.Points,
+
+                }).ToList(),
                 Duration = (int)q.Duration.TotalMinutes,
                 DateTaken = q.DateTaken,
 
@@ -130,24 +127,24 @@
                 };
             }
 
-            if (DateTime.Compare(DateTime.UtcNow, quiz.DateTaken.AddMinutes(quiz.Duration)) >= 0)
-            {
-                return new GetQuizResult
-                {
-                    IsSuccessful = false,
-                    Message = GlobalConstants.ErrorMessage.QuizDue,
-                };
-            }
+            //if (DateTime.Compare(DateTime.UtcNow, quiz.DateTaken.AddMinutes(quiz.Duration)) >= 0)
+            //{
+            //    return new GetQuizResult
+            //    {
+            //        IsSuccessful = false,
+            //        Message = GlobalConstants.ErrorMessage.QuizDue,
+            //    };
+            //}
 
-            if (DateTime.Compare(DateTime.UtcNow, quiz.DateTaken) < 0)
-            {
-                return new GetQuizResult
-                {
-                    IsSuccessful = false,
-                    Message = quiz.DateTaken.Subtract(DateTime.UtcNow).TotalHours >= 1 ? string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetHours, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalHours))
-                    : string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetMinutes, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalMinutes)),
-                };
-            }
+            //if (DateTime.Compare(DateTime.UtcNow, quiz.DateTaken) < 0)
+            //{
+            //    return new GetQuizResult
+            //    {
+            //        IsSuccessful = false,
+            //        Message = quiz.DateTaken.Subtract(DateTime.UtcNow).TotalHours >= 1 ? string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetHours, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalHours))
+            //        : string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetMinutes, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalMinutes)),
+            //    };
+            //}
 
             return new GetQuizResult
             {
@@ -171,23 +168,7 @@
         //    });
         //}
 
-        public async Task RecordAsDoneAsync(int studentId, Guid quizId, int points, IEnumerable<AnswersViewModel> answers)
-        {
-            var studentQuiz = new StudentsQuizzes
-            {
-                StudentId = studentId,
-                QuizId = quizId,
-                IsTaken = true,
-                Points = points,
-                Answers = JsonSerializer.Serialize(answers, new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                }),
-            };
-            await this.db.StudentsQuizzes.AddAsync(studentQuiz);
 
-            await this.db.SaveChangesAsync();
-        }
 
         public ReviewQuizViewModel GetReviewQuiz(Guid quizId, int studentId)
         {
@@ -220,6 +201,79 @@
             studentQuiz.Points += 1;
             await this.db.SaveChangesAsync();
             return studentQuiz.Points;
+        }
+
+        public async Task RecordAsDoneAsync(int studentId, Guid quizId, int points)
+        {
+            var studentQuiz = new StudentsQuizzes
+            {
+                StudentId = studentId,
+                QuizId = quizId,
+                IsTaken = true,
+                Points = points,
+            };
+            await this.db.StudentsQuizzes.AddAsync(studentQuiz);
+
+            await this.db.SaveChangesAsync();
+        }
+
+        public async Task<bool> RecordAnswersAsync(Guid quizId, int studentId, List<TakeQuestionsViewModel> questions)
+        {
+            foreach (var question in questions)
+            {
+                if (!this.db.Questions.Any(q => q.Id == question.Id))
+                {
+                    return false;
+                }
+
+                var dataObj = new StudentQuizzesQuestionAnswer
+                {
+                    StudentId = studentId,
+                    QuestionId = question.Id,
+                    IsFirstAnswerChecked = question.IsFirstAnswerChecked,
+                    IsSecondAnswerChecked = question.IsSecondAnswerChecked,
+                    IsThirdAnswerChecked = question.IsThirdAnswerChecked,
+                    IsFourthAnswerChecked = question.IsFourthAnswerChecked,
+                };
+                this.db.StudentQuizzesQuestionAnswers.Add(dataObj);
+            }
+
+            var studentPoints = this.GetPoints(quizId, questions);
+
+            await this.RecordAsDoneAsync(studentId, quizId, studentPoints);
+
+            return true;
+        }
+
+        private int GetPoints(Guid quizId, List<TakeQuestionsViewModel> studentQuestions)
+        {
+            int points = 0;
+            var quizQuestions = this.db.Questions.Where(q => q.QuizId == quizId).ToList();
+            foreach (var question in quizQuestions)
+            {
+                var studentQuestion = studentQuestions.FirstOrDefault(q => q.Id == question.Id);
+                if (studentQuestion != null)
+                {
+                    var correctAnswers = new List<bool>
+                    {
+                        question.IsFirstAnswerCorrect, question.IsSecondAnswerCorrect, question.IsThirdAnswerCorrect, question.IsFourthAnswerCorrect,
+                    };
+
+                    var studentAnswers = new List<bool>
+                    {
+                        studentQuestion.IsFirstAnswerChecked, question.IsSecondAnswerCorrect, question.IsThirdAnswerCorrect, question.IsFourthAnswerCorrect,
+                    };
+
+                    bool areEqual = correctAnswers.SequenceEqual(studentAnswers);
+
+                    if (areEqual)
+                    {
+                        points += 1;
+                    }
+                }
+            }
+
+            return points;
         }
     }
 }

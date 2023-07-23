@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSystem.Data;
 
@@ -11,9 +12,11 @@ using SchoolSystem.Data;
 namespace SchoolSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230723144615_RemovedAnswerEntity")]
+    partial class RemovedAnswerEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -590,16 +593,16 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsFirstAnswerChecked")
+                    b.Property<bool>("IsFirstChecked")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsFourthAnswerChecked")
+                    b.Property<bool>("IsFourthChecked")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsSecondAnswerChecked")
+                    b.Property<bool>("IsSecondChecked")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsThirdAnswerChecked")
+                    b.Property<bool>("IsThirdChecked")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedOn")

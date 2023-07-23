@@ -1,7 +1,6 @@
 ﻿@model QuizzesInputModel
 
 <form method="post">
-    <div asp-validation-summary="All" class="text-danger"></div>
     <div class="mb-3">
         <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" />
@@ -25,7 +24,6 @@
         <select asp-for="ClassesId" class="form-select" asp-items="@(new SelectList(Model.ViewModel.Classes, "Id", "Name"))" data-bs-toggle="tooltip" data-bs-placement="top"
                 data-bs-custom-class="custom-tooltip"
                 data-bs-title="Може да изберете повече от един клас.">
-            <option selected="selected" value="">Моля избери</option>
         </select>
         <div>
             <span asp-validation-for="ClassesId" class="text-danger"></span>
@@ -201,21 +199,14 @@
 
 
 
-        if ($(".validation-summary-errors").length > 0) {
-
-            $(".questions-buttons-container").append(`<button id="question-button-0" class="question-button" style="margin-right: 10px;">1</button>`);
-        }
-
         //CLONE AND ATTACH CLIENT VALIDATION TO THE CLONED ELEMENTS.
 
-        let isFirst = true
 
         $(".display-question").click(function (e) {
             e.preventDefault();
             $(".questions-buttons-container button").removeClass("bg-success");
-            if (isFirst) {
+            if ($(".question-container.submitted").length == 0) {
                 $(".question-container").eq(-1).fadeIn();
-                isFirst = false;
             }
             else if ($(".question-container").eq(-1).hasClass("submitted")) {
                 $(".question-container").hide();
@@ -382,6 +373,19 @@
     </script>
 
     <script>
+        $(".add-test").click(function (e) {
+            e.preventDefault();
+            if ($(".question-container.submitted").length == 0) {
+                $(".question-container").eq(-1).show();
+                $("form").validate().form(); 
+            }
+            else if ($(".question-container:not(:hidden)").length == 0) {
+                $(".add-test").unbind("click");
+                $(".add-test").click();
+            }
+
+        });
+
         //$(".add-test").click(function (e) {
             //e.preventDefault();
             //$('.question-container:not(":first")').each(function () {

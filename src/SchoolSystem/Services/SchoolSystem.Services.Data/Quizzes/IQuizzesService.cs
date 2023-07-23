@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
 
     public interface IQuizzesService
@@ -16,7 +17,9 @@
 
         //Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id);
 
-        Task RecordAsDoneAsync(int studentId, Guid quizId, int points, IEnumerable<AnswersViewModel> answers);
+        Task<bool> RecordAnswersAsync(Guid quizId, int studentId, List<TakeQuestionsViewModel> questions);
+
+        Task RecordAsDoneAsync(int studentId, Guid quizId, int points);
 
         ReviewQuizViewModel GetReviewQuiz(Guid quizId, int studentId);
 

@@ -210,6 +210,8 @@
 
             public const string CheckAtLeastOneAnswer = "Изберете поне един от тиковете.";
 
+            public const string AtMostOneSelectionPossibleWhenRadio = "Може да избереш само 1 от опциите";
+
         }
     }
 }

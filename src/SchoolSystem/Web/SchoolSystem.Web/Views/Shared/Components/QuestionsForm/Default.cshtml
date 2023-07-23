@@ -1,0 +1,36 @@
+﻿@model List<TakeQuestionsViewModel>
+<form method="post">
+    <div class="questions">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <div id="question-@(i+1)" class="question @(i > 0 ? "d-none" : "")">
+
+                <input type="hidden" asp-for="@Model[i].Id" />
+                <h3>@Model[i].Title</h3>
+                <div class="answers">
+                    <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" value="@Model[i].FirstAnswerContent" />
+                    <input type="hidden" asp-for="@Model[i].IsFirstAnswerChecked" />
+
+                    <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" value="@Model[i].SecondAnswerContent" />
+                    <input type="hidden" asp-for="@Model[i].IsSecondAnswerChecked" />
+
+                    <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" value="@Model[i].ThirdAnswerContent" />
+                    <input type="hidden" asp-for="@Model[i].IsThirdAnswerChecked" />
+
+                    <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" value="@Model[i].FourthAnswerContent" />
+                    <input type="hidden" asp-for="@Model[i].IsFourthAnswerChecked" />
+
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="buttons" style="display: flex; justify-content: space-between;">
+        <button class="btn btn-primary prev-question disabled">Предишен въпрос</button>
+        <button class="btn btn-primary next-question">Следващ въпрос</button>
+    </div>
+
+
+
+    <button class="btn btn-primary submit-exam">Завърши изпит</button>
+</form>
