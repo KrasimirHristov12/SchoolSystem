@@ -10,8 +10,8 @@
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Web.ViewModels.Answers;
 
-    [Bind(Exclude = $"{nameof(Title)},{nameof(Points)},{nameof(FirstAnswerContent)},{nameof(SecondAnswerContent)},${nameof(ThirdAnswerContent)},{nameof(FourthAnswerContent)}")]
-    public class TakeQuestionsViewModel : IValidatableObject
+    [Bind(Exclude = $"{nameof(Title)},{nameof(Type)},{nameof(Points)},{nameof(FirstAnswerContent)},{nameof(SecondAnswerContent)},${nameof(ThirdAnswerContent)},{nameof(FourthAnswerContent)}")]
+    public class TakeQuestionsViewModel
     {
         public Guid Id { get; set; }
 
@@ -36,17 +36,5 @@
         public bool IsFourthAnswerChecked { get; set; }
 
         public int Points { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var listOfBools = new List<bool>
-            {
-                this.IsFirstAnswerChecked, this.IsSecondAnswerChecked, this.IsThirdAnswerChecked, this.IsFourthAnswerChecked,
-            };
-            if (this.Type == QuestionType.Radio && listOfBools.Count(a => a == true) > 1)
-            {
-                yield return new ValidationResult(GlobalConstants.ErrorMessage.AtMostOneSelectionPossibleWhenRadio);
-            }
-        }
     }
 }

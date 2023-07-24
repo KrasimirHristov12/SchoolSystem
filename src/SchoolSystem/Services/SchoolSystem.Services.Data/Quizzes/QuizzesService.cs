@@ -45,6 +45,7 @@
                 {
                     Title = q.Title,
                     Type = (QuestionType)q.QuestionType,
+                    Points = (int)q.Points,
                     FirstAnswerContent = q.Answers.FirstAnswerContent,
                     IsFirstAnswerCorrect = q.Answers.IsFirstAnswerCorrect,
                     SecondAnswerContent = q.Answers.SecondAnswerContent,
@@ -261,14 +262,14 @@
 
                     var studentAnswers = new List<bool>
                     {
-                        studentQuestion.IsFirstAnswerChecked, question.IsSecondAnswerCorrect, question.IsThirdAnswerCorrect, question.IsFourthAnswerCorrect,
+                        studentQuestion.IsFirstAnswerChecked, studentQuestion.IsSecondAnswerChecked, studentQuestion.IsThirdAnswerChecked, studentQuestion.IsFourthAnswerChecked,
                     };
 
                     bool areEqual = correctAnswers.SequenceEqual(studentAnswers);
 
                     if (areEqual)
                     {
-                        points += 1;
+                        points += question.Points;
                     }
                 }
             }

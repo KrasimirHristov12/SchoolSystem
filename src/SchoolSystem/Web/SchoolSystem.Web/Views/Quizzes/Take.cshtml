@@ -45,6 +45,7 @@
         $("body").css('background-color', '#dae0e3');
         $("footer").hide();
 
+
         $(".prev-question").click(function (e) {
             e.preventDefault();
             let currentQuestion = $(".question:not(.d-none)");
@@ -83,12 +84,21 @@
         $("input:radio").change(function () {
             let radio = this;
             if ($(radio).is(":checked")) {
-                $(radio).next().attr("value", "True");
-                $(radio).closest(".answers").find("input:hidden").not($(radio).next()).each(function () {
+                $(radio).next().next().attr("value", "True");
+                $(radio).closest(".answers").find("input:hidden").not($(radio).next().next()).each(function () {
                     $(this).attr("value", "False");
                 })
             }
         });
+
+        $("input:checkbox").change(function () {
+            if ($(this).is(":checked")) {
+                $(this).next().next().attr("value", "True");;
+            }
+            else {
+                $(this).next().next().attr("value", "False");
+            }
+        })
     </script>
 
 }

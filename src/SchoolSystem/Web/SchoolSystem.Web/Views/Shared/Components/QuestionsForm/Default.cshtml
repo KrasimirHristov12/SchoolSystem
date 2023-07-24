@@ -1,5 +1,6 @@
 ﻿@model List<TakeQuestionsViewModel>
-<form method="post">
+<form method="post" class="question-form">
+    <div class="text-danger" asp-validation-summary="All"></div>
     <div class="questions">
         @for (int i = 0; i < Model.Count; i++)
         {
@@ -8,24 +9,36 @@
                 <input type="hidden" asp-for="@Model[i].Id" />
                 <h3>@Model[i].Title</h3>
                 <div class="answers">
-                    <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" value="@Model[i].FirstAnswerContent" />
-                    <input type="hidden" asp-for="@Model[i].IsFirstAnswerChecked" />
+                    <div class="answer-1">
+                        <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" id="[@(i)].FirstAnswerContent" value="@Model[i].FirstAnswerContent" />
+                        <label for="[@(i)].FirstAnswerContent">@Model[i].FirstAnswerContent</label>
+                        <input type="hidden" asp-for="@Model[i].IsFirstAnswerChecked" />
+                    </div>
 
-                    <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" value="@Model[i].SecondAnswerContent" />
-                    <input type="hidden" asp-for="@Model[i].IsSecondAnswerChecked" />
+                    <div class="answer-2">
+                        <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" id="[@(i)].SecondAnswerContent" value="@Model[i].SecondAnswerContent" />
+                        <label for="[@(i)].SecondAnswerContent">@Model[i].SecondAnswerContent</label>
+                        <input type="hidden" asp-for="@Model[i].IsSecondAnswerChecked" />
+                    </div>
 
-                    <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" value="@Model[i].ThirdAnswerContent" />
-                    <input type="hidden" asp-for="@Model[i].IsThirdAnswerChecked" />
+                    <div class="answer-3">
+                        <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" id="[@(i)].ThirdAnswerContent" value="@Model[i].ThirdAnswerContent" />
+                        <label for="[@(i)].ThirdAnswerContent">@Model[i].ThirdAnswerContent</label>
+                        <input type="hidden" asp-for="@Model[i].IsThirdAnswerChecked" />
+                    </div>
 
-                    <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" value="@Model[i].FourthAnswerContent" />
-                    <input type="hidden" asp-for="@Model[i].IsFourthAnswerChecked" />
+                    <div class="answer-4">
+                        <input type="@(Model[i].Type == QuestionType.Radio ? "radio" : "checkbox")" name="question-@(i+1)" id="[@(i)].FourthAnswerContent" value="@Model[i].FourthAnswerContent" />
+                        <label for="[@(i)].FourthAnswerContent">@Model[i].FourthAnswerContent</label>
+                        <input type="hidden" asp-for="@Model[i].IsFourthAnswerChecked" />
+                    </div>
 
                 </div>
             </div>
         }
     </div>
 
-    <div class="buttons" style="display: flex; justify-content: space-between;">
+    <div class="buttons">
         <button class="btn btn-primary prev-question disabled">Предишен въпрос</button>
         <button class="btn btn-primary next-question">Следващ въпрос</button>
     </div>

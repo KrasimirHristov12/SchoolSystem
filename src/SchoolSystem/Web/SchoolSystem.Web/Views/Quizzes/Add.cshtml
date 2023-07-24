@@ -49,7 +49,7 @@
 
         <div class="mb-3 duration">
             <label asp-for="Duration"></label>
-            <input asp-for="Duration" class="form-control" min="10" max="180" />
+            <input asp-for="Duration" class="form-control" />
             <div>
                 <span asp-validation-for="Duration" class="text-danger"></span>
             </div>
@@ -61,11 +61,18 @@
     <div class="questions-buttons-container" style="margin-top: 10px;"></div>
 
     <div id="question-container-0" class="question-container" style="display: none;">
-        <label asp-for="Questions[0].Title">Условие на въпроса</label>
+        <label asp-for="Questions[0].Title"></label>
         <input asp-for="Questions[0].Title" class="form-control" />
 
         <div>
             <span asp-validation-for="Questions[0].Title" class="text-danger"></span>
+        </div>
+
+        <label asp-for="Questions[0].Points"></label>
+        <input asp-for="Questions[0].Points" class="form-control" />
+
+        <div>
+            <span asp-validation-for="Questions[0].Points" class="text-danger"></span>
         </div>
         <label asp-for="Questions[0].QuestionType">Тип на въпроса</label>
         <select asp-for="Questions[0].QuestionType" asp-items="Html.GetEnumSelectList<QuestionType>()" class="form-select"></select>
@@ -157,7 +164,7 @@
 
 @section Scripts {
 
-    
+
 
     <script>
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -225,38 +232,77 @@
                     $(this).attr("for", labelForUpdated);
 
                 });
-
-                cloning.find("input:text").each(function () {
-                    let ariaDescribedByUpdated = $(this).attr("aria-describedby").replace(`_${prevContainerIndex}__`, `_${prevContainerIndex + 1}__`);
-                    $(this).attr("aria-describedby", ariaDescribedByUpdated);
-
-                });
-
                 cloning.find("input:checkbox").each(function () {
-                    let ariaDescribedByUpdated = $(this).attr("aria-describedby").replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`);
-                    $(this).attr("aria-describedby", ariaDescribedByUpdated);
+                    let ariaDescribedByUpdated = $(this).attr("aria-describedby");
+                    //CHECK IF THE ELEMENT HAS SUCH ATTRIBUTE
+                    if (typeof ariaDescribedByUpdated !== 'undefined' && ariaDescribedByUpdated !== false) {
+                        $(this).attr("aria-describedby", ariaDescribedByUpdated.replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`));
+                    }
 
                 });
 
-                let updatedValMsg = cloning.find("table tr").eq(0).find("th").eq(2).find("span.text-danger").attr("data-valmsg-for").replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`);
+                let valMsg = cloning.find("table tr").eq(0).find("th").eq(2).find("span.text-danger").attr("data-valmsg-for");
+                //CHECK IF THE ELEMENT HAS SUCH ATTRIBUTE
+                if (typeof valMsg !== 'undefined' && valMsg !== false) {
+                    cloning.find("table tr").eq(0).find("th").eq(2).find("span.text-danger").attr("data-valmsg-for", valMsg.replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`));
+                }
 
-                cloning.find("table tr").eq(0).find("th").eq(2).find("span.text-danger").attr("data-valmsg-for", updatedValMsg);
+                console.log(cloning.find('input,select'))
 
-                cloning.find("input,select").each(function () {
-                   if ($(this).is(":text")) {
+                cloning.find('input,select').each(function () {
+                    if ($(this).is('input:not(":checkbox")')) {
+                        let ariaDescribedByUpdated = $(this).attr("aria-describedby");
+                        //CHECK IF THE ELEMENT HAS SUCH ATTRIBUTE
+                        if (typeof ariaDescribedByUpdated !== 'undefined' && ariaDescribedByUpdated !== false) {
+                            $(this).attr("aria-describedby", ariaDescribedByUpdated.replace(`_${prevContainerIndex}__`, `_${prevContainerIndex + 1}__`));
+                        }
                         $(this).val('');
-                   }
-                   else if ($(this).is(":checkbox")) {
+                    }
+                    else if ($(this).is("input:checkbox")) {
                         $(this).prop("checked", false);
-                   }
-                   else {
-                       $(this).val("0");
-                   }
-                    
-                    $(this).attr("id", $(this).attr("id").replace(`_${prevContainerIndex}__`, `_${prevContainerIndex + 1}__`));
-                    $(this).attr("name", $(this).attr("name").replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`));
-                    if ($(this).is(':not(:checkbox)')) {
-                        $(this).next().find("span").eq(0).attr("data-valmsg-for", $(this).next().find("span").eq(0).attr("data-valmsg-for").replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`));
+                    }
+
+                    //FOR SELECT - ASSIGNING TO RADIO
+                    else {
+                        let ariaDescribedByUpdated = $(this).attr("aria-describedby");
+                        //CHECK IF THE ELEMENT HAS SUCH ATTRIBUTE
+                        if (typeof ariaDescribedByUpdated !== 'undefined' && ariaDescribedByUpdated !== false) {
+                            $(this).attr("aria-describedby", ariaDescribedByUpdated.replace(`_${prevContainerIndex}__`, `_${prevContainerIndex + 1}__`));
+                        }
+                        $(this).val("0");
+                    }
+
+                    let inputId = $(this).attr("id");
+                    let inputName = $(this).attr("name");
+                    //CHECK IF THE ELEMENT HAS SUCH ATTRIBUTE
+                    if (typeof inputId !== 'undefined' && inputId !== false) {
+                        $(this).attr("id", inputId.replace(`_${prevContainerIndex}__`, `_${prevContainerIndex + 1}__`));
+                    }
+                    //CHECK IF THE ELEMENT HAS SUCH ATTRIBUTE
+                    if (typeof inputName !== 'undefined' && inputName !== false) {
+                        $(this).attr("name", inputName.replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`));
+                    }
+
+
+                    if ($(this).is('input:text,select')) {
+                        let dataValMsgFor = $(this).next().find("span").eq(0).attr("data-valmsg-for");
+
+                        //CHECK IF THE ELEMENT HAS SUCH ATTRIBUTE
+                        if (typeof dataValMsgFor !== 'undefined' && dataValMsgFor !== false) {
+                            dataValMsgFor = dataValMsgFor.replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`);
+                            $(this).next().find("span").eq(0).attr("data-valmsg-for", dataValMsgFor);
+                        }
+
+
+                    }
+                    else if ($(this).is('input[type="number"]')) {
+                        let dataValMsgFor = $(this).next().next().find("span").eq(0).attr("data-valmsg-for");
+
+                        //CHECK IF THE ELEMENT HAS SUCH ATTRIBUTE
+                        if (typeof dataValMsgFor !== 'undefined' && dataValMsgFor !== false) {
+                            dataValMsgFor = dataValMsgFor.replace(`[${prevContainerIndex}]`, `[${prevContainerIndex + 1}]`);
+                            $(this).next().next().find("span").eq(0).attr("data-valmsg-for", dataValMsgFor);
+                        }
                     }
 
                 });
@@ -300,10 +346,10 @@
 
                 $("form").validate().element('#' + $(this).attr("id"));
             });
-            
+
         });
 
-        $(".question-container").find("#answers-container").find("input:text").on("keyup", function () {
+        $(".question-container").find('input:text,input[type="number"]').on("keyup", function () {
             $("form").validate().element('#' + $(this).attr("id"));
         });
 
@@ -314,43 +360,36 @@
 
             e.preventDefault();
 
-            let answerContainer = $(".question-container:not(:hidden)").find("#answers-container");
+            let questionsContainer = $(".question-container:not(:hidden)").eq(0);
+            let answerContainer = questionsContainer.find("#answers-container");
 
-            let currentQuestion = answerContainer.closest("div.question-container").attr("id").split("-")[2];
 
-            console.log(currentQuestion);
-
-            $("form").validate().element(`input#Questions_${currentQuestion}__Title`);
-
-            //PERFORM VALIDATION ON ANSWERS INPUT INDIVIDUALLY
-            answerContainer.find("input").each(function () {
-                console.log($(this));
-
-                $("form").validate().element('#' + $(this).attr("id"));
-            });
+            let currentQuestion = questionsContainer.attr("id").split("-")[2];
 
 
 
-            
 
-            answerContainer.find("input:checkbox").each(function () {
+            //PERFORM VALIDATION ON  INPUT INDIVIDUALLY
+
+            console.log(questionsContainer.find("input"));
+
+            questionsContainer.find('input:not(":hidden")').each(function () {
 
                 $("form").validate().element('#' + $(this).attr("id"));
             });
 
 
 
-
-            if (answerContainer.find("input.input-validation-error").length === 0 && !$(`input#Questions_${currentQuestion}__Title`).hasClass("input-validation-error")) {
-                let questionNumber = parseInt(answerContainer.closest(".question-container").attr("id").split("-")[2]) + 1;
+            if (questionsContainer.find("input.input-validation-error").length === 0) {
+                let questionNumber = parseInt(questionsContainer.attr("id").split("-")[2]) + 1;
                 if ($(`#question-button-${questionNumber - 1}`).length == 0) {
                     $(".questions-buttons-container").append(`<button id="question-button-${questionNumber - 1}" class="question-button" style="margin-right: 10px;">${questionNumber}</button>`);
 
                 }
 
-                answerContainer.closest(".question-container").hide();
-                if (!answerContainer.closest(".question-container").hasClass("submitted")) {
-                    answerContainer.closest(".question-container").addClass("submitted"); 
+                questionsContainer.hide();
+                if (!questionsContainer.hasClass("submitted")) {
+                    questionsContainer.addClass("submitted");
                 }
                 $(`#question-button-${questionNumber - 1}`).removeClass("bg-success");
 
@@ -377,7 +416,7 @@
             e.preventDefault();
             if ($(".question-container.submitted").length == 0) {
                 $(".question-container").eq(-1).show();
-                $("form").validate().form(); 
+                $("form").validate().form();
             }
             else if ($(".question-container:not(:hidden)").length == 0) {
                 $(".add-test").unbind("click");
@@ -386,27 +425,27 @@
 
         });
 
-        //$(".add-test").click(function (e) {
-            //e.preventDefault();
-            //$('.question-container:not(":first")').each(function () {
-                //let questionIndex = parseInt($(this).attr("id").split("-")[2]);
-                //localStorage.setItem(`Questions_html_${questionIndex}`, $(this).prop("outerHTML"));
-                //localStorage.setItem(`Questions_${questionIndex}__Title`, $(this).find(`#Questions_${questionIndex}__Title`).val());
-                //localStorage.setItem(`Questions_${questionIndex}__QuestionType`, $(this).find(`#Questions_${questionIndex}__QuestionType`).val());
-                //localStorage.setItem(`Questions_${questionIndex}__Answers_FirstAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FirstAnswerContent`).val());
-                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`).prop("checked"));
-                //localStorage.setItem(`Questions_${questionIndex}__Answers_SecondAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_SecondAnswerContent`).val());
-                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`).prop("checked"));
-                //localStorage.setItem(`Questions_${questionIndex}__Answers_ThirdAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_ThirdAnswerContent`).val());
-                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`).prop("checked"));
-                //localStorage.setItem(`Questions_${questionIndex}__Answers_FourthAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FourthAnswerContent`).val());
-                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`).prop("checked"));
+                                                //$(".add-test").click(function (e) {
+                                                    //e.preventDefault();
+                                                    //$('.question-container:not(":first")').each(function () {
+                                                        //let questionIndex = parseInt($(this).attr("id").split("-")[2]);
+                                                        //localStorage.setItem(`Questions_html_${questionIndex}`, $(this).prop("outerHTML"));
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Title`, $(this).find(`#Questions_${questionIndex}__Title`).val());
+                                                        //localStorage.setItem(`Questions_${questionIndex}__QuestionType`, $(this).find(`#Questions_${questionIndex}__QuestionType`).val());
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_FirstAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FirstAnswerContent`).val());
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`).prop("checked"));
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_SecondAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_SecondAnswerContent`).val());
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`).prop("checked"));
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_ThirdAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_ThirdAnswerContent`).val());
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`).prop("checked"));
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_FourthAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FourthAnswerContent`).val());
+                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`).prop("checked"));
 
-            //});
-            //$(".add-test").unbind("click");
-            //$(".add-test").click();
+                                                    //});
+                                                    //$(".add-test").unbind("click");
+                                                    //$(".add-test").click();
 
 
-        //});
+                                                //});
     </script>
 }

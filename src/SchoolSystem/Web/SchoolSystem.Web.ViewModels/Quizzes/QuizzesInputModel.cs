@@ -34,9 +34,9 @@
 
         public List<QuestionsInputModel> Questions { get; set; }
 
-        [RequiredWithErrorMessage]
-        [Range(GlobalConstants.Quiz.DurationMinNumber, GlobalConstants.Quiz.DurationMaxNumber, ErrorMessage = GlobalConstants.ErrorMessage.InvalidDurationOfQuiz)]
         [Display(Name = GlobalConstants.Quiz.DurationDisplay)]
+        [RequiredWithErrorMessage]
+        [Range(typeof(int), GlobalConstants.Quiz.DurationMinNumberAsString, GlobalConstants.Quiz.DurationMaxNumberAsString, ErrorMessage = GlobalConstants.ErrorMessage.InvalidDurationOfQuiz)]
         public int? Duration { get; set; }
 
         public QuizzesViewModel ViewModel { get; set; }

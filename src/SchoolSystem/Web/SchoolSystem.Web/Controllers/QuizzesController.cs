@@ -2,12 +2,15 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Globalization;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using SchoolSystem.Common;
+    using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.Quizzes;
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Data.Students;
@@ -107,9 +110,35 @@
         {
             var userId = this.userService.GetUserId(this.User);
             var studentId = this.studentService.GetIdByUserId(userId);
+            var quiz = this.quizzesService.GetQuiz(id, studentId);
+            var viewModel = quiz.Model;
+            for (int i = 0; i < quiz.Model.Questions.Count; i++)
+            {
+                model[i].Title = quiz.Model.Questions[i].Title;
+                model[i].FirstAnswerContent = quiz.Model.Questions[i].FirstAnswerContent;
+                model[i].SecondAnswerContent = quiz.Model.Questions[i].SecondAnswerContent;
+                model[i].ThirdAnswerContent = quiz.Model.Questions[i].ThirdAnswerContent;
+                model[i].FourthAnswerContent = quiz.Model.Questions[i].FourthAnswerContent;
+                model[i].Type = quiz.Model.Questions[i].Type;
+            }
+
+            viewModel.Questions = model;
+
+            for (int i = 0; i < viewModel.Questions.Count; i++)
+            {
+                var listOfBools = new List<bool>
+                {
+                    viewModel.Questions[i].IsFirstAnswerChecked, viewModel.Questions[i].IsSecondAnswerChecked, viewModel.Questions[i].IsThirdAnswerChecked, viewModel.Questions[i].IsFourthAnswerChecked,
+                };
+                if (viewModel.Questions[i].Type == QuestionType.Radio && listOfBools.Count(a => a == true) > 1)
+                {
+                    this.ModelState.AddModelError(string.Empty, GlobalConstants.ErrorMessage.AtMostOneSelectionPossibleWhenRadio);
+                }
+            }
+
             if (!this.ModelState.IsValid)
             {
-                return this.View(model);
+                return this.View(viewModel);
             }
 
             var result = await this.quizzesService.RecordAnswersAsync(id, studentId, model);

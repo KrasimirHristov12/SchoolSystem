@@ -86,6 +86,14 @@
 
         public static class Question
         {
+            public const string TitleDisplay = "Условие на въпроса:";
+
+            public const string PointsDisplay = "Точки:";
+
+            public const string MinimumPointsAsString = "1";
+
+            public const string MaximumPointsAsString = "30";
+
             public const int TitleMaxLength = 500;
 
             public const string RadioDisplay = "С един верен отговор";
@@ -122,9 +130,9 @@
 
             public const int NameMaxLength = 100;
 
-            public const int DurationMinNumber = 10;
+            public const string DurationMinNumberAsString = "10";
 
-            public const int DurationMaxNumber = 180;
+            public const string DurationMaxNumberAsString = "180";
 
         }
 
@@ -194,7 +202,7 @@
 
             public const string QuizNameLengthErrorMessage = "Името на теста трябва да съдържа между {2} и {1} символи.";
 
-            public const string InvalidDurationOfQuiz = "Продължителността, която сте въвели е невалидно. Трябва да бъде между 10 минути и 180 минути.";
+            public const string InvalidDurationOfQuiz = "Продължителността трябва да бъде между 10 минути и 180 минути.";
 
             public const string QuizAlreadyTaken = "Вече си предал теста. Нямаш право на повече от един опит.";
 
@@ -202,7 +210,7 @@
 
             public const string QuizDue = "Не си направил теста, когато е трябвало. Имаш служебна двойка.";
 
-            public const string QuizNotStartedYetHours = "Изпитът започва след около {0} час/а";
+            public const string QuizNotStartedYetHours = "Изпитът започва след около {0} час/а.";
 
             public const string QuizNotStartedYetMinutes = "Изпитът започва след около {0} минути/а";
 
@@ -210,7 +218,9 @@
 
             public const string CheckAtLeastOneAnswer = "Изберете поне един от тиковете.";
 
-            public const string AtMostOneSelectionPossibleWhenRadio = "Може да избереш само 1 от опциите";
+            public const string AtMostOneSelectionPossibleWhenRadio = "Може да избереш само 1 от опциите.";
+
+            public const string PointsErrorMessage = "Точките трябва да са между 1 и 30.";
 
         }
     }
