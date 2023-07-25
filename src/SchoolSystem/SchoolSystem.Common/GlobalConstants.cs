@@ -82,6 +82,20 @@
             public const double GradeMinimum = 2.0;
 
             public const double GradeMaximum = 6.0;
+
+            public const string PoorDisplay = "Слаб (2)";
+
+            public const string FairDisplay = "Среден (3)";
+
+            public const string GoodDisplay = "Добър (4)";
+
+            public const string VeryGoodDisplay = "Много добър (5)";
+
+            public const string ExcellentDisplay = "Отличен (6)";
+
+            public const string ScalePattern = "[0-9]+[-][0-9]+";
+
+            public const string PoorPattern = "[0][-][0-9]+";
         }
 
         public static class Question
@@ -133,7 +147,6 @@
             public const string DurationMinNumberAsString = "10";
 
             public const string DurationMaxNumberAsString = "180";
-
         }
 
         public static class ErrorMessage
@@ -221,6 +234,16 @@
             public const string AtMostOneSelectionPossibleWhenRadio = "Може да избереш само 1 от опциите.";
 
             public const string PointsErrorMessage = "Точките трябва да са между 1 и 30.";
+
+            public const string ScaleIncorrectFormat = "Невалиден формат.";
+
+            public const string PoorMinimumShouldBeZero = "Двойката трябва да започва от 0 точки.";
+
+            public const string MinValueShouldBeOneGreaterThanMaxValueOfPrev = "Минималната стойност трябва да бъде с 1 по-голяма от максималната стойност на предишния елемент.";
+
+            public const string MaxShouldBeGreaterThanMin = "Максималната стойност трябва да е по-голяма от минималната стойност.";
+
+            public const string MinValueShouldBeZero = "Минималната стойност трябва да бъде 0.";
 
         }
     }

@@ -46,15 +46,71 @@
         <div>
             <span asp-validation-for="DateTaken" class="text-danger"></span>
         </div>
+    </div>
 
-        <div class="mb-3 duration">
-            <label asp-for="Duration"></label>
-            <input asp-for="Duration" class="form-control" />
-            <div>
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
+    <div class="mb-3">
+        <label asp-for="Duration"></label>
+        <input asp-for="Duration" class="form-control" />
+        <div>
+            <span asp-validation-for="Duration" class="text-danger"></span>
         </div>
     </div>
+
+    <table class="table">
+        <tr>
+            <th>Оценка</th>
+            <th>Точки</th>
+        </tr>
+        <tr>
+            <td><label asp-for="ScaleRangeForPoor"></label></td>
+            <td>
+                <input class="form-control" asp-for="ScaleRangeForPoor" placeholder="мин-макс (пр. 0-10)" />
+                <div>
+                    <span asp-validation-for="ScaleRangeForPoor" class="text-danger"></span>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="ScaleRangeForFair"></label></td>
+            <td>
+                <input class="form-control" asp-for="ScaleRangeForFair" placeholder="мин-макс (пр. 11-21)" />
+                <div>
+                    <span asp-validation-for="ScaleRangeForFair" class="text-danger"></span>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="ScaleRangeForGood"></label></td>
+            <td>
+                <input class="form-control" asp-for="ScaleRangeForGood" placeholder="мин-макс (пр. 22-32)" />
+                <div>
+                    <span asp-validation-for="ScaleRangeForGood" class="text-danger"></span>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="ScaleRangeForVeryGood"></label></td>
+            <td><input class="form-control" asp-for="ScaleRangeForVeryGood" placeholder="мин-макс (пр. 33-43)" />
+                <div>
+                    <span asp-validation-for="ScaleRangeForVeryGood" class="text-danger"></span>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="ScaleRangeForExcellent"></label></td>
+            <td><input class="form-control" asp-for="ScaleRangeForExcellent" placeholder="мин-макс (пр. 43-53)" />
+                <div>
+                    <span asp-validation-for="ScaleRangeForExcellent" class="text-danger"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
 
     <button class="btn btn-primary display-question">Добавяне на въпрос</button>
 
@@ -425,27 +481,27 @@
 
         });
 
-                                                //$(".add-test").click(function (e) {
-                                                    //e.preventDefault();
-                                                    //$('.question-container:not(":first")').each(function () {
-                                                        //let questionIndex = parseInt($(this).attr("id").split("-")[2]);
-                                                        //localStorage.setItem(`Questions_html_${questionIndex}`, $(this).prop("outerHTML"));
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Title`, $(this).find(`#Questions_${questionIndex}__Title`).val());
-                                                        //localStorage.setItem(`Questions_${questionIndex}__QuestionType`, $(this).find(`#Questions_${questionIndex}__QuestionType`).val());
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_FirstAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FirstAnswerContent`).val());
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`).prop("checked"));
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_SecondAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_SecondAnswerContent`).val());
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`).prop("checked"));
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_ThirdAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_ThirdAnswerContent`).val());
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`).prop("checked"));
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_FourthAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FourthAnswerContent`).val());
-                                                        //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`).prop("checked"));
+                                                        //$(".add-test").click(function (e) {
+                                                            //e.preventDefault();
+                                                            //$('.question-container:not(":first")').each(function () {
+                                                                //let questionIndex = parseInt($(this).attr("id").split("-")[2]);
+                                                                //localStorage.setItem(`Questions_html_${questionIndex}`, $(this).prop("outerHTML"));
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Title`, $(this).find(`#Questions_${questionIndex}__Title`).val());
+                                                                //localStorage.setItem(`Questions_${questionIndex}__QuestionType`, $(this).find(`#Questions_${questionIndex}__QuestionType`).val());
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_FirstAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FirstAnswerContent`).val());
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`).prop("checked"));
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_SecondAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_SecondAnswerContent`).val());
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`).prop("checked"));
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_ThirdAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_ThirdAnswerContent`).val());
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`).prop("checked"));
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_FourthAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FourthAnswerContent`).val());
+                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`).prop("checked"));
 
-                                                    //});
-                                                    //$(".add-test").unbind("click");
-                                                    //$(".add-test").click();
+                                                            //});
+                                                            //$(".add-test").unbind("click");
+                                                            //$(".add-test").click();
 
 
-                                                //});
+                                                        //});
     </script>
 }

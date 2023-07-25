@@ -11,6 +11,11 @@
 
     public class QuizzesInputModel
     {
+        public QuizzesInputModel()
+        {
+            this.ScaleRangeForPoor = "0-";
+        }
+
         [RequiredWithErrorMessage]
         [StringLength(GlobalConstants.Quiz.NameMaxLength, MinimumLength = GlobalConstants.Quiz.NameMinLength, ErrorMessage = GlobalConstants.ErrorMessage.QuizNameLengthErrorMessage)]
         [Display(Name = GlobalConstants.Quiz.NameDisplay)]
@@ -38,6 +43,41 @@
         [RequiredWithErrorMessage]
         [Range(typeof(int), GlobalConstants.Quiz.DurationMinNumberAsString, GlobalConstants.Quiz.DurationMaxNumberAsString, ErrorMessage = GlobalConstants.ErrorMessage.InvalidDurationOfQuiz)]
         public int? Duration { get; set; }
+
+        [Display(Name = GlobalConstants.Grade.PoorDisplay)]
+        [RequiredWithErrorMessage]
+        [RegularExpression(GlobalConstants.Grade.ScalePattern, ErrorMessage = GlobalConstants.ErrorMessage.ScaleIncorrectFormat)]
+        [PoorMinValueZero]
+        [MaxGreaterThanMin]
+        public string ScaleRangeForPoor { get; set; }
+
+        [Display(Name = GlobalConstants.Grade.FairDisplay)]
+        [RequiredWithErrorMessage]
+        [RegularExpression(GlobalConstants.Grade.ScalePattern, ErrorMessage = GlobalConstants.ErrorMessage.ScaleIncorrectFormat)]
+        [MinValueOneGreaterThanMaxOfPrev(nameof(ScaleRangeForPoor))]
+        [MaxGreaterThanMin]
+        public string ScaleRangeForFair { get; set; }
+
+        [Display(Name = GlobalConstants.Grade.GoodDisplay)]
+        [RequiredWithErrorMessage]
+        [RegularExpression(GlobalConstants.Grade.ScalePattern, ErrorMessage = GlobalConstants.ErrorMessage.ScaleIncorrectFormat)]
+        [MinValueOneGreaterThanMaxOfPrev(nameof(ScaleRangeForFair))]
+        [MaxGreaterThanMin]
+        public string ScaleRangeForGood { get; set; }
+
+        [Display(Name = GlobalConstants.Grade.VeryGoodDisplay)]
+        [RequiredWithErrorMessage]
+        [RegularExpression(GlobalConstants.Grade.ScalePattern, ErrorMessage = GlobalConstants.ErrorMessage.ScaleIncorrectFormat)]
+        [MinValueOneGreaterThanMaxOfPrev(nameof(ScaleRangeForGood))]
+        [MaxGreaterThanMin]
+        public string ScaleRangeForVeryGood { get; set; }
+
+        [Display(Name = GlobalConstants.Grade.ExcellentDisplay)]
+        [RequiredWithErrorMessage]
+        [RegularExpression(GlobalConstants.Grade.ScalePattern, ErrorMessage = GlobalConstants.ErrorMessage.ScaleIncorrectFormat)]
+        [MinValueOneGreaterThanMaxOfPrev(nameof(ScaleRangeForVeryGood))]
+        [MaxGreaterThanMin]
+        public string ScaleRangeForExcellent { get; set; }
 
         public QuizzesViewModel ViewModel { get; set; }
     }

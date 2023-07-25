@@ -43,6 +43,8 @@
 
         public DbSet<Question> Questions { get; set; }
 
+        public DbSet<GradingScale> GradingScales { get; set; }
+
 
         public override int SaveChanges() => this.SaveChanges(true);
 
