@@ -66,6 +66,8 @@
                 Subjects = this.subjectService.GetAllTaughtForTeacher(teacherId),
                 Classes = this.classService.GetAllClassesForTeacher(teacherId),
             };
+            model.Questions = new List<QuestionsInputModel>();
+            model.Questions.Add(new QuestionsInputModel());
             return this.View(model);
         }
 

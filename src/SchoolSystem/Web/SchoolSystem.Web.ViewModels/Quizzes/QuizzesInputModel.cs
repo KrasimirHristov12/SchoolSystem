@@ -77,6 +77,7 @@
         [RegularExpression(GlobalConstants.Grade.ScalePattern, ErrorMessage = GlobalConstants.ErrorMessage.ScaleIncorrectFormat)]
         [MinValueOneGreaterThanMaxOfPrev(nameof(ScaleRangeForVeryGood))]
         [MaxGreaterThanMin]
+        [MaximumEqualToTotalPoints(nameof(Questions), GlobalConstants.Question.PointsPropertyName)]
         public string ScaleRangeForExcellent { get; set; }
 
         public QuizzesViewModel ViewModel { get; set; }

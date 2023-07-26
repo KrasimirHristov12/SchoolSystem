@@ -93,7 +93,8 @@
 
         <tr>
             <td><label asp-for="ScaleRangeForVeryGood"></label></td>
-            <td><input class="form-control" asp-for="ScaleRangeForVeryGood" placeholder="мин-макс (пр. 33-43)" />
+            <td>
+                <input class="form-control" asp-for="ScaleRangeForVeryGood" placeholder="мин-макс (пр. 33-43)" />
                 <div>
                     <span asp-validation-for="ScaleRangeForVeryGood" class="text-danger"></span>
                 </div>
@@ -102,7 +103,8 @@
 
         <tr>
             <td><label asp-for="ScaleRangeForExcellent"></label></td>
-            <td><input class="form-control" asp-for="ScaleRangeForExcellent" placeholder="мин-макс (пр. 43-53)" />
+            <td>
+                <input class="form-control" asp-for="ScaleRangeForExcellent" placeholder="мин-макс (пр. 43-53)" />
                 <div>
                     <span asp-validation-for="ScaleRangeForExcellent" class="text-danger"></span>
                 </div>
@@ -114,102 +116,110 @@
 
     <button class="btn btn-primary display-question">Добавяне на въпрос</button>
 
-    <div class="questions-buttons-container" style="margin-top: 10px;"></div>
+    <div class="questions-container">
+        <div class="questions-buttons-container" style="margin-top: 10px;"></div>
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+            <div id="question-container-@(i)" class="question-container" style="display: none;">
+                <label asp-for="@Model.Questions[i].Title"></label>
+                <input asp-for="@Model.Questions[i].Title" class="form-control" />
 
-    <div id="question-container-0" class="question-container" style="display: none;">
-        <label asp-for="Questions[0].Title"></label>
-        <input asp-for="Questions[0].Title" class="form-control" />
+                <div>
+                    <span asp-validation-for="@Model.Questions[i].Title" class="text-danger"></span>
+                </div>
 
-        <div>
-            <span asp-validation-for="Questions[0].Title" class="text-danger"></span>
-        </div>
+                <label asp-for="@Model.Questions[i].Points"></label>
+                <input asp-for="@Model.Questions[i].Points" class="form-control" />
 
-        <label asp-for="Questions[0].Points"></label>
-        <input asp-for="Questions[0].Points" class="form-control" />
-
-        <div>
-            <span asp-validation-for="Questions[0].Points" class="text-danger"></span>
-        </div>
-        <label asp-for="Questions[0].QuestionType">Тип на въпроса</label>
-        <select asp-for="Questions[0].QuestionType" asp-items="Html.GetEnumSelectList<QuestionType>()" class="form-select"></select>
-        <div>
-            <span asp-validation-for="Questions[0].QuestionType" class="text-danger"></span>
-        </div>
-
-
-
-        <div id="answers-container" class="mb-3">
-            <table class="table">
-                <tr>
-                    <th></th>
-                    <th>Отговор</th>
-                    <th style="text-align: center;">
-                        Маркирай като верен отговор
-                        <div>
-                            <span asp-validation-for="Questions[0].Answers.IsFirstAnswerCorrect" class="text-danger"></span>
-                        </div>
+                <div>
+                    <span asp-validation-for="@Model.Questions[i].Points" class="text-danger"></span>
+                </div>
+                <label asp-for="@Model.Questions[i].QuestionType">Тип на въпроса</label>
+                <select asp-for="@Model.Questions[i].QuestionType" asp-items="Html.GetEnumSelectList<QuestionType>()" class="form-select"></select>
+                <div>
+                    <span asp-validation-for="@Model.Questions[i].QuestionType" class="text-danger"></span>
+                </div>
 
 
-                    </th>
-                </tr>
-                <tr>
-                    <td><label for="option_a">А)</label></td>
-                    <td class="option_a_container">
-                        <input asp-for="Questions[0].Answers.FirstAnswerContent" class="form-control ms-2" />
 
-                        <div>
-                            <span asp-validation-for="Questions[0].Answers.FirstAnswerContent" class="text-danger"></span>
-                        </div>
-                    </td>
-
-                    <td>
-                        <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="Questions[0].Answers.IsFirstAnswerCorrect" /></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="option_b">Б)</label></td>
-                    <td class="option_b_container">
-                        <input asp-for="Questions[0].Answers.SecondAnswerContent" class="form-control ms-2" />
-                        <div>
-                            <span asp-validation-for="Questions[0].Answers.SecondAnswerContent" class="text-danger"></span>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="Questions[0].Answers.IsSecondAnswerCorrect" /></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="option_c">В)</label></td>
-                    <td class="option_c_container">
-                        <input asp-for="Questions[0].Answers.ThirdAnswerContent" class="form-control ms-2" />
-                        <div>
-                            <span asp-validation-for="Questions[0].Answers.ThirdAnswerContent" class="text-danger"></span>
-                        </div>
-                    </td>
-
-                    <td>
-                        <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="Questions[0].Answers.IsThirdAnswerCorrect" /></div>
-                    </td>
+                <div id="answers-container" class="mb-3">
+                    <table class="table">
+                        <tr>
+                            <th></th>
+                            <th>Отговор</th>
+                            <th style="text-align: center;">
+                                Маркирай като верен отговор
+                                <div>
+                                    <span asp-validation-for="@Model.Questions[i].Answers.IsFirstAnswerCorrect" class="text-danger"></span>
+                                </div>
 
 
-                </tr>
-                <tr>
-                    <td><label for="option_d">Г)</label></td>
-                    <td class="option_d_container">
-                        <input asp-for="Questions[0].Answers.FourthAnswerContent" class="form-control ms-2" />
-                        <div>
-                            <span asp-validation-for="Questions[0].Answers.FourthAnswerContent" class="text-danger"></span>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="Questions[0].Answers.IsFourthAnswerCorrect" /></div>
-                    </td>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td><label for="option_a">А)</label></td>
+                            <td class="option_a_container">
+                                <input asp-for="@Model.Questions[i].Answers.FirstAnswerContent" class="form-control ms-2" />
 
-                </tr>
-            </table>
-        </div>
+                                <div>
+                                    <span asp-validation-for="@Model.Questions[i].Answers.FirstAnswerContent" class="text-danger"></span>
+                                </div>
+                            </td>
 
-        <button class="btn btn-primary save-question mt-2">Запазване на въпроса</button>
+                            <td>
+                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].Answers.IsFirstAnswerCorrect" /></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="option_b">Б)</label></td>
+                            <td class="option_b_container">
+                                <input asp-for="@Model.Questions[i].Answers.SecondAnswerContent" class="form-control ms-2" />
+                                <div>
+                                    <span asp-validation-for="@Model.Questions[i].Answers.SecondAnswerContent" class="text-danger"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].Answers.IsSecondAnswerCorrect" /></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="option_c">В)</label></td>
+                            <td class="option_c_container">
+                                <input asp-for="@Model.Questions[i].Answers.ThirdAnswerContent" class="form-control ms-2" />
+                                <div>
+                                    <span asp-validation-for="@Model.Questions[i].Answers.ThirdAnswerContent" class="text-danger"></span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].Answers.IsThirdAnswerCorrect" /></div>
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td><label for="option_d">Г)</label></td>
+                            <td class="option_d_container">
+                                <input asp-for="@Model.Questions[i].Answers.FourthAnswerContent" class="form-control ms-2" />
+                                <div>
+                                    <span asp-validation-for="@Model.Questions[i].Answers.FourthAnswerContent" class="text-danger"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].Answers.IsFourthAnswerCorrect" /></div>
+                            </td>
+
+                        </tr>
+                    </table>
+                </div>
+
+                <button class="btn btn-primary save-question mt-2">Запазване на въпроса</button>
+            </div>
+        }
+
+        
+
+  
     </div>
 
 
@@ -231,38 +241,14 @@
     </script>
 
     <script>
-        //for (let i = 0; i < localStorage.length; i++) {
-        //    let curElement = localStorage.getItem(localStorage.key(i));
-        //    if (localStorage.key(i).includes("Questions_html")) {
-        //        let questionIndex = parseInt($(curElement).attr("id").split("-")[2]);
-        //        $(curElement).insertAfter($(".question-container").eq(-1));
-
-        //        itemsArr = [`Questions_${questionIndex}__Title`, `Questions_${questionIndex}__QuestionType`, `Questions_${questionIndex}__Answers_FirstAnswerContent`
-        //            , `Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`, `Questions_${questionIndex}__Answers_SecondAnswerContent`, `Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`
-        //            , `Questions_${questionIndex}__Answers_ThirdAnswerContent`, `Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`, `Questions_${questionIndex}__Answers_FourthAnswerContent`
-        //            , `Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`];
-
-        //        for (const item of itemsArr) {
-        //            if (!item.endsWith("Correct")) {
-        //                $(".question-container").eq(-1).find(`#${item}`).val(localStorage.getItem(item));
-        //            }
-        //            else {
-        //                $(".question-container").eq(-1).find(`#${item}`).prop("checked", localStorage.getItem(item) == "true");
-        //            }
-
-        //            //localStorage.removeItem(item);
-
-
-        //        }
-        //        localStorage.removeItem(`Questions_html_${questionIndex}`);
-        //        $(".questions-buttons-container").append(`<button id="question-button-${questionIndex}" class="question-button" style="margin-right: 10px;">${questionIndex + 1}</button>`);
-        //    }
-
-        //}
-
-
-
         //CLONE AND ATTACH CLIENT VALIDATION TO THE CLONED ELEMENTS.
+        if ($(".question-container").length > 1) {
+            $(".question-container").each(function (index) {
+                $(".questions-buttons-container").append(`<button id="question-button-${index}" class="question-button" style="margin-right: 10px;">${index + 1}</button>`);
+            });
+        }
+
+
 
 
         $(".display-question").click(function (e) {
@@ -481,27 +467,5 @@
 
         });
 
-                                                        //$(".add-test").click(function (e) {
-                                                            //e.preventDefault();
-                                                            //$('.question-container:not(":first")').each(function () {
-                                                                //let questionIndex = parseInt($(this).attr("id").split("-")[2]);
-                                                                //localStorage.setItem(`Questions_html_${questionIndex}`, $(this).prop("outerHTML"));
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Title`, $(this).find(`#Questions_${questionIndex}__Title`).val());
-                                                                //localStorage.setItem(`Questions_${questionIndex}__QuestionType`, $(this).find(`#Questions_${questionIndex}__QuestionType`).val());
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_FirstAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FirstAnswerContent`).val());
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFirstAnswerCorrect`).prop("checked"));
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_SecondAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_SecondAnswerContent`).val());
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsSecondAnswerCorrect`).prop("checked"));
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_ThirdAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_ThirdAnswerContent`).val());
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsThirdAnswerCorrect`).prop("checked"));
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_FourthAnswerContent`, $(this).find(`#Questions_${questionIndex}__Answers_FourthAnswerContent`).val());
-                                                                //localStorage.setItem(`Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`, $(this).find(`#Questions_${questionIndex}__Answers_IsFourthAnswerCorrect`).prop("checked"));
-
-                                                            //});
-                                                            //$(".add-test").unbind("click");
-                                                            //$(".add-test").click();
-
-
-                                                        //});
     </script>
 }

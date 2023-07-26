@@ -115,6 +115,8 @@
             public const string CheckboxDisplay = "С повече от един верен отговор";
 
             public const string TextDisplay = "Със свободен отговор";
+
+            public const string PointsPropertyName = "Points";
         }
 
         public static class Answer
@@ -245,6 +247,7 @@
 
             public const string MinValueShouldBeZero = "Минималната стойност трябва да бъде 0.";
 
+            public const string MaxValueOfLastShouldBeEqualToTotalPoints = "Максималната стойност трябва да бъде равна на общия брой точки.";
         }
     }
 }
