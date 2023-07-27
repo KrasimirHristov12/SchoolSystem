@@ -19,6 +19,7 @@
     using SchoolSystem.Data.Seeding;
     using SchoolSystem.Services.Data;
     using SchoolSystem.Services.Data.Grades;
+    using SchoolSystem.Services.Data.Questions;
     using SchoolSystem.Services.Data.Quizzes;
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Data.Students;
@@ -92,6 +93,7 @@
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<IGradesService, GradesService>();
             services.AddTransient<IQuizzesService, QuizzesService>();
+            services.AddTransient<IQuestionsService, QuestionsService>();
         }
 
         private static void Configure(WebApplication app)

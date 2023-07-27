@@ -1,94 +1,39 @@
-﻿@model ReviewQuizViewModel
+﻿@model IEnumerable<ReviewQuizViewModel>
 
-@Html.Raw(Model.Content)
+@foreach (var question in Model)
+{
+    <div class="question">
+        <h5>@question.Title</h5>
+        <div class="@(question.IsAnswerCorrect ? "text-success" : "text-danger")">@(question.IsAnswerCorrect ? "Верен отговор" : $"Грешен отговор. Верен отговор: {question.ActualAnswers}")</div>
+        <div class="answers">
+            <div class="answer-1">
+                <input type="@(question.Type == QuestionType.Radio ? "radio" : "checkbox")" disabled @(question.IsFirstAnswerChecked ? "checked" : "")/>
+                <label>@question.FirstAnswerContent</label>
+            </div>
 
-@section Scripts {
-    <script>
-        let quizId = "@Model.QuizId";
-        let studentId = "@Model.StudentId";
+            <div class="answer-2">
+                <input type="@(question.Type == QuestionType.Radio ? "radio" : "checkbox")" disabled @(question.IsSecondAnswerChecked ? "checked" : "") />
+                <label>@question.SecondAnswerContent</label>
+            </div>
 
-        answers_map = {
-            'a': 'а',
-            'b': 'б',
-            'c': 'в',
-            'd': 'г',
-        }
-        let givenAnswers = JSON.parse('@Model.GivenAnswers'.replace(/&quot;/g, '"'));
-        let correctAnswers = JSON.parse('@Model.CorrectAnswers'.replace(/&quot;/g, '"'));
-        console.log(givenAnswers);
-        console.log(correctAnswers);
+            <div class="answer-3">
+                <input type="@(question.Type == QuestionType.Radio ? "radio" : "checkbox")" disabled @(question.IsThirdAnswerChecked ? "checked" : "") />
+                <label>@question.ThirdAnswerContent</label>
+            </div>
 
-        for (let i = 0; i < givenAnswers.length; i++) {
-            if (givenAnswers[i].questionType == "text") {
-                let confirmAnswer = $(`<div class="confirm-buttons-container"><div class="mt-2"><button class="btn btn-success me-2 correct-answer">Маркирай като верен</button><button class="btn btn-danger incorrect-answer">Маркирай като грешен</button></div></div>`);
-                $(".quizlib-question").eq(i).find("input:text").prop("disabled", true).val(givenAnswers[i].answers.length == 0 ? '' : givenAnswers[i].answers[0]);
-                $(".quizlib-question").eq(i).append(confirmAnswer);
+            <div class="answer-4">
+                <input type="@(question.Type == QuestionType.Radio ? "radio" : "checkbox")" disabled @(question.IsFourthAnswerChecked ? "checked" : "") />
+                <label>@question.FourthAnswerContent</label>
+            </div>
 
-            }
-            else if (givenAnswers[i].questionType == "radio") {
-                let answer = givenAnswers[i].answers.length == 0 ? '' : givenAnswers[i].answers[0];
-                $(".quizlib-question").eq(i).find("input:radio").prop("disabled", true);
-                if (answer !== '') {
-                    $(".quizlib-question").eq(i).find(`input:radio[value="${answer}"]`).prop('checked', true);
-                }
-                
-            }
-            else if (givenAnswers[i].questionType == "checkbox") {
-                $(".quizlib-question").eq(i).find("input:checkbox").prop("disabled", true);
-                for (let j = 0; j < givenAnswers[i].answers.length; j++) {
-                    let answer = givenAnswers[i].answers[j];
-                    $(".quizlib-question").eq(i).find(`input:checkbox[value="${answer}"]`).prop('checked', true);
-                }
-            }
-        }
-
-        for (let i = 0; i < correctAnswers.length; i++) {
-            let correctAnswersAsString = JSON.stringify(correctAnswers[i].answers);
-            let givenAnswersAsString = JSON.stringify(givenAnswers[parseInt(correctAnswers[i].question) - 1].answers);
-
-
-
-            if (correctAnswersAsString == givenAnswersAsString) {
-                $(`<span class="text-success">Верен отговор</span>`).insertAfter($ (".quizlib-question").eq(parseInt(correctAnswers[i].question) - 1).find(".quizlib-question-title"));
-            }
-            else {
-                let bulgarianAnswers = [];
-                correctAnswers[i].answers.forEach(function (answer) {
-                    bulgarianAnswers.push(answers_map[answer]);
-                });
-                $(`<span class="text-danger">Грешен отговор. Верен отговор: ${bulgarianAnswers.join(', ')}</span>`).insertAfter($(".quizlib-question").eq(parseInt(correctAnswers[i].question) - 1).find(".quizlib-question-title"));
-            }
-
-        }
-
-        $(".correct-answer").on("click", function () {
-            let isConfirmed = confirm("Потвърдете, че този отговор е верен");
-            if (isConfirmed) {
-                $.ajax({
-                    url: `/api/Results/MarkAsCorrect?quizId=${quizId}&studentId=${studentId}`,
-                    method: "GET",
-                    contentType: "application/json",
-
-                 }).done(function (data) {
-                    $(`<span class="text-success">Верен отговор</span>`).insertAfter( $(".confirm-buttons-container").closest(".quizlib-question").find(".quizlib-question-title") )
-                    $(this).closest(".confirm-buttons-container").remove();
-                    
-                    
-                 });
-            }
-        });
-
-
-        $(".incorrect-answer").on("click", function () {
-            let isConfirmed = confirm("Потвърдете, че този отговор е грешен");
-
-            if (isConfirmed) {
-                $(`<span class="text-danger">Грешен отговор</span>`).insertAfter( $(".confirm-buttons-container").closest(".quizlib-question").find(".quizlib-question-title") );
-                $ (this).closest(".confirm-buttons-container").remove();
-            }
-        });
-
-
-
-    </script>
+        </div>
+    </div>
 }
+
+<div class="grade-container border-2">
+    <p>Точки: <b>@Model.Sum(q => q.EarnedPoints) точки</b></p>
+    <p>Оценка: TODO</p>
+</div>
+
+
+

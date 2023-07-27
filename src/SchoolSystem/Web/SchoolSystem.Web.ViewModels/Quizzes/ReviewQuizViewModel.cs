@@ -1,18 +1,33 @@
 ﻿namespace SchoolSystem.Web.ViewModels.Quizzes
 {
-    using System;
-    using System.Collections.Generic;
+    using SchoolSystem.Data.Models.Enums;
 
     public class ReviewQuizViewModel
     {
-        public Guid QuizId { get; set; }
+        public string Title { get; set; }
 
-        public int StudentId { get; set; }
+        public QuestionType Type { get; set; }
 
-        public string Content { get; set; }
+        public string FirstAnswerContent { get; set; }
 
-        public string CorrectAnswers { get; set; }
+        public bool IsFirstAnswerChecked { get; set; }
 
-        public string GivenAnswers { get; set; }
+        public string SecondAnswerContent { get; set; }
+
+        public bool IsSecondAnswerChecked { get; set; }
+
+        public string ThirdAnswerContent { get; set; }
+
+        public bool IsThirdAnswerChecked { get; set; }
+
+        public string FourthAnswerContent { get; set; }
+
+        public bool IsFourthAnswerChecked { get; set; }
+
+        public bool IsAnswerCorrect { get; set; }
+
+        public string ActualAnswers { get; set; }
+
+        public int EarnedPoints { get; set; }
     }
 }

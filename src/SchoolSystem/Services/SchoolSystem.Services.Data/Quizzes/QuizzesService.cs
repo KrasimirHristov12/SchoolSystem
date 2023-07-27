@@ -10,17 +10,23 @@
     using SchoolSystem.Data;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
+    using SchoolSystem.Services.Data.Questions;
     using SchoolSystem.Web.ViewModels.Answers;
     using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
 
+    using SchoolSystem.Common;
+    using System.ComponentModel.DataAnnotations;
+
     public class QuizzesService : IQuizzesService
     {
         private readonly ApplicationDbContext db;
+        private readonly IQuestionsService questionsService;
 
-        public QuizzesService(ApplicationDbContext db)
+        public QuizzesService(ApplicationDbContext db, IQuestionsService questionsService)
         {
             this.db = db;
+            this.questionsService = questionsService;
         }
 
         public async Task AddAsync(QuizzesInputModel model, int teacherId)
@@ -171,24 +177,81 @@
 
 
 
-        public ReviewQuizViewModel GetReviewQuiz(Guid quizId, int studentId)
+        public IEnumerable<ReviewQuizViewModel> GetReviewQuizModel(Guid quizId, int studentId)
         {
-            //string quizContent = this.db.Quizzes.Where(q => q.Id == quizId).Select(q => q.Content).FirstOrDefault();
-            //string correctAnswers = this.db.Quizzes.Where(q => q.Id == quizId).Select(q => q.Answers).FirstOrDefault();
-            //var givenAnswers = this.db.StudentsQuizzes.Where(q => q.QuizId == quizId && q.StudentId == studentId).Select(q => q.Answers).FirstOrDefault();
-            //if (quizContent == null || correctAnswers == null || givenAnswers == null)
-            //{
-            //    return null;
-            //}
+            var reviewQuizViewModelCollection = new List<ReviewQuizViewModel>();
+            var questionsIds = this.questionsService.GetIdsByQuizId(quizId).ToList();
+            var questions = this.db.Questions.Where(q => q.QuizId == quizId).ToList();
 
-            //return new ReviewQuizViewModel
-            //{
-            //    Content = quizContent,
-            //    CorrectAnswers = correctAnswers,
-            //    GivenAnswers = givenAnswers,
-            //};
+            var questionAnswersFromStudent = this.db.StudentQuizzesQuestionAnswers.Where(q => questionsIds.Contains(q.QuestionId) && q.StudentId == studentId).ToList();
 
-            return null;
+            //THE STUDENT HAS NOT TAKEN THE EXAM - DISPLAY APPROPRIATE ERROR PAGE SOON.
+
+            if (questionAnswersFromStudent.Count == 0)
+            {
+                return reviewQuizViewModelCollection;
+            }
+
+            for (int i = 0; i < questions.Count; i++)
+            {
+                string actualAnswers = string.Empty;
+
+                var correctAnswers = new List<bool>
+                {
+                    questions[i].IsFirstAnswerCorrect, questions[i].IsSecondAnswerCorrect, questions[i].IsThirdAnswerCorrect, questions[i].IsFourthAnswerCorrect,
+                };
+                var studentAnswers = new List<bool>
+                {
+                    questionAnswersFromStudent[i].IsFirstAnswerChecked, questionAnswersFromStudent[i].IsSecondAnswerChecked, questionAnswersFromStudent[i].IsThirdAnswerChecked, questionAnswersFromStudent[i].IsFourthAnswerChecked,
+                };
+                bool isCorrect = correctAnswers.SequenceEqual(studentAnswers);
+
+                if (!isCorrect)
+                {
+                    var actualAnswersList = new List<char>();
+                    if (questions[i].IsFirstAnswerCorrect)
+                    {
+                        actualAnswersList.Add('а');
+                    }
+
+                    if (questions[i].IsSecondAnswerCorrect)
+                    {
+                        actualAnswersList.Add('б');
+                    }
+
+                    if (questions[i].IsThirdAnswerCorrect)
+                    {
+                        actualAnswersList.Add('в');
+                    }
+
+                    if (questions[i].IsFourthAnswerCorrect)
+                    {
+                        actualAnswersList.Add('г');
+                    }
+
+                    actualAnswers = string.Join(",", actualAnswersList);
+                }
+
+                var reviewQuizViewModel = new ReviewQuizViewModel
+                {
+                    Title = questions[i].Title,
+                    Type = questions[i].Type,
+                    FirstAnswerContent = questions[i].FirstAnswerContent,
+                    SecondAnswerContent = questions[i].SecondAnswerContent,
+                    ThirdAnswerContent = questions[i].ThirdAnswerContent,
+                    FourthAnswerContent = questions[i].FourthAnswerContent,
+                    IsFirstAnswerChecked = questionAnswersFromStudent[i].IsFirstAnswerChecked,
+                    IsSecondAnswerChecked = questionAnswersFromStudent[i].IsSecondAnswerChecked,
+                    IsThirdAnswerChecked = questionAnswersFromStudent[i].IsThirdAnswerChecked,
+                    IsFourthAnswerChecked = questionAnswersFromStudent[i].IsFourthAnswerChecked,
+                    IsAnswerCorrect = isCorrect,
+                    ActualAnswers = actualAnswers,
+                    EarnedPoints = isCorrect ? questions[i].Points : 0,
+                };
+                reviewQuizViewModelCollection.Add(reviewQuizViewModel);
+            }
+
+            return reviewQuizViewModelCollection;
         }
 
         public async Task<int?> MarkAsCorrectAsync(Guid quizId, int studentId)
@@ -239,17 +302,18 @@
                 this.db.StudentQuizzesQuestionAnswers.Add(dataObj);
             }
 
-            var studentPoints = this.GetPoints(quizId, questions);
+            var quizQuestions = this.db.Questions.Where(q => q.QuizId == quizId).ToList();
+
+            var studentPoints = this.GetPoints(quizQuestions, questions);
 
             await this.RecordAsDoneAsync(studentId, quizId, studentPoints);
 
             return true;
         }
 
-        private int GetPoints(Guid quizId, List<TakeQuestionsViewModel> studentQuestions)
+        private int GetPoints(List<Question> quizQuestions, List<TakeQuestionsViewModel> studentQuestions)
         {
             int points = 0;
-            var quizQuestions = this.db.Questions.Where(q => q.QuizId == quizId).ToList();
             foreach (var question in quizQuestions)
             {
                 var studentQuestion = studentQuestions.FirstOrDefault(q => q.Id == question.Id);

@@ -154,14 +154,11 @@
 
         public IActionResult Review(Guid quizId, int studentId)
         {
-            var model = this.quizzesService.GetReviewQuiz(quizId, studentId);
-            if (model == null)
+            var model = this.quizzesService.GetReviewQuizModel(quizId, studentId);
+            if (model.Count() == 0)
             {
                 return this.NotFound();
             }
-
-            model.QuizId = quizId;
-            model.StudentId = studentId;
 
             return this.View(model);
         }

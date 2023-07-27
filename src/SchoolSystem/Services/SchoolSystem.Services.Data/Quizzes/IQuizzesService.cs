@@ -21,7 +21,7 @@
 
         Task RecordAsDoneAsync(int studentId, Guid quizId, int points);
 
-        ReviewQuizViewModel GetReviewQuiz(Guid quizId, int studentId);
+        IEnumerable<ReviewQuizViewModel> GetReviewQuizModel(Guid quizId, int studentId);
 
         Task<int?> MarkAsCorrectAsync(Guid quizId, int studentId);
     }
