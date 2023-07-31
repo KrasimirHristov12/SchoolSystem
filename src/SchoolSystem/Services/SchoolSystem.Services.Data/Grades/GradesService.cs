@@ -9,16 +9,19 @@
     using SchoolSystem.Common;
     using SchoolSystem.Data;
     using SchoolSystem.Data.Models;
+    using SchoolSystem.Services.Data.GradingScale;
     using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Grades;
 
     public class GradesService : IGradesService
     {
         private readonly ApplicationDbContext db;
+        private readonly IGradingScaleService gradingScaleService;
 
-        public GradesService(ApplicationDbContext db)
+        public GradesService(ApplicationDbContext db, IGradingScaleService gradingScaleService)
         {
             this.db = db;
+            this.gradingScaleService = gradingScaleService;
         }
 
         public IEnumerable<GradesViewModel> GetForStudent(int studentId)
@@ -98,6 +101,60 @@
             await this.db.SaveChangesAsync();
 
             return new CRUDResult { Succeeded = true, ErrorMessages = null, };
+        }
+
+        public int GetMarkByPointsEarnedAndGradingScale(int pointsEarned, IEnumerable<string> scaleRanges)
+        {
+            int currentMark = 2;
+            int finalMark = 0;
+
+            foreach (var scale in scaleRanges)
+            {
+                var minMaxValues = this.gradingScaleService.GetMinMaxPoints(scale);
+                int minValue = minMaxValues[0];
+                int maxValue = minMaxValues[1];
+                if (Enumerable.Range(minValue, maxValue - minValue + 1).Contains(pointsEarned))
+                {
+                    finalMark = currentMark;
+                    break;
+                }
+
+                currentMark++;
+            }
+
+            return finalMark;
+        }
+
+        public async Task<bool> AddAfterQuizIsTakenAsync(int teacherId, int studentId, int subjectId, int pointsEarned, IEnumerable<string> scaleRanges)
+        {
+            if (!this.db.Teachers.Any(t => t.Id == teacherId))
+            {
+                return false;
+            }
+
+            if (!this.db.Students.Any(s => s.Id == studentId))
+            {
+                return false;
+            }
+
+            if (!this.db.Subjects.Any(s => s.Id == subjectId))
+            {
+                return false;
+            }
+
+            var markNumber = this.GetMarkByPointsEarnedAndGradingScale(pointsEarned, scaleRanges);
+            var markObj = new Grade
+            {
+                TeacherId = teacherId,
+                StudentId = studentId,
+                SubjectId = subjectId,
+                Value = markNumber,
+            };
+
+            this.db.Grades.Add(markObj);
+
+            await this.db.SaveChangesAsync();
+            return true;
         }
     }
 }

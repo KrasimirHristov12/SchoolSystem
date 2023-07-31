@@ -17,7 +17,7 @@
 
         //Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id);
 
-        Task<bool> RecordAnswersAsync(Guid quizId, int studentId, List<TakeQuestionsViewModel> questions);
+        Task<int> RecordAnswersAsync(Guid quizId, int studentId, List<TakeQuestionsViewModel> questions);
 
         Task RecordAsDoneAsync(int studentId, Guid quizId, int points);
 

@@ -11,6 +11,8 @@
     using Microsoft.AspNetCore.Mvc;
     using SchoolSystem.Common;
     using SchoolSystem.Data.Models.Enums;
+    using SchoolSystem.Services.Data.Grades;
+    using SchoolSystem.Services.Data.GradingScale;
     using SchoolSystem.Services.Data.Quizzes;
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Data.Students;
@@ -28,9 +30,11 @@
         private readonly ISubjectService subjectService;
         private readonly IQuizzesService quizzesService;
         private readonly IStudentService studentService;
+        private readonly IGradesService gradesService;
+        private readonly IGradingScaleService gradingScaleService;
 
         public QuizzesController(IUserService userService, ITeacherService teacherService, ISchoolClassService classService, ISubjectService subjectService,
-            IQuizzesService quizzesService, IStudentService studentService)
+            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService)
         {
             this.userService = userService;
             this.teacherService = teacherService;
@@ -38,6 +42,8 @@
             this.subjectService = subjectService;
             this.quizzesService = quizzesService;
             this.studentService = studentService;
+            this.gradesService = gradesService;
+            this.gradingScaleService = gradingScaleService;
         }
 
         [Authorize(Roles = GlobalConstants.Student.StudentRoleName)]
@@ -113,6 +119,16 @@
             var userId = this.userService.GetUserId(this.User);
             var studentId = this.studentService.GetIdByUserId(userId);
             var quiz = this.quizzesService.GetQuiz(id, studentId);
+            if (!quiz.IsSuccessful)
+            {
+                return this.Content(quiz.Message);
+            }
+
+            var scaleRange = this.gradingScaleService.GetGradingScale(id);
+            var scaleRangeAsList = new List<string>
+            {
+                scaleRange.ScaleRangeForPoor, scaleRange.ScaleRangeForFair, scaleRange.ScaleRangeForGood, scaleRange.ScaleRangeForVeryGood, scaleRange.ScaleRangeForExcellent,
+            };
             var viewModel = quiz.Model;
             for (int i = 0; i < quiz.Model.Questions.Count; i++)
             {
@@ -143,8 +159,15 @@
                 return this.View(viewModel);
             }
 
-            var result = await this.quizzesService.RecordAnswersAsync(id, studentId, model);
-            if (!result)
+            int pointsEarned = await this.quizzesService.RecordAnswersAsync(id, studentId, model);
+            if (pointsEarned == -1)
+            {
+                return this.NotFound();
+            }
+
+            var gradeResult = await this.gradesService.AddAfterQuizIsTakenAsync(viewModel.TeacherId, viewModel.StudentId, viewModel.SubjectId, pointsEarned, scaleRangeAsList);
+
+            if (!gradeResult)
             {
                 return this.NotFound();
             }

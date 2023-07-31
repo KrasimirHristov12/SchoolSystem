@@ -3,30 +3,28 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text.Json;
     using System.Threading.Tasks;
 
     using SchoolSystem.Common;
     using SchoolSystem.Data;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
+    using SchoolSystem.Services.Data.GradingScale;
     using SchoolSystem.Services.Data.Questions;
-    using SchoolSystem.Web.ViewModels.Answers;
     using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
-
-    using SchoolSystem.Common;
-    using System.ComponentModel.DataAnnotations;
 
     public class QuizzesService : IQuizzesService
     {
         private readonly ApplicationDbContext db;
         private readonly IQuestionsService questionsService;
+        private readonly IGradingScaleService gradingScale;
 
-        public QuizzesService(ApplicationDbContext db, IQuestionsService questionsService)
+        public QuizzesService(ApplicationDbContext db, IQuestionsService questionsService, IGradingScaleService gradingScale)
         {
             this.db = db;
             this.questionsService = questionsService;
+            this.gradingScale = gradingScale;
         }
 
         public async Task AddAsync(QuizzesInputModel model, int teacherId)
@@ -68,6 +66,8 @@
             quiz.Questions = questions;
             this.db.Quizzes.Add(quiz);
             await this.db.SaveChangesAsync();
+
+            await this.gradingScale.AddAsync(quiz.Id, model.ScaleRangeForPoor, model.ScaleRangeForFair, model.ScaleRangeForGood, model.ScaleRangeForVeryGood, model.ScaleRangeForExcellent);
         }
 
         public IEnumerable<DisplayQuizzesViewModel> GetMine(int studentId, string date)
@@ -99,6 +99,9 @@
             var quiz = this.db.Quizzes.Where(q => q.Id == id).Select(q => new TakeQuizViewModel
             {
                 Id = id,
+                TeacherId = q.TeacherId,
+                StudentId = studentId,
+                SubjectId = q.SubjectId,
                 Questions = this.db.Questions.Where(qu => qu.QuizId == id).Select(qu => new TakeQuestionsViewModel
                 {
                     Id = qu.Id,
@@ -281,13 +284,13 @@
             await this.db.SaveChangesAsync();
         }
 
-        public async Task<bool> RecordAnswersAsync(Guid quizId, int studentId, List<TakeQuestionsViewModel> questions)
+        public async Task<int> RecordAnswersAsync(Guid quizId, int studentId, List<TakeQuestionsViewModel> questions)
         {
             foreach (var question in questions)
             {
                 if (!this.db.Questions.Any(q => q.Id == question.Id))
                 {
-                    return false;
+                    return -1;
                 }
 
                 var dataObj = new StudentQuizzesQuestionAnswer
@@ -308,7 +311,7 @@
 
             await this.RecordAsDoneAsync(studentId, quizId, studentPoints);
 
-            return true;
+            return studentPoints;
         }
 
         private int GetPoints(List<Question> quizQuestions, List<TakeQuestionsViewModel> studentQuestions)
