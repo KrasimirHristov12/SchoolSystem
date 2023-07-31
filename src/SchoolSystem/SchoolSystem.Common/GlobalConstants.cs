@@ -96,6 +96,16 @@
             public const string ScalePattern = "[0-9]+[-][0-9]+";
 
             public const string PoorPattern = "[0][-][0-9]+";
+
+            public const string OralReason = "Устно изпитване";
+
+            public const string QuizReason = "Тест/писмено изпитване";
+
+            public const string ParticipationReason = "Участие";
+
+            public const string OtherReason = "Друго";
+
+            public const string ReasonDisplay = "Причина:";
         }
 
         public static class Question

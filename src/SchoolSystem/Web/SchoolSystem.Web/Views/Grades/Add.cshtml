@@ -41,6 +41,15 @@
         </div>
     </div>
 
+
+    <div class="mb-3">
+        <label asp-for="Reason"></label>
+        <select asp-for="Reason" class="form-select" asp-items="@Html.GetEnumSelectList<GradeReason>()"></select>
+        <div>
+            <span asp-validation-for="Reason" class="text-danger"></span>
+        </div>
+    </div>
+
     <div class="mb-3">
         <label asp-for="Value"></label>
         <input asp-for="Value" class="form-control"/>

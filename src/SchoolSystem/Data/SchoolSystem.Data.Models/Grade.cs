@@ -4,10 +4,13 @@
     using System.ComponentModel.DataAnnotations;
 
     using SchoolSystem.Data.Common.Models;
+    using SchoolSystem.Data.Models.Enums;
 
     public class Grade : IDeletableEntity, IAuditInfo
     {
         public int Id { get; set; }
+
+        public GradeReason Reason { get; set; }
 
         public double Value { get; set; }
 

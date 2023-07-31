@@ -1,5 +1,6 @@
 ﻿namespace SchoolSystem.Services.Data.Grades
 {
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
@@ -9,6 +10,7 @@
     using SchoolSystem.Common;
     using SchoolSystem.Data;
     using SchoolSystem.Data.Models;
+    using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.GradingScale;
     using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Grades;
@@ -29,13 +31,26 @@
             var student = this.db.Students.Where(s => s.Id == studentId);
             var cultureInfo = new CultureInfo("bg-BG");
 
+            var enumDisplayDict = new Dictionary<GradeReason, string>();
+
+            enumDisplayDict[GradeReason.Oral] = GlobalConstants.Grade.OralReason;
+            enumDisplayDict[GradeReason.Quiz] = GlobalConstants.Grade.QuizReason;
+            enumDisplayDict[GradeReason.Participation] = GlobalConstants.Grade.ParticipationReason;
+            enumDisplayDict[GradeReason.Other] = GlobalConstants.Grade.OtherReason;
+
             var grades = this.db.Students.Where(s => s.Id == studentId).Select(s => s.Grades.Select(g => new GradesViewModel
             {
                 TeacherName = g.Teacher.FirstName + " " + g.Teacher.LastName,
                 Date = g.CreatedOn.Date.ToString("d", cultureInfo),
                 SubjectName = g.Subject.Name,
+                Reason = g.Reason,
                 Value = g.Value.ToString("F2"),
             })).First().ToList();
+
+            foreach (var g in grades)
+            {
+                g.ReasonAsString = enumDisplayDict[g.Reason];
+            }
 
             return grades;
         }
@@ -96,6 +111,7 @@
             {
                 TeacherId = teacherId,
                 SubjectId = (int)model.SubjectId,
+                Reason = (GradeReason)model.Reason,
                 Value = (double)model.Value,
             });
             await this.db.SaveChangesAsync();
@@ -148,6 +164,7 @@
                 TeacherId = teacherId,
                 StudentId = studentId,
                 SubjectId = subjectId,
+                Reason = GradeReason.Quiz,
                 Value = markNumber,
             };
 

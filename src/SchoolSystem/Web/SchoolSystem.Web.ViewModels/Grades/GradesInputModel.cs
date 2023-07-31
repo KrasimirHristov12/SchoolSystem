@@ -3,6 +3,7 @@
     using System.ComponentModel.DataAnnotations;
 
     using SchoolSystem.Common;
+    using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Web.Infrastructure.ValidationAttributes;
 
     public class GradesInputModel
@@ -18,6 +19,10 @@
         [Display(Name = GlobalConstants.Student.StudentDisplay)]
         [RequiredWithErrorMessage]
         public int? StudentId { get; set; }
+
+        [Display(Name = GlobalConstants.Grade.ReasonDisplay)]
+        [RequiredWithErrorMessage]
+        public GradeReason? Reason { get; set; }
 
         [Display(Name = GlobalConstants.Grade.GradeDisplay)]
         [RequiredWithErrorMessage]
