@@ -36,11 +36,11 @@
         }
 
         [Authorize(Roles = $"{GlobalConstants.Student.StudentRoleName}")]
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
             var userId = this.userService.GetUserId(this.User);
             var studentId = this.studentService.GetIdByUserId(userId);
-            var grades = this.gradesService.GetForStudent(studentId);
+            var grades = this.gradesService.GetForStudent(studentId, page);
             return this.View(grades);
         }
 

@@ -26,9 +26,9 @@
             this.gradingScaleService = gradingScaleService;
         }
 
-        public IEnumerable<GradesViewModel> GetForStudent(int studentId)
+        public DisplayGradesViewModel GetForStudent(int studentId, int page)
         {
-            var student = this.db.Students.Where(s => s.Id == studentId);
+            var model = new DisplayGradesViewModel();
             var cultureInfo = new CultureInfo("bg-BG");
 
             var enumDisplayDict = new Dictionary<GradeReason, string>();
@@ -37,22 +37,26 @@
             enumDisplayDict[GradeReason.Quiz] = GlobalConstants.Grade.QuizReason;
             enumDisplayDict[GradeReason.Participation] = GlobalConstants.Grade.ParticipationReason;
             enumDisplayDict[GradeReason.Other] = GlobalConstants.Grade.OtherReason;
+            var totalGradesForStudent = this.db.Grades.Where(g => g.StudentId == studentId).Count();
 
-            var grades = this.db.Students.Where(s => s.Id == studentId).Select(s => s.Grades.Select(g => new GradesViewModel
+            var grades = this.db.Grades.Where(g => g.StudentId == studentId).Skip((page - 1) * 10).Take(10).Select(g => new GradesViewModel
             {
                 TeacherName = g.Teacher.FirstName + " " + g.Teacher.LastName,
                 Date = g.CreatedOn.Date.ToString("d", cultureInfo),
                 SubjectName = g.Subject.Name,
                 Reason = g.Reason,
                 Value = g.Value.ToString("F2"),
-            })).First().ToList();
+            }).ToList();
 
             foreach (var g in grades)
             {
                 g.ReasonAsString = enumDisplayDict[g.Reason];
             }
 
-            return grades;
+            model.Grades = grades;
+            model.CurrentPage = page;
+            model.TotalPages = (int)Math.Ceiling(totalGradesForStudent / 10M);
+            return model;
         }
 
         public async Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId)

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<GradesViewModel>
+﻿@model DisplayGradesViewModel
 
 @{
     this.ViewData["Title"] = "Бележник";
@@ -12,7 +12,7 @@
         <th>Оценка</th>
         <th>Дата</th>
     </tr>
-    @foreach (var grade in Model)
+    @foreach (var grade in Model.Grades)
     {
         <tr>
             <td>@grade.TeacherName</td>
@@ -24,3 +24,34 @@
     }
 
 </table>
+
+<ul class="pagination">
+    <li class="page-item prev"><a class="page-link" asp-route-page="@(Model.CurrentPage - 1)">Previous</a></li>
+    @for (int i = 0; i < Model.TotalPages; i++)
+    {
+        <li class="page-item"><a class="page-link" asp-route-page="@(i+1)">@(i+1)</a></li>
+    }
+    <li class="page-item next"><a class="page-link" asp-route-page="@(Model.CurrentPage + 1)">Next</a></li>
+</ul>
+
+@section Scripts {
+    <script>
+        let currentPage = @Model.CurrentPage;
+        let lastPage = @Model.TotalPages;
+        if (currentPage == 1) {
+            $(".prev").addClass("pe-none");
+        }
+        else {
+            $(".prev").removeClass("pe-none");
+        }
+
+        if (currentPage >= lastPage) {
+            $(".next").addClass("pe-none");
+        }
+        else {
+            $(".next").removeClass("pe-none");
+        }
+
+
+    </script>
+}

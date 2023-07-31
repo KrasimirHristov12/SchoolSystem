@@ -10,7 +10,7 @@
     {
         Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId);
 
-        IEnumerable<GradesViewModel> GetForStudent(int studentId);
+        DisplayGradesViewModel GetForStudent(int studentId, int page);
 
         Task<bool> AddAfterQuizIsTakenAsync(int teacherId, int studentId, int subjectId, int pointsEarned, IEnumerable<string> scaleRanges);
 
