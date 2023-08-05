@@ -4,13 +4,15 @@
     this.ViewData["Title"] = "Бележник";
 }
 
+<p>Намерени оценки: <span id="grades-count">@Model.Grades.Count()</span></p>
+
 <table class="table table-striped table-hover">
     <tr>
-        <th>Учител</th>
-        <th>Предмет</th>
-        <th>Причина</th>
-        <th>Оценка</th>
-        <th>Дата</th>
+        <th><span role="button">Учител↓</span><vc:filter-box filter-elements="Model.Filter.Teachers" type="teachers"></vc:filter-box> </th>
+        <th><span role="button">Предмет↓</span><vc:filter-box filter-elements="Model.Filter.Subjects" type="subjects"></vc:filter-box></th>
+        <th><span role="button">Причина↓</span><vc:filter-box filter-elements="Model.Filter.Reasons" type="reasons"></vc:filter-box></th>
+        <th><span role="button">Оценка↓</span><vc:filter-box filter-elements="Model.Filter.Grades" type="grades"></vc:filter-box></th>
+        <th><span role="button">Дата↓</span><vc:filter-box filter-elements="Model.Filter.Dates" type="dates"></vc:filter-box></th>
     </tr>
     @foreach (var grade in Model.Grades)
     {
@@ -29,13 +31,14 @@
     <li class="page-item prev"><a class="page-link" asp-route-page="@(Model.CurrentPage - 1)">Previous</a></li>
     @for (int i = 0; i < Model.TotalPages; i++)
     {
-        <li class="page-item"><a class="page-link" asp-route-page="@(i+1)">@(i+1)</a></li>
+        <li class="page-item"><a class="page-link" asp-route-page="@(i+1)">@(i + 1)</a></li>
     }
     <li class="page-item next"><a class="page-link" asp-route-page="@(Model.CurrentPage + 1)">Next</a></li>
 </ul>
 
 @section Scripts {
     <script>
+        // PAGING
         let currentPage = @Model.CurrentPage;
         let lastPage = @Model.TotalPages;
         if (currentPage == 1) {
@@ -51,6 +54,148 @@
         else {
             $(".next").removeClass("pe-none");
         }
+
+    </script>
+
+    <script>
+        // DISPLAY/HIDE FILTER BOXES
+        $("th span").on("click", function () {
+            let currentFilterBox = $(this).next();
+
+            if (currentFilterBox.hasClass("d-none")) {
+                currentFilterBox.removeClass("d-none");
+            }
+            else {
+                currentFilterBox.addClass("d-none");
+            }
+        });
+
+
+    </script>
+
+    <script>
+
+        Array.prototype.remove = function () {
+            var what, a = arguments, L = a.length, ax;
+            while (L && this.length) {
+                what = a[--L];
+                while ((ax = this.indexOf(what)) !== -1) {
+                    this.splice(ax, 1);
+                }
+            }
+            return this;
+        };
+        
+        let queryTeachersArray = [];
+        let querySubjectsArray = [];
+        let queryReasonsArray = [];
+        let queryGradesArray = [];
+        let queryDate = "";
+
+        $("input:checkbox").on("change", function () {
+            let queryString = '';
+            let checkedLength = $(this).closest(".filter-box").find("input:checkbox:checked").length - 1;
+            let checkBoxIdSplitted = $(this).attr("id").split("-");
+
+            let typeClass = checkBoxIdSplitted[0];
+
+            if ($(this).is(":checked")) {
+                if (typeClass !== "dates") {
+
+                    if (typeClass == "teachers") {
+                        queryTeachersArray.push($(this).val());
+                    }
+                    else if (typeClass == "subjects") {
+                        querySubjectsArray.push($(this).val());
+                    }
+
+                    else if (typeClass == "reasons") {
+                        queryReasonsArray.push($(this).val());
+                    }
+
+                    else if (typeClass == "grades") {
+                        queryGradesArray.push($(this).val());
+                    }
+
+
+                }
+                else {
+                    queryDate = $(this).val();
+                }
+            }
+            else {
+                if (typeClass !== "dates") {
+                    if (typeClass == "teachers") {
+                        queryTeachersArray.remove($(this).val());
+                    }
+                    else if (typeClass == "subjects") {
+                        querySubjectsArray.remove($(this).val());
+                    }
+
+                    else if (typeClass == "reasons") {
+                        queryReasonsArray.remove($(this).val());
+                    }
+
+                    else if (typeClass == "grades") {
+                        queryGradesArray.remove($(this).val());
+                    }
+                }
+                else {
+                    queryDate = "";
+                }
+            }
+
+            for (let i = 0; i < queryTeachersArray.length; i++) {
+                queryString += `teachersIds[${i}]=${queryTeachersArray[i]}&`
+            }
+
+
+            for (let i = 0; i < querySubjectsArray.length; i++) {
+                queryString += `subjectsIds[${i}]=${querySubjectsArray[i]}&`
+            }
+
+
+            for (let i = 0; i < queryReasonsArray.length; i++) {
+                queryString += `reasonsIds[${i}]=${queryReasonsArray[i]}&`
+            }
+
+
+            for (let i = 0; i < queryGradesArray.length; i++) {
+                queryString += `gradesIds[${i}]=${queryGradesArray[i]}&`
+            }
+
+            if (queryDate !== '') {
+                queryString += `date=${queryDate}`;
+            }
+            
+
+
+
+
+
+            // AJAX TO FILTER
+            $.get(`api/grades/GetFilteredGrades?${queryString}`, function (data, status) {
+                if (status == "success") {
+                    $('table tr:not(":first")').empty();
+                    $("#grades-count").text(data.length);
+                    for (const grade of data) {
+                        $('table tbody').append(`
+                                     <tr>
+                                         <td>${grade.teacherName}</td>
+                                         <td>${grade.subjectName}</td>
+                                         <td>${grade.reasonAsString}</td>
+                                         <td>${grade.value}</td>
+                                         <td>${grade.date}</td>
+                                     </tr>`)
+                    }
+            
+            
+                }
+            });
+
+
+
+        });
 
 
     </script>

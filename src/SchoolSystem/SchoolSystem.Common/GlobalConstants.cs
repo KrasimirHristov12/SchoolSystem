@@ -1,4 +1,6 @@
-﻿namespace SchoolSystem.Common
+﻿using System.Data;
+
+namespace SchoolSystem.Common
 {
     public static class GlobalConstants
     {
@@ -106,6 +108,10 @@
             public const string OtherReason = "Друго";
 
             public const string ReasonDisplay = "Причина:";
+
+            public const string ApiControllerRoute = "api/grades";
+
+            public const string GetFilteredGrades = "GetFilteredGrades";
         }
 
         public static class Question

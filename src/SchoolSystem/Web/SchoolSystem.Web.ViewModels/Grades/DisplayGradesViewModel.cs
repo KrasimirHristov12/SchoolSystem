@@ -10,5 +10,7 @@
 
         public IEnumerable<GradesViewModel> Grades { get; set; }
 
+        public FilterGradesViewModel Filter { get; set; }
+
     }
 }
