@@ -13,7 +13,7 @@
 
     else if (this.User.IsInRole(GlobalConstants.Teacher.TeacherRoleName))
     {
-        <vc:teacher-information></vc:teacher-information>
+        <vc:teacher-information teacher-id="@Model.TeacherId"></vc:teacher-information>
     }
 
 </div>

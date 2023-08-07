@@ -1,1 +1,11 @@
-﻿
+﻿@model TeacherInformationViewModel
+
+
+<p class="border-bottom">Име: <u><b>@Model.FullName</b></u></p>
+<p class="border-bottom">Опит: <u><b>@Model.YearsOfExperience години</b></u></p>
+@if (Model.IsClassTeacher)
+{
+    <p class="border-bottom">Класен ръководител на: <u><b>@Model.ClassName</b></u></p>
+}
+<p class="border-bottom">Класове, на които преподава: <u><b>@Model.ClassesTaught</b></u></p>
+<p class="border-bottom">Преподава по: <u><b>@Model.SubjectsTaught</b></u></p>

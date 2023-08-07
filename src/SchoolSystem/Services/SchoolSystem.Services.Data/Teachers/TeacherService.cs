@@ -4,6 +4,7 @@
 
     using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Data;
+    using SchoolSystem.Web.ViewModels.Teachers;
 
     public class TeacherService : ITeacherService
     {
@@ -23,6 +24,21 @@
             }
 
             return teacher.Id;
+        }
+
+        public TeacherInformationViewModel GetTeacherInformation(int teacherId)
+        {
+            var teacher = this.db.Teachers.Where(t => t.Id == teacherId)
+                .Select(t => new TeacherInformationViewModel
+                {
+                    FullName = t.FirstName + " " + t.Surname + " " + t.LastName,
+                    YearsOfExperience = t.YearsOfExperience,
+                    IsClassTeacher = t.IsClassTeacher,
+                    ClassName = t.ClassName,
+                    SubjectsTaught = string.Join(", ", t.Subjects.Select(s => s.Name).ToList()),
+                    ClassesTaught = string.Join(", ", t.Classes.Select(c => c.Name).ToList()),
+                }).FirstOrDefault();
+            return teacher;
         }
     }
 }
