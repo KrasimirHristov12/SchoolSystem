@@ -29,6 +29,7 @@
                               new SettingsSeeder(),
                               new ClassesSeeder(),
                               new SubjectsSeeder(),
+                              new GradesSeeder(),
                           };
 
             foreach (var seeder in seeders)

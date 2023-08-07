@@ -8,6 +8,8 @@
 
         public int TotalPages { get; set; }
 
+        public int TotalGrades { get; set; }
+
         public IEnumerable<GradesViewModel> Grades { get; set; }
 
         public FilterGradesViewModel Filter { get; set; }

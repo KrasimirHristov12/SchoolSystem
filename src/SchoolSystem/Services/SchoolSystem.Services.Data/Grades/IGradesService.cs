@@ -13,9 +13,7 @@
 
         DisplayGradesViewModel GetForStudent(int studentId, int page);
 
-        IEnumerable<GradesViewModel> GetForStudentApi(int studentId, int page);
-
-        IEnumerable<GradesViewModel> GetFilteredGrades(IEnumerable<int> teacherIds, IEnumerable<int> subjectIds, IEnumerable<int> reasonIds, ICollection<int> gradesIds, int date, int studentId);
+        DisplayGradesViewModel GetFilteredGrades(int page, int studentId, IEnumerable<int> teacherIds = null, IEnumerable<int> subjectIds = null, IEnumerable<int> reasonIds = null, ICollection<int> gradesValues = null, int? date = null);
 
         Task<bool> AddAfterQuizIsTakenAsync(int teacherId, int studentId, int subjectId, int pointsEarned, IEnumerable<string> scaleRanges);
 

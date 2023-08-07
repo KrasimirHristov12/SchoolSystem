@@ -67,7 +67,7 @@
                 reasonsSet.Add(reasonAsString);
                 reasonsIdsSet.Add(reasonId);
                 gradesSet.Add(grade);
-                gradesIdsSet.Add(gradeId);
+                gradesIdsSet.Add((int)g.Value);
             }
 
             var totalGradesForStudent = this.db.Grades.Where(g => g.StudentId == studentId).Count();
@@ -113,57 +113,48 @@
                 EntityNames = datesSet,
             };
             model.Grades = grades;
+            model.TotalGrades = totalGradesForStudent;
             model.CurrentPage = page;
             model.TotalPages = (int)Math.Ceiling(totalGradesForStudent / 10M);
             return model;
         }
 
-        public IEnumerable<GradesViewModel> GetForStudentApi(int studentId, int page)
-        {
-            var cultureInfo = new CultureInfo("bg-BG");
-            return this.db.Grades.Where(g => g.StudentId == studentId).Skip((page - 1) * 10).Take(10).Select(g => new GradesViewModel
-            {
-                TeacherName = g.Teacher.FirstName + " " + g.Teacher.LastName,
-                Date = g.CreatedOn.Date.ToString("d", cultureInfo),
-                SubjectName = g.Subject.Name,
-                Reason = g.Reason,
-                Value = g.Value.ToString("F2"),
-            }).ToList();
-        }
-
-        public IEnumerable<GradesViewModel> GetFilteredGrades(IEnumerable<int> teacherIds, IEnumerable<int> subjectIds, IEnumerable<int> reasonIds, ICollection<int> gradesIds, int date, int studentId)
+        public DisplayGradesViewModel GetFilteredGrades(int page, int studentId, IEnumerable<int> teacherIds = null, IEnumerable<int> subjectIds = null, IEnumerable<int> reasonIds = null, ICollection<int> gradesValues = null, int? date = null)
         {
             var cultureInfo = new CultureInfo("bg-BG");
             var gradesFromDb = this.db.Grades.Where(g => g.StudentId == studentId);
-            if (teacherIds.Any())
+            if (teacherIds != null && teacherIds.Any())
             {
                 gradesFromDb = gradesFromDb.Where(g => teacherIds.Contains(g.TeacherId));
             }
 
-            if (subjectIds.Any())
+            if (subjectIds != null && subjectIds.Any())
             {
                 gradesFromDb = gradesFromDb.Where(g => subjectIds.Contains(g.SubjectId));
             }
 
-            if (reasonIds.Any())
+            if (reasonIds != null && reasonIds.Any())
             {
                 gradesFromDb = gradesFromDb.Where(g => reasonIds.Contains((int)g.Reason));
             }
 
-            if (gradesIds.Any())
+            if (gradesValues != null && gradesValues.Any())
             {
-                gradesFromDb = gradesFromDb.Where(g => gradesIds.Contains(g.Id));
+                gradesFromDb = gradesFromDb.Where(g => gradesValues.Contains((int)g.Value));
             }
-            if (date == 1)
+
+            if (date != null && date == 1)
             {
                 gradesFromDb = gradesFromDb.OrderByDescending(g => g.CreatedOn);
             }
-            else if (date == 2)
+            else if (date != null && date == 2)
             {
                 gradesFromDb = gradesFromDb.OrderBy(g => g.CreatedOn);
             }
 
-            var gradesList = gradesFromDb.Select(g => new GradesViewModel
+            var filteredCount = gradesFromDb.Count();
+
+            var gradesList = gradesFromDb.Skip((page - 1) * 10).Take(10).Select(g => new GradesViewModel
             {
                 TeacherName = g.Teacher.FirstName + " " + g.Teacher.LastName,
                 Date = g.CreatedOn.Date.ToString("d", cultureInfo),
@@ -177,7 +168,14 @@
                 g.ReasonAsString = this.GetReasonNameByReasonEnum(g.Reason);
             }
 
-            return gradesList;
+            return new DisplayGradesViewModel
+            {
+                Grades = gradesList,
+                TotalGrades = filteredCount,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(filteredCount / 10M),
+                Filter = null,
+            };
         }
 
         public async Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId)

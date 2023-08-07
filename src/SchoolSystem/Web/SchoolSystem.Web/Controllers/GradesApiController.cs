@@ -25,20 +25,12 @@
         }
 
         [HttpGet]
-        [Authorize(Roles = GlobalConstants.Student.StudentRoleName)]
-        public IActionResult Get(int page, int studentId)
-        {
-            var grades = this.gradesService.GetForStudentApi(studentId, page);
-            return this.Ok(grades);
-        }
-
-        [HttpGet]
         [Route(GlobalConstants.Grade.GetFilteredGrades)]
         [Authorize(Roles = GlobalConstants.Student.StudentRoleName)]
-        public IActionResult Get([FromQuery]IEnumerable<int> teachersIds, [FromQuery] IEnumerable<int> subjectsIds, [FromQuery]IEnumerable<int> reasonsIds, [FromQuery]ICollection<int> gradesIds, [FromQuery]int date)
+        public IActionResult Get([FromQuery]IEnumerable<int> teachersIds, [FromQuery] IEnumerable<int> subjectsIds, [FromQuery]IEnumerable<int> reasonsIds, [FromQuery]ICollection<int> gradesValues, [FromQuery]int? date, [FromQuery]int page)
         {
             int studentId = this.studentService.GetIdByUserId(this.userService.GetUserId(this.User));
-            var g = this.gradesService.GetFilteredGrades(teachersIds, subjectsIds, reasonsIds, gradesIds, date, studentId);
+            var g = this.gradesService.GetFilteredGrades(page, studentId, teachersIds, subjectsIds, reasonsIds, gradesValues, date);
             return this.Ok(g);
         }
     }
