@@ -3,6 +3,6 @@
     using System.Threading.Tasks;
     public interface ITeacherService
     {
-        Task<int> GetTeacherIdByUserIdAsync(string userId);
+        int GetTeacherIdByUserId(string userId);
     }
 }

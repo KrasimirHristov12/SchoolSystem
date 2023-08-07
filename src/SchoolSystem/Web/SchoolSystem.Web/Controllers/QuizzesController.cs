@@ -62,10 +62,10 @@
         }
 
         [Authorize(Roles = GlobalConstants.Teacher.TeacherRoleName)]
-        public async Task<IActionResult> Add()
+        public IActionResult Add()
         {
             string userId = this.userService.GetUserId(this.User);
-            int teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            int teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             var model = new QuizzesInputModel();
             model.ViewModel = new QuizzesViewModel
             {
@@ -82,7 +82,7 @@
         public async Task<IActionResult> Add(QuizzesInputModel model)
         {
             string userId = this.userService.GetUserId(this.User);
-            int teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            int teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             if (!this.ModelState.IsValid)
             {
                 model.ViewModel = new QuizzesViewModel

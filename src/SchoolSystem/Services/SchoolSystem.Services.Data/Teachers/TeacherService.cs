@@ -1,6 +1,6 @@
 ﻿namespace SchoolSystem.Services.Data.Teachers
 {
-    using System.Threading.Tasks;
+    using System.Linq;
 
     using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Data;
@@ -14,9 +14,9 @@
             this.db = db;
         }
 
-        public async Task<int> GetTeacherIdByUserIdAsync(string userId)
+        public int GetTeacherIdByUserId(string userId)
         {
-            var teacher = await this.db.Teachers.FirstOrDefaultAsync(t => t.UserId == userId);
+            var teacher = this.db.Teachers.FirstOrDefault(t => t.UserId == userId);
             if (teacher == null)
             {
                 return -1;

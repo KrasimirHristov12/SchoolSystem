@@ -1,0 +1,8 @@
+﻿@model StudentInformationViewModel
+
+<p class="border-bottom">Име: <u><b>@Model.FullName</b></u></p>
+<p class="border-bottom">Клас: <u><b>@Model.ClassName</b></u></p>
+<p class="border-bottom">Средна оценка: <u><b>@Model.AverageGrade.ToString("F2")</b></u></p>
+<p class="border-bottom">Най-силен предмет: <u><b>@Model.StrongestSubjectName (<i>средна оценка: @Model.StrongestSubjectAverageGrade.ToString("F2")</i>)</b></u></p>
+<p>Най-слаб предмет: <u><b>@Model.WeakestSubjectName (<i>средна оценка: @Model.WeakestSubjectAverageGrade.ToString("F2")</i>)</b></u></p>
+

@@ -45,10 +45,10 @@
         }
 
         [Authorize(Roles = $"{GlobalConstants.Teacher.TeacherRoleName}")]
-        public async Task<IActionResult> Add()
+        public IActionResult Add()
         {
             var userId = this.userService.GetUserId(this.User);
-            var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
 
             var model = new GradesInputModel()
             {
@@ -67,7 +67,7 @@
         public async Task<IActionResult> Add(GradesInputModel model)
         {
             var userId = this.userService.GetUserId(this.User);
-            var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             model.GradeModel = new AddGradeViewModel
             {
                 Classes = this.classService.GetAllClassesForTeacher(teacherId),

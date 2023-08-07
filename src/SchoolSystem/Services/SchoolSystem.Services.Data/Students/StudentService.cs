@@ -35,5 +35,23 @@
 
             return student.Id;
         }
+
+        public StudentInformationViewModel GetStudentInformation(int studentId)
+        {
+            var student = this.db.Students.Where(s => s.Id == studentId)
+                .Select(s => new StudentInformationViewModel
+                {
+                    FullName = s.FirstName + " " + s.Surname + " " + s.LastName,
+                    ClassName = s.Class.Name,
+                    AverageGrade = s.Grades.Average(s => s.Value),
+                    StrongestSubjectName = s.Grades.GroupBy(g => g.Subject.Name).Select(x => new { Name = x.Key, Average = x.Average(g1 => g1.Value) }).OrderByDescending(x => x.Average).Select(x => x.Name).FirstOrDefault(),
+                    StrongestSubjectAverageGrade = s.Grades.GroupBy(g => g.Subject.Name).Select(x => new { Name = x.Key, Average = x.Average(g1 => g1.Value) }).OrderByDescending(x => x.Average).Select(x => x.Average).FirstOrDefault(),
+                    WeakestSubjectName = s.Grades.GroupBy(g => g.Subject.Name).Select(x => new { Name = x.Key, Average = x.Average(g1 => g1.Value) }).OrderBy(x => x.Average).Select(x => x.Name).FirstOrDefault(),
+                    WeakestSubjectAverageGrade = s.Grades.GroupBy(g => g.Subject.Name).Select(x => new { Name = x.Key, Average = x.Average(g1 => g1.Value) }).OrderBy(x => x.Average).Select(x => x.Average).FirstOrDefault(),
+
+                }).FirstOrDefault();
+            return student;
+        }
     }
 }
+ 

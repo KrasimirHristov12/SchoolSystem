@@ -9,5 +9,7 @@
         int GetIdByUserId(string userId);
 
         IEnumerable<StudentsViewModel> GetAll();
+
+        StudentInformationViewModel GetStudentInformation(int studentId);
     }
 }

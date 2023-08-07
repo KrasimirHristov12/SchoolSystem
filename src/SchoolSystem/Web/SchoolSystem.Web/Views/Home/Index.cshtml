@@ -1,14 +1,19 @@
-﻿@using SchoolSystem.Common
-@using System.Security.Claims;
+﻿@model HomePageViewModel
 @{
     this.ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome to @GlobalConstants.SystemName!</h1>
-    @if (User.Identity.IsAuthenticated)
+
+    @if (this.User.IsInRole(GlobalConstants.Student.StudentRoleName))
     {
-        <h1>@User.Claims.First(c => c.Type == ClaimTypes.Role).Value TBD</h1>
+        <vc:student-information student-id="@Model.StudentId"></vc:student-information>
     }
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    else if (this.User.IsInRole(GlobalConstants.Teacher.TeacherRoleName))
+    {
+        <vc:teacher-information></vc:teacher-information>
+    }
+
 </div>

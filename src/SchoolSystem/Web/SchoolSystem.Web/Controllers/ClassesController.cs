@@ -21,10 +21,10 @@
             this.userService = userService;
         }
 
-        public async Task<IActionResult> Add()
+        public IActionResult Add()
         {
             var userId = this.userService.GetUserId(this.User);
-            var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             var model = new ClassInputModel()
             {
                 Classes = this.classService.GetAllClassesNotForTeacher(teacherId),
@@ -36,7 +36,7 @@
         public async Task<IActionResult> Add(ClassInputModel model)
         {
             var userId = this.userService.GetUserId(this.User);
-            var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
 
             model.Classes = this.classService.GetAllClassesNotForTeacher(teacherId);
 

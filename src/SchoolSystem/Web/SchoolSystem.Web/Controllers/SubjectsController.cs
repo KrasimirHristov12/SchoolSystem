@@ -21,10 +21,10 @@
             this.teacherService = teacherService;
         }
 
-        public async Task<IActionResult> Overview()
+        public IActionResult Overview()
         {
             var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             this.ViewData["teacherId"] = teacherId;
             var taughtSubjects = this.subjectService.GetAllTaughtForTeacher(teacherId);
             return this.View(taughtSubjects);
@@ -34,7 +34,7 @@
         public async Task<IActionResult> Add(SubjectsInputModel model)
         {
             var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             var result = await this.subjectService.AddSubjectToTeacherAsync((int)model.SubjectId, teacherId);
             if (!result.Succeeded)
             {
@@ -56,7 +56,7 @@
             }
 
             var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var teacherId = await this.teacherService.GetTeacherIdByUserIdAsync(userId);
+            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             var result = await this.subjectService.ValidateSubjectUniquenessToTeacherListAsync((int)subjectId, teacherId);
             if (!result.Succeeded)
             {

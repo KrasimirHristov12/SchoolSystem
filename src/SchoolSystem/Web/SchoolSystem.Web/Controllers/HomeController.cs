@@ -1,15 +1,50 @@
 ﻿namespace SchoolSystem.Web.Controllers
 {
     using System.Diagnostics;
+    using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
+    using SchoolSystem.Common;
+    using SchoolSystem.Services.Data.Students;
+    using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Web.ViewModels;
+    using SchoolSystem.Web.ViewModels.Home;
+    using SchoolSystem.Web.WebServices;
 
-    public class HomeController : BaseController
+    public class HomeController : Controller
     {
+        private readonly IStudentService studentService;
+        private readonly ITeacherService teacherService;
+        private readonly IUserService userService;
+
+        public HomeController(IStudentService studentService, ITeacherService teacherService, IUserService userService)
+        {
+            this.studentService = studentService;
+            this.teacherService = teacherService;
+            this.userService = userService;
+        }
+
         public IActionResult Index()
         {
-            return this.View();
+            if (this.User.Identity.IsAuthenticated)
+            {
+                var userId = this.userService.GetUserId(this.User);
+                var model = new HomePageViewModel();
+                if (this.User.IsInRole(GlobalConstants.Student.StudentRoleName))
+                {
+                    model.StudentId = this.studentService.GetIdByUserId(userId);
+                    model.TeacherId = null;
+                }
+                else if (this.User.IsInRole(GlobalConstants.Teacher.TeacherRoleName))
+                {
+                    model.StudentId = null;
+                    model.TeacherId = this.teacherService.GetTeacherIdByUserId(userId);
+                }
+
+                return this.View(model);
+            }
+
+            return this.RedirectToAction("Login", "Accounts");
         }
 
         public IActionResult Privacy()
