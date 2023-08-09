@@ -7,7 +7,7 @@
 
     public class QuizzesViewModel
     {
-        public IEnumerable<SubjectsViewModel> Subjects { get; set; }
+        public IEnumerable<SubjectViewModel> Subjects { get; set; }
 
         public IEnumerable<ClassViewModel> Classes { get; set; }
     }

@@ -14,10 +14,8 @@
 
         IEnumerable<ClassViewModel> GetAllClassesForTeacher(int teacherId);
 
-        IEnumerable<ClassViewModel> GetAllClassesNotForTeacher(int teacherId);
-
         Task<string> GetClassNameById(int id);
 
-        Task<CRUDResult> AddClassesToTeacher(IList<int?> classesIds, int teacherId);
+        Task<List<CRUDResult>> AddClassesToTeacher(IList<int?> classesIds, int teacherId);
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace SchoolSystem.Services.Data.Teachers
 {
+    using System.Collections.Generic;
     using System.Linq;
 
-    using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Data;
     using SchoolSystem.Web.ViewModels.Teachers;
 
@@ -24,6 +24,15 @@
             }
 
             return teacher.Id;
+        }
+
+        public IEnumerable<TeacherViewModel> GetAllTeachers()
+        {
+            return this.db.Teachers.Select(t => new TeacherViewModel
+            {
+                Id = t.Id,
+                FullName = $"{t.FirstName} {t.Surname} {t.LastName}",
+            }).ToList();
         }
 
         public TeacherInformationViewModel GetTeacherInformation(int teacherId)

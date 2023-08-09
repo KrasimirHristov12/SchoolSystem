@@ -8,9 +8,9 @@
     using SchoolSystem.Common;
     using SchoolSystem.Services.Data.Subjects;
     using SchoolSystem.Services.Data.Teachers;
-    using SchoolSystem.Web.WebModels;
+    using SchoolSystem.Web.ViewModels.Subjects;
 
-    public class SubjectsController : TeachersBaseController
+    public class SubjectsController : HeadmastersBaseController
     {
         private readonly ISubjectService subjectService;
         private readonly ITeacherService teacherService;
@@ -21,49 +21,46 @@
             this.teacherService = teacherService;
         }
 
-        public IActionResult Overview()
+        public IActionResult Add()
         {
-            var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
-            this.ViewData["teacherId"] = teacherId;
-            var taughtSubjects = this.subjectService.GetAllTaughtForTeacher(teacherId);
-            return this.View(taughtSubjects);
+            var model = new SubjectsInputModel
+            {
+                Subjects = this.subjectService.GetAllSubjects(),
+                Teachers = this.teacherService.GetAllTeachers(),
+            };
+
+            return this.View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Add(SubjectsInputModel model)
         {
-            var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
-            var result = await this.subjectService.AddSubjectToTeacherAsync((int)model.SubjectId, teacherId);
-            if (!result.Succeeded)
+            model.Subjects = this.subjectService.GetAllSubjects();
+            model.Teachers = this.teacherService.GetAllTeachers();
+            if (!this.ModelState.IsValid)
             {
-                foreach (var e in result.ErrorMessages)
+                return this.View(model);
+            }
+
+            var results = await this.subjectService.AddSubjectsToTeacherAsync(model.SubjectsIds, model.TeacherId);
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                if (!results[i].Succeeded)
                 {
-                    this.ModelState.AddModelError(string.Empty, e);
+                    foreach (var errMess in results[i].ErrorMessages)
+                    {
+                        this.ModelState.AddModelError($"SubjectsIds[{i}]", errMess);
+                    }
                 }
             }
 
-            this.TempData["SuccessfullyAdded"] = GlobalConstants.Subject.SubjectSuccessfullyAdded;
-            return this.RedirectToAction(nameof(this.Overview));
-        }
-
-        public async Task<IActionResult> ValidateSubjectUniquenessToTeacherList(int? subjectId)
-        {
-            if (subjectId == null)
+            if (!this.ModelState.IsValid)
             {
-                return this.Json(GlobalConstants.ErrorMessage.RequiredErrorMessage);
+                return this.View(model);
             }
 
-            var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
-            var result = await this.subjectService.ValidateSubjectUniquenessToTeacherListAsync((int)subjectId, teacherId);
-            if (!result.Succeeded)
-            {
-                return this.Json(result.ErrorMessages.First());
-            }
-
-            return this.Json(true);
+            return this.Redirect("/");
         }
     }
 }

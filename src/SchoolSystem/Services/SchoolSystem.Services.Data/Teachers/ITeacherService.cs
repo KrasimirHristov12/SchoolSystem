@@ -1,12 +1,14 @@
 ﻿namespace SchoolSystem.Services.Data.Teachers
 {
-    using System.Threading.Tasks;
+    using System.Collections.Generic;
 
     using SchoolSystem.Web.ViewModels.Teachers;
 
     public interface ITeacherService
     {
         int GetTeacherIdByUserId(string userId);
+
+        IEnumerable<TeacherViewModel> GetAllTeachers();
         TeacherInformationViewModel GetTeacherInformation(int teacherId);
     }
 }

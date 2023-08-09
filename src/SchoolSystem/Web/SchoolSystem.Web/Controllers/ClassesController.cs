@@ -1,5 +1,6 @@
 ﻿namespace SchoolSystem.Web.Controllers
 {
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@
     using SchoolSystem.Web.ViewModels.Classes;
     using SchoolSystem.Web.WebServices;
 
-    public class ClassesController : TeachersBaseController
+    public class ClassesController : HeadmastersBaseController
     {
         private readonly ISchoolClassService classService;
         private readonly ITeacherService teacherService;
@@ -23,11 +24,10 @@
 
         public IActionResult Add()
         {
-            var userId = this.userService.GetUserId(this.User);
-            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             var model = new ClassInputModel()
             {
-                Classes = this.classService.GetAllClassesNotForTeacher(teacherId),
+                Teachers = this.teacherService.GetAllTeachers(),
+                Classes = this.classService.GetAllClasses(),
             };
             return this.View(model);
         }
@@ -35,25 +35,28 @@
         [HttpPost]
         public async Task<IActionResult> Add(ClassInputModel model)
         {
-            var userId = this.userService.GetUserId(this.User);
-            var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
-
-            model.Classes = this.classService.GetAllClassesNotForTeacher(teacherId);
-
+            model.Classes = this.classService.GetAllClasses();
+            model.Teachers = this.teacherService.GetAllTeachers();
             if (!this.ModelState.IsValid)
             {
                 return this.View(model);
             }
 
-            var result = await this.classService.AddClassesToTeacher(model.ClassesIds, teacherId);
+            var results = await this.classService.AddClassesToTeacher(model.ClassesIds, model.TeacherId);
 
-            if (!result.Succeeded)
+            for (int i = 0; i < results.Count; i++)
             {
-                foreach (var errorMessage in result.ErrorMessages)
+                if (!results[i].Succeeded)
                 {
-                    this.ModelState.AddModelError(string.Empty, errorMessage);
+                    foreach (var errMess in results[i].ErrorMessages)
+                    {
+                        this.ModelState.AddModelError($"ClassesIds[{i}]", errMess);
+                    }
                 }
+            }
 
+            if (!this.ModelState.IsValid)
+            {
                 return this.View(model);
             }
 

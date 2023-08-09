@@ -19,56 +19,87 @@
             this.db = db;
         }
 
-        public IEnumerable<SubjectsViewModel> GetAllTaughtForTeacher(int teacherId)
+        public IEnumerable<SubjectViewModel> GetAllTaughtForTeacher(int teacherId)
         {
             return this.db.Subjects.Where(s => s.Teachers.Any(t => t.Id == teacherId))
-                .Select(s => new SubjectsViewModel
+                .Select(s => new SubjectViewModel
                 {
                     Id = s.Id,
                     Name = s.Name,
                 }).ToList();
         }
 
-        public async Task<IEnumerable<SubjectsViewModel>> GetAllAvailableForTeacherAsync(int teacherId)
+        public async Task<IEnumerable<SubjectViewModel>> GetAllAvailableForTeacherAsync(int teacherId)
         {
             return await this.db.Subjects.Where(s => !s.Teachers.Any(t => t.Id == teacherId))
-                .Select(s => new SubjectsViewModel
+                .Select(s => new SubjectViewModel
                 {
                     Id = s.Id,
                     Name = s.Name,
                 }).ToListAsync();
         }
 
-        public async Task<CRUDResult> AddSubjectToTeacherAsync(int subjectId, int teacherId)
+        public async Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId)
         {
-            var teacher = await this.db.Teachers.Include(t => t.Subjects).FirstAsync(t => t.Id == teacherId);
-            var subject = await this.db.Subjects.FindAsync(subjectId);
-            teacher.Subjects.Add(subject);
-            await this.db.SaveChangesAsync();
-            return new CRUDResult
-            {
-                Succeeded = true,
-                ErrorMessages = null,
-            };
-        }
+            var teacher = this.db.Teachers.Include(t => t.Subjects).First(t => t.Id == teacherId);
+            var results = new List<CRUDResult>();
 
-        public async Task<CRUDResult> ValidateSubjectUniquenessToTeacherListAsync(int subjectId, int teacherId)
-        {
-            var teacher = await this.db.Teachers.Include(t => t.Subjects).FirstAsync(t => t.Id == teacherId);
-            if (teacher.Subjects.Any(s => s.Id == subjectId))
+            foreach (var subjectId in subjectIds)
             {
-                return new CRUDResult
+                if (subjectId != null)
                 {
-                    Succeeded = false,
-                    ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.SubjectAlreadyExistsInTeacherCollection },
-                };
+                    var result = new CRUDResult()
+                    {
+                        Succeeded = false,
+                        ErrorMessages = new List<string>(),
+                    };
+
+                    var subject = this.db.Subjects.FirstOrDefault(c => c.Id == subjectId);
+
+                    if (subjectIds.Where(s => s == subjectId).Count() > 1)
+                    {
+                        result.ErrorMessages.Add(GlobalConstants.ErrorMessage.SubjectShouldBeUnique);
+                    }
+
+                    if (subject == null)
+                    {
+                        result.ErrorMessages.Add(GlobalConstants.ErrorMessage.SubjectDoesNotExist);
+                    }
+
+                    if (teacher.Subjects.Any(s => s.Id == subjectId))
+                    {
+                        result.ErrorMessages.Add(GlobalConstants.ErrorMessage.SubjectAlreadyInTeacherList);
+                    }
+
+                    if (result.ErrorMessages.Count == 0)
+                    {
+                        result.Succeeded = true;
+                        teacher.Subjects.Add(subject);
+                    }
+
+                    results.Add(result);
+                }
+                else
+                {
+                    results.Add(new CRUDResult() { Succeeded = true, ErrorMessages = null, });
+                }
             }
 
-            return new CRUDResult
+            if (results.All(r => r.Succeeded))
             {
-                Succeeded = true,
-                ErrorMessages = null,
-            };
+                await this.db.SaveChangesAsync();
+            }
+
+            return results;
+        }
+
+        public IEnumerable<SubjectViewModel> GetAllSubjects()
+        {
+            return this.db.Subjects.Select(s => new SubjectViewModel
+            {
+                Id = s.Id,
+                Name = s.Name,
+            }).ToList();
         }
     }
 }

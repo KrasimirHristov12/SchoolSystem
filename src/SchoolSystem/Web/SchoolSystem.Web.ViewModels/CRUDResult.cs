@@ -6,6 +6,6 @@
     {
         public bool Succeeded { get; set; }
 
-        public IEnumerable<string> ErrorMessages { get; set; }
+        public List<string> ErrorMessages { get; set; }
     }
 }

@@ -7,6 +7,8 @@
     using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Common;
     using SchoolSystem.Data;
+    using SchoolSystem.Data.Migrations;
+    using SchoolSystem.Data.Models;
     using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Classes;
@@ -70,49 +72,58 @@
             return foundClass.Name;
         }
 
-        public async Task<CRUDResult> AddClassesToTeacher(IList<int?> classesIds, int teacherId)
+        public async Task<List<CRUDResult>> AddClassesToTeacher(IList<int?> classesIds, int teacherId)
         {
             var teacher = this.db.Teachers.Include(t => t.Classes).First(t => t.Id == teacherId);
-            foreach (var classId in classesIds.Where(c => c.HasValue))
+            var results = new List<CRUDResult>();
+
+            foreach (var classId in classesIds)
             {
-                var schoolClass = this.db.Classes.FirstOrDefault(c => c.Id == classId);
-
-                if (classesIds.Where(c => c == classId).Count() > 1)
+                if (classId != null)
                 {
-                    return new CRUDResult
+                    var result = new CRUDResult()
                     {
                         Succeeded = false,
-                        ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.ClassShouldBeUnique },
+                        ErrorMessages = new List<string>(),
                     };
-                }
 
-                if (schoolClass == null)
-                {
-                    return new CRUDResult
+                    var schoolClass = this.db.Classes.FirstOrDefault(c => c.Id == classId);
+
+                    if (classesIds.Where(c => c == classId).Count() > 1)
                     {
-                        Succeeded = false,
-                        ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.ClassDoesNotExist },
-                    };
-                }
+                        result.ErrorMessages.Add(GlobalConstants.ErrorMessage.ClassShouldBeUnique);
+                    }
 
-                if (teacher.Classes.Any(c => c.Id == classId))
-                {
-                    return new CRUDResult
+                    if (schoolClass == null)
                     {
-                        Succeeded = false,
-                        ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.ClassAlreadyInTeacherList },
-                    };
+                        result.ErrorMessages.Add(GlobalConstants.ErrorMessage.ClassDoesNotExist);
+                    }
+
+                    if (teacher.Classes.Any(c => c.Id == classId))
+                    {
+                        result.ErrorMessages.Add(GlobalConstants.ErrorMessage.ClassAlreadyInTeacherList);
+                    }
+
+                    if (result.ErrorMessages.Count == 0)
+                    {
+                        result.Succeeded = true;
+                        teacher.Classes.Add(schoolClass);
+                    }
+
+                    results.Add(result);
                 }
+                else
+                {
+                    results.Add(new CRUDResult() { Succeeded = true, ErrorMessages = null, });
+                }
+            }
 
-                teacher.Classes.Add(schoolClass);
-           }
-
-            await this.db.SaveChangesAsync();
-            return new CRUDResult
+            if (results.All(r => r.Succeeded))
             {
-                Succeeded = true,
-                ErrorMessages = null,
-            };
+                await this.db.SaveChangesAsync();
+            }
+
+            return results;
         }
     }
 }

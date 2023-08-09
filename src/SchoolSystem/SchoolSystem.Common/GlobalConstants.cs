@@ -63,6 +63,11 @@ namespace SchoolSystem.Common
             public const string StudentClassDisplay = "Класове:";
         }
 
+        public static class Headmaster
+        {
+            public const string HeadmasterRoleName = "Headmaster";
+        }
+
         public static class SchoolClass
         {
             public const int ClassMinLength = 2;
@@ -74,7 +79,7 @@ namespace SchoolSystem.Common
             public const int SubjectMinLength = 5;
             public const int SubjectMaxLength = 50;
             public const string SubjectNameDisplay = "Избери предмет:";
-            public const string SubjectSuccessfullyAdded = "Предметът беше успешно добавен във вашия списък.";
+            public const string SubjectSuccessfullyAdded = "Предметът беше успешно добавен!";
         }
 
         public static class Grade
@@ -221,9 +226,9 @@ namespace SchoolSystem.Common
 
             public const string GradeErrorMessage = "Оценката трябва да е между 2.00 и 6.00";
 
-            public const string ClassShouldBeUnique = "Избрали сте един клас повече от веднъж.";
+            public const string ClassShouldBeUnique = "Избрали сте този клас повече от веднъж.";
 
-            public const string ClassAlreadyInTeacherList = "Вече преподавате на този клас.";
+            public const string ClassAlreadyInTeacherList = "Този клас е част от списъка на учителя.";
 
             public const string StudentNotInClass = "Ученикът не е в този клас.";
 
@@ -264,6 +269,14 @@ namespace SchoolSystem.Common
             public const string MinValueShouldBeZero = "Минималната стойност трябва да бъде 0.";
 
             public const string MaxValueOfLastShouldBeEqualToTotalPoints = "Максималната стойност трябва да бъде равна на общия брой точки.";
+
+            public const string AtLeastOneClassShouldBeSelected = "Трябва да е избран поне 1 клас. В момента не е избран нито един.";
+
+            public const string SubjectShouldBeUnique = "Избрали сте този предмет повече от веднъж.";
+
+            public const string SubjectAlreadyInTeacherList = "Този предмет е част от списъка на учителя.";
+
+            public const string AtLeastOneSubjectShouldBeSelected = "Трябва да е избран поне 1 предмет. В момента не е избран нито един.";
         }
     }
 }

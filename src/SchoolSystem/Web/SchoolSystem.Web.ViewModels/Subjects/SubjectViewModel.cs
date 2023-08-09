@@ -1,6 +1,6 @@
 ﻿namespace SchoolSystem.Web.ViewModels.Subjects
 {
-    public class SubjectsViewModel
+    public class SubjectViewModel
     {
         public int Id { get; set; }
 

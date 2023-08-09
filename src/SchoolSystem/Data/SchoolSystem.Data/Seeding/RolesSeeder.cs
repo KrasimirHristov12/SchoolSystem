@@ -26,6 +26,7 @@
             await SeedRoleAsync(roleManager, GlobalConstants.AdministratorRoleName);
             await SeedRoleAsync(roleManager, GlobalConstants.Teacher.TeacherRoleName);
             await SeedRoleAsync(roleManager, GlobalConstants.Student.StudentRoleName);
+            await SeedRoleAsync(roleManager, GlobalConstants.Headmaster.HeadmasterRoleName);
         }
 
         private static async Task SeedRoleAsync(RoleManager<ApplicationRole> roleManager, string roleName)

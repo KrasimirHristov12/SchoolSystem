@@ -3,6 +3,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using SchoolSystem.Common;
     using SchoolSystem.Data;
@@ -25,63 +26,85 @@
 
         public IActionResult Register()
         {
-            var model = new RegisterInputModel
+            if (!this.User.Identity.IsAuthenticated)
             {
-                Classes = this.classService.GetAllClasses(),
-                FreeClasses = this.classService.GetAllFreeClasses(),
-            };
+                var model = new RegisterInputModel
+                {
+                    Classes = this.classService.GetAllClasses(),
+                    FreeClasses = this.classService.GetAllFreeClasses(),
+                };
 
-            return this.View(model);
+                return this.View(model);
+            }
+
+            return this.Forbid();
+
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterInputModel model)
         {
-            model.Classes = this.classService.GetAllClasses();
-            model.FreeClasses = this.classService.GetAllFreeClasses();
-
-            if (!this.ModelState.IsValid)
+            if (!this.User.Identity.IsAuthenticated)
             {
-                return this.View(model);
-            }
+                model.Classes = this.classService.GetAllClasses();
+                model.FreeClasses = this.classService.GetAllFreeClasses();
 
-            var result = await this.userService.RegisterAsync(model);
-            if (!result.Succeeded)
-            {
-                foreach (var e in result.ErrorMessages)
+                if (!this.ModelState.IsValid)
                 {
-                    this.ModelState.AddModelError(string.Empty, e);
+                    return this.View(model);
                 }
 
-                return this.View(model);
+                var result = await this.userService.RegisterAsync(model);
+                if (!result.Succeeded)
+                {
+                    foreach (var e in result.ErrorMessages)
+                    {
+                        this.ModelState.AddModelError(string.Empty, e);
+                    }
+
+                    return this.View(model);
+                }
+
+                return this.RedirectToAction(nameof(this.Login));
             }
 
-            return this.RedirectToAction(nameof(this.Login));
+            return this.Forbid();
         }
 
         public IActionResult Login()
         {
-            return this.View();
+            if (!this.User.Identity.IsAuthenticated)
+            {
+                return this.View();
+            }
+
+            return this.Forbid();
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginInputModel model)
         {
-            if (!this.ModelState.IsValid)
+            if (!this.User.Identity.IsAuthenticated)
             {
-                return this.View(model);
+                if (!this.ModelState.IsValid)
+                {
+                    return this.View(model);
+                }
+
+                bool result = await this.userService.LoginAsync(model);
+                if (!result)
+                {
+                    this.ModelState.AddModelError(string.Empty, GlobalConstants.ErrorMessage.LoginErrorMessage);
+                    return this.View(model);
+                }
+
+                return this.Redirect("/");
             }
 
-            bool result = await this.userService.LoginAsync(model);
-            if (!result)
-            {
-                this.ModelState.AddModelError(string.Empty, GlobalConstants.ErrorMessage.LoginErrorMessage);
-                return this.View(model);
-            }
-
-            return this.Redirect("/");
+            return this.Forbid();
         }
 
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await this.userService.LogoutAsync();

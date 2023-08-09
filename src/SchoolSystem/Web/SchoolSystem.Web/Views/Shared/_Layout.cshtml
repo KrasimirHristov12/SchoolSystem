@@ -32,14 +32,6 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Classes" asp-action="Add">Добавяне на клас</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Subjects" asp-action="Overview">Предмети</a>
-                            </li>
-
-                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Quizzes" asp-action="Add">Добавяне на тест</a>
                             </li>
                         }
@@ -51,6 +43,17 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Quizzes" asp-action="Mine">Моите тестове</a>
+                            </li>
+                        }
+
+                        @if (this.User.IsInRole(GlobalConstants.Headmaster.HeadmasterRoleName))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Classes" asp-action="Add">Добавяне на клас</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Subjects" asp-action="Add">Добавяне на предмет</a>
                             </li>
                         }
 

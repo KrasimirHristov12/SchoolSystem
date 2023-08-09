@@ -8,12 +8,13 @@
 
     public interface ISubjectService
     {
-        IEnumerable<SubjectsViewModel> GetAllTaughtForTeacher(int teacherId);
+        IEnumerable<SubjectViewModel> GetAllSubjects();
 
-        Task<IEnumerable<SubjectsViewModel>> GetAllAvailableForTeacherAsync(int teacherId);
+        IEnumerable<SubjectViewModel> GetAllTaughtForTeacher(int teacherId);
 
-        Task<CRUDResult> AddSubjectToTeacherAsync(int subjectId, int teacherId);
+        Task<IEnumerable<SubjectViewModel>> GetAllAvailableForTeacherAsync(int teacherId);
 
-        Task<CRUDResult> ValidateSubjectUniquenessToTeacherListAsync(int subjectId, int teacherId);
+        Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId);
+
     }
 }
