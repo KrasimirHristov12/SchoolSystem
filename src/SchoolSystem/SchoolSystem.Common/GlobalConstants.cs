@@ -61,6 +61,7 @@ namespace SchoolSystem.Common
             public const string StudentRoleName = "Student";
             public const string StudentDisplay = "Ученик:";
             public const string StudentClassDisplay = "Класове:";
+            public const string RankingDisplay = "Ranking";
         }
 
         public static class Headmaster

@@ -52,6 +52,17 @@
                 }).FirstOrDefault();
             return student;
         }
+
+        public IEnumerable<RankingStudentViewModel> GetStudentsRanking(int page, int countPerPage)
+        {
+            var students = this.db.Students.Select(s => new RankingStudentViewModel
+            {
+                FullName = $"{s.FirstName} {s.Surname} {s.LastName}",
+                ClassName = s.Class.Name,
+                AvgGrade = s.Grades.Average(g => g.Value),
+            }).OrderByDescending(s => s.AvgGrade).Skip((page - 1) * countPerPage).Take(countPerPage).ToList();
+
+            return students;
+        }
     }
 }
- 

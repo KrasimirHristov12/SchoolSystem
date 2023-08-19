@@ -27,7 +27,6 @@
             {
                 await userManager.AddToRoleAsync(headMasterUser, GlobalConstants.Headmaster.HeadmasterRoleName);
             }
-            
         }
     }
 }

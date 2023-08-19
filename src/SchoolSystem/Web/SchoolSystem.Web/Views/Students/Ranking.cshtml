@@ -1,0 +1,63 @@
+﻿@model IEnumerable<RankingStudentViewModel>
+
+@{
+    var students = Model.ToList();
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>Позиция</th>
+        <th>Име на ученика</th>
+        <th>Клас</th>
+        <th>Средна оценка</th>
+    </tr>
+    @for (int i = 0; i < students.Count; i++)
+    {
+        <tr>
+            <td>@(i + 1)</td>
+            <td>@students[i].FullName</td>
+            <td>@students[i].ClassName</td>
+            <td>@students[i].AvgGrade.ToString("F2")</td>
+        </tr>
+    }
+</table>
+
+@section Scripts {
+    <script>
+        let currentPage = 1;
+        let observer = new IntersectionObserver(function (entries) {
+            let lastTrEntry = entries[0];
+            if (lastTrEntry.isIntersecting) {
+                console.log("in");
+                currentPage++;
+                observer.unobserve(lastTrEntry.target);
+                $.get(`/api/students/ranking?currentPage=${currentPage}`, function (data, status) {
+                    if (status == 'success') {
+
+
+                        for (const student of data) {
+                            let position = $(".table tbody tr").length;
+                            $(".table tbody").append(`
+                                        <tr>
+                                            <td>${position + 1}</td>
+                                            <td>${student.fullName}</td>
+                                            <td>${student.className}</td>
+                                            <td>${student.avgGrade}</td>
+                                        </tr>`);
+                           
+                        }
+
+                        observer.observe(document.querySelector(".table tr:last-child"));
+
+                    }
+                })
+                
+            }
+        });
+
+        observer.observe(document.querySelector(".table tr:last-child"));
+
+
+
+    </script>
+}

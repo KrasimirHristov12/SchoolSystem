@@ -31,6 +31,7 @@
                               new SubjectsSeeder(),
                               new GradesSeeder(),
                               new AccountsSeeder(),
+                              new StudentsSeeder(),
                           };
 
             foreach (var seeder in seeders)

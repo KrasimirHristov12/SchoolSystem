@@ -11,5 +11,7 @@
         IEnumerable<StudentsViewModel> GetAll();
 
         StudentInformationViewModel GetStudentInformation(int studentId);
+
+        IEnumerable<RankingStudentViewModel> GetStudentsRanking(int page, int countPerPage);
     }
 }
