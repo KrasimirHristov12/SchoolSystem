@@ -396,3 +396,10 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+appsettings.json
+**/appsettings.json
+/src/SchoolSystem/Data/SchoolSystem.Data/appsettings.json
+/src/SchoolSystem/Data/SchoolSystem.Data/appsettings.json
+/src/SchoolSystem/Web/SchoolSystem.Web/appsettings.Development.json
+*.json

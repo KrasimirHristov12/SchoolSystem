@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSystem.Data;
 
@@ -11,9 +12,11 @@ using SchoolSystem.Data;
 namespace SchoolSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230820140618_AddedNotificationsMessages")]
+    partial class AddedNotificationsMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,6 +247,9 @@ namespace SchoolSystem.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<Guid?>("NotificationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -274,6 +280,8 @@ namespace SchoolSystem.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("NotificationId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -411,6 +419,10 @@ namespace SchoolSystem.Data.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -418,31 +430,9 @@ namespace SchoolSystem.Data.Migrations
 
                     b.HasIndex("IsDeleted");
 
+                    b.HasIndex("SenderId");
+
                     b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("SchoolSystem.Data.Models.NotificationsReceivers", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("NotificationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NotificationId");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.ToTable("NotificationsReceivers");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
@@ -968,6 +958,13 @@ namespace SchoolSystem.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SchoolSystem.Data.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("SchoolSystem.Data.Models.Notification", null)
+                        .WithMany("Receivers")
+                        .HasForeignKey("NotificationId");
+                });
+
             modelBuilder.Entity("SchoolSystem.Data.Models.Grade", b =>
                 {
                     b.HasOne("SchoolSystem.Data.Models.Student", "Student")
@@ -1006,23 +1003,15 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Quiz");
                 });
 
-            modelBuilder.Entity("SchoolSystem.Data.Models.NotificationsReceivers", b =>
+            modelBuilder.Entity("SchoolSystem.Data.Models.Notification", b =>
                 {
-                    b.HasOne("SchoolSystem.Data.Models.Notification", "Notification")
-                        .WithMany("Receivers")
-                        .HasForeignKey("NotificationId")
+                    b.HasOne("SchoolSystem.Data.Models.ApplicationUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SchoolSystem.Data.Models.ApplicationUser", "Receiver")
-                        .WithMany("Notifications")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Notification");
-
-                    b.Navigation("Receiver");
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Question", b =>
@@ -1143,8 +1132,6 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Claims");
 
                     b.Navigation("Logins");
-
-                    b.Navigation("Notifications");
 
                     b.Navigation("Roles");
                 });

@@ -13,6 +13,7 @@
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.Grades;
     using SchoolSystem.Services.Data.GradingScale;
+    using SchoolSystem.Services.Data.Notifications;
     using SchoolSystem.Services.Data.Quizzes;
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Data.Students;
@@ -32,9 +33,10 @@
         private readonly IStudentService studentService;
         private readonly IGradesService gradesService;
         private readonly IGradingScaleService gradingScaleService;
+        private readonly INotificationsService notificationsService;
 
         public QuizzesController(IUserService userService, ITeacherService teacherService, ISchoolClassService classService, ISubjectService subjectService,
-            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService)
+            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService, INotificationsService notificationsService)
         {
             this.userService = userService;
             this.teacherService = teacherService;
@@ -44,6 +46,7 @@
             this.studentService = studentService;
             this.gradesService = gradesService;
             this.gradingScaleService = gradingScaleService;
+            this.notificationsService = notificationsService;
         }
 
         [Authorize(Roles = GlobalConstants.Student.StudentRoleName)]
@@ -165,7 +168,7 @@
                 return this.NotFound();
             }
 
-            var gradeResult = await this.gradesService.AddAfterQuizIsTakenAsync(viewModel.TeacherId, viewModel.StudentId, viewModel.SubjectId, pointsEarned, scaleRangeAsList);
+            var gradeResult = await this.gradesService.AddAfterQuizIsTakenAsync(viewModel, pointsEarned, scaleRangeAsList);
 
             if (!gradeResult)
             {

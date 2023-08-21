@@ -1,4 +1,4 @@
-﻿namespace SchoolSystem.Services.Data.SchoolClass
+﻿ namespace SchoolSystem.Services.Data.SchoolClass
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -17,5 +17,7 @@
         Task<string> GetClassNameById(int id);
 
         Task<List<CRUDResult>> AddClassesToTeacher(IList<int?> classesIds, int teacherId);
+
+        string GetClassNameByStudentId(int studentId);
     }
 }

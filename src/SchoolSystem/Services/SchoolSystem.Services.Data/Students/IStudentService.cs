@@ -8,10 +8,14 @@
     {
         int GetIdByUserId(string userId);
 
+        string GetUserId(int studentId);
+
         IEnumerable<StudentsViewModel> GetAll();
 
         StudentInformationViewModel GetStudentInformation(int studentId);
 
         IEnumerable<RankingStudentViewModel> GetStudentsRanking(int page, int countPerPage);
+
+        string GetFullName(int studentId);
     }
 }

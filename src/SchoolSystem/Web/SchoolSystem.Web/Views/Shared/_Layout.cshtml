@@ -34,6 +34,13 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Quizzes" asp-action="Add">Добавяне на тест</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Students" asp-action="Ranking">Класиране по успех</a>
+                            </li>
+
+                            <vc:notifications></vc:notifications>
+
                         }
 
                         @if (this.User.IsInRole(GlobalConstants.Student.StudentRoleName))
@@ -44,6 +51,11 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Quizzes" asp-action="Mine">Моите тестове</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Students" asp-action="Ranking">Класиране по успех</a>
+                            </li>
+
+                            <vc:notifications></vc:notifications>
                         }
 
                         @if (this.User.IsInRole(GlobalConstants.Headmaster.HeadmasterRoleName))
@@ -55,6 +67,11 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Subjects" asp-action="Add">Добавяне на предмет</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Students" asp-action="Ranking">Класиране по успех</a>
+                            </li>
+
+                            <vc:notifications></vc:notifications>
                         }
 
                         <li class="nav-item">
@@ -92,5 +109,18 @@
     <script src="~/js/jquery.datetimepicker.full.min.js"></script>
     <script src="~/js/add-validation.js"></script>
     @await this.RenderSectionAsync("Scripts", required: false)
+    <script>
+        console.log("test");
+        $(".notifications-display").on("click", function () {
+            console.log("in");
+            if ($(".notifications-container").hasClass("d-none")) {
+                $(".notifications-container").removeClass("d-none");
+            }
+            else {
+                $(".notifications-container").addClass("d-none");
+            }
+        })
+    </script>
+
 </body>
 </html>

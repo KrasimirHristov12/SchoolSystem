@@ -20,6 +20,7 @@
     using SchoolSystem.Services.Data;
     using SchoolSystem.Services.Data.Grades;
     using SchoolSystem.Services.Data.GradingScale;
+    using SchoolSystem.Services.Data.Notifications;
     using SchoolSystem.Services.Data.Questions;
     using SchoolSystem.Services.Data.Quizzes;
     using SchoolSystem.Services.Data.SchoolClass;
@@ -97,6 +98,7 @@
             services.AddTransient<IQuizzesService, QuizzesService>();
             services.AddTransient<IQuestionsService, QuestionsService>();
             services.AddTransient<IGradingScaleService, GradingScaleService>();
+            services.AddTransient<INotificationsService, NotificationsService>();
         }
 
         private static void Configure(WebApplication app)

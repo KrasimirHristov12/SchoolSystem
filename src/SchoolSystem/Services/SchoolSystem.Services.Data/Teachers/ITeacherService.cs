@@ -9,6 +9,12 @@
         int GetTeacherIdByUserId(string userId);
 
         IEnumerable<TeacherViewModel> GetAllTeachers();
+
         TeacherInformationViewModel GetTeacherInformation(int teacherId);
+
+        string GetUserId(int teacherId);
+
+        string GetTeacherFullName(int teacherId);
+
     }
 }

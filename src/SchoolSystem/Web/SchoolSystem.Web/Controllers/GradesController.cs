@@ -1,13 +1,15 @@
 ﻿namespace SchoolSystem.Web.Controllers
 {
-    using System.Linq;
-    using System.Security.Claims;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using SchoolSystem.Common;
+    using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.Grades;
+    using SchoolSystem.Services.Data.Notifications;
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Subjects;
@@ -80,7 +82,7 @@
                 return this.View(model);
             }
 
-            var result = await this.gradesService.AddAsync(model, teacherId);
+            var result = await this.gradesService.AddAsync(model, teacherId, userId);
             if (!result.Succeeded)
             {
                 foreach (var err in result.ErrorMessages)

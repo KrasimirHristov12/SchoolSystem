@@ -49,5 +49,17 @@
                 }).FirstOrDefault();
             return teacher;
         }
+
+        public string GetTeacherFullName(int teacherId)
+        {
+            var teacherFullName = this.db.Teachers.Where(t => t.Id == teacherId).Select(t => t.FirstName + " " + t.Surname + " " + t.LastName).FirstOrDefault();
+            return teacherFullName;
+        }
+
+        public string GetUserId(int teacherId)
+        {
+            var userId = this.db.Teachers.Where(t => t.Id == teacherId).Select(t => t.UserId).FirstOrDefault();
+            return userId;
+        }
     }
 }

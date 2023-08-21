@@ -36,6 +36,12 @@
             return student.Id;
         }
 
+        public string GetUserId(int studentId)
+        {
+            var userId = this.db.Students.Where(s => s.Id == studentId).Select(s => s.UserId).FirstOrDefault();
+            return userId;
+        }
+
         public StudentInformationViewModel GetStudentInformation(int studentId)
         {
             var student = this.db.Students.Where(s => s.Id == studentId)
@@ -63,6 +69,12 @@
             }).OrderByDescending(s => s.AvgGrade).Skip((page - 1) * countPerPage).Take(countPerPage).ToList();
 
             return students;
+        }
+
+        public string GetFullName(int studentId)
+        {
+            var fullName = this.db.Students.Where(s => s.Id == studentId).Select(s => s.FirstName + " " + s.Surname + " " + s.LastName).FirstOrDefault();
+            return fullName;
         }
     }
 }

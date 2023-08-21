@@ -15,7 +15,19 @@
 
         public int TeacherId { get; set; }
 
+        public string TeacherUserId { get; set; }
+
+        public string TeacherFullName { get; set; }
+
         public int StudentId { get; set; }
+
+        public string StudentUserId { get; set; }
+
+        public string StudentFullName { get; set; }
+
+        public string StudentClassName { get; set; }
+
+        public string QuizName { get; set; }
 
         public int SubjectId { get; set; }
 

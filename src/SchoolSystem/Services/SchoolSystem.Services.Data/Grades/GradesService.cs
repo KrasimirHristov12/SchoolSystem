@@ -9,21 +9,32 @@
     using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Common;
     using SchoolSystem.Data;
+    using SchoolSystem.Data.Migrations;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.GradingScale;
+    using SchoolSystem.Services.Data.Notifications;
+    using SchoolSystem.Services.Data.Students;
+    using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Grades;
+    using SchoolSystem.Web.ViewModels.Quizzes;
 
     public class GradesService : IGradesService
     {
         private readonly ApplicationDbContext db;
         private readonly IGradingScaleService gradingScaleService;
+        private readonly ITeacherService teacherService;
+        private readonly INotificationsService notificationsService;
+        private readonly IStudentService studentService;
 
-        public GradesService(ApplicationDbContext db, IGradingScaleService gradingScaleService)
+        public GradesService(ApplicationDbContext db, IGradingScaleService gradingScaleService, ITeacherService teacherService, INotificationsService notificationsService, IStudentService studentService)
         {
             this.db = db;
             this.gradingScaleService = gradingScaleService;
+            this.teacherService = teacherService;
+            this.notificationsService = notificationsService;
+            this.studentService = studentService;
         }
 
         public DisplayGradesViewModel GetForStudent(int studentId, int page)
@@ -178,7 +189,7 @@
             };
         }
 
-        public async Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId)
+        public async Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId, string userId)
         {
             var selectedStudent = this.db.Students.Include(s => s.Grades).FirstOrDefault(st => st.Id == model.StudentId);
             var selectedClass = this.db.Classes.Include(c => c.Students).FirstOrDefault(c => c.Id == model.ClassId);
@@ -239,6 +250,15 @@
             });
             await this.db.SaveChangesAsync();
 
+            var studentUserId = this.studentService.GetUserId((int)model.StudentId);
+            var receiversIds = new List<string>
+            {
+                studentUserId,
+            };
+            string teacherFullName = this.teacherService.GetTeacherFullName(teacherId);
+            string notificationMessage = string.Format(GlobalConstants.Notification.AddedGrade, teacherFullName);
+            await this.notificationsService.AddAsync(NotificationType.AddedGrade, receiversIds, notificationMessage);
+
             return new CRUDResult { Succeeded = true, ErrorMessages = null, };
         }
 
@@ -264,19 +284,19 @@
             return finalMark;
         }
 
-        public async Task<bool> AddAfterQuizIsTakenAsync(int teacherId, int studentId, int subjectId, int pointsEarned, IEnumerable<string> scaleRanges)
+        public async Task<bool> AddAfterQuizIsTakenAsync(TakeQuizViewModel model, int pointsEarned, IEnumerable<string> scaleRanges)
         {
-            if (!this.db.Teachers.Any(t => t.Id == teacherId))
+            if (!this.db.Teachers.Any(t => t.Id == model.TeacherId))
             {
                 return false;
             }
 
-            if (!this.db.Students.Any(s => s.Id == studentId))
+            if (!this.db.Students.Any(s => s.Id == model.StudentId))
             {
                 return false;
             }
 
-            if (!this.db.Subjects.Any(s => s.Id == subjectId))
+            if (!this.db.Subjects.Any(s => s.Id == model.SubjectId))
             {
                 return false;
             }
@@ -284,9 +304,9 @@
             var markNumber = this.GetMarkByPointsEarnedAndGradingScale(pointsEarned, scaleRanges);
             var markObj = new Grade
             {
-                TeacherId = teacherId,
-                StudentId = studentId,
-                SubjectId = subjectId,
+                TeacherId = model.TeacherId,
+                StudentId = model.StudentId,
+                SubjectId = model.SubjectId,
                 Reason = GradeReason.Quiz,
                 Value = markNumber,
             };
@@ -294,6 +314,13 @@
             this.db.Grades.Add(markObj);
 
             await this.db.SaveChangesAsync();
+
+            var takenNotificationMessage = string.Format(GlobalConstants.Notification.TestTaken, model.StudentFullName, model.StudentClassName, model.QuizName);
+            await this.notificationsService.AddAsync(NotificationType.TestTaken, new List<string> { model.TeacherUserId }, takenNotificationMessage);
+
+            var addedNotificationMessage = string.Format(GlobalConstants.Notification.AddedGrade, model.TeacherFullName);
+            await this.notificationsService.AddAsync(NotificationType.AddedGrade, new List<string> { model.StudentUserId }, addedNotificationMessage);
+
             return true;
         }
 

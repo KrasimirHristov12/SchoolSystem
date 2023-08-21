@@ -16,7 +16,6 @@
     public class SchoolClassService : ISchoolClassService
     {
         private readonly ApplicationDbContext db;
-        private readonly ITeacherService teacherService;
 
         public SchoolClassService(ApplicationDbContext db)
         {
@@ -124,6 +123,13 @@
             }
 
             return results;
+        }
+
+        public string GetClassNameByStudentId(int studentId)
+        {
+            var className = this.db.Students.Where(s => s.Id == studentId).Select(s => s.Class.Name).FirstOrDefault();
+            return className;
+
         }
     }
 }

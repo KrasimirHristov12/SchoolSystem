@@ -11,6 +11,9 @@
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.GradingScale;
     using SchoolSystem.Services.Data.Questions;
+    using SchoolSystem.Services.Data.SchoolClass;
+    using SchoolSystem.Services.Data.Students;
+    using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
 
@@ -19,12 +22,18 @@
         private readonly ApplicationDbContext db;
         private readonly IQuestionsService questionsService;
         private readonly IGradingScaleService gradingScale;
+        private readonly IStudentService studentService;
+        private readonly ITeacherService teacherService;
+        private readonly ISchoolClassService schoolClassService;
 
-        public QuizzesService(ApplicationDbContext db, IQuestionsService questionsService, IGradingScaleService gradingScale)
+        public QuizzesService(ApplicationDbContext db, IQuestionsService questionsService, IGradingScaleService gradingScale, IStudentService studentService, ITeacherService teacherService, ISchoolClassService schoolClassService)
         {
             this.db = db;
             this.questionsService = questionsService;
             this.gradingScale = gradingScale;
+            this.studentService = studentService;
+            this.teacherService = teacherService;
+            this.schoolClassService = schoolClassService;
         }
 
         public async Task AddAsync(QuizzesInputModel model, int teacherId)
@@ -100,6 +109,7 @@
             {
                 Id = id,
                 TeacherId = q.TeacherId,
+                QuizName = q.Name,
                 StudentId = studentId,
                 SubjectId = q.SubjectId,
                 Questions = this.db.Questions.Where(qu => qu.QuizId == id).Select(qu => new TakeQuestionsViewModel
@@ -156,29 +166,34 @@
             //    };
             //}
 
+            quiz.StudentUserId = this.studentService.GetUserId(quiz.StudentId);
+            quiz.TeacherUserId = this.teacherService.GetUserId(quiz.TeacherId);
+            quiz.TeacherFullName = this.teacherService.GetTeacherFullName(quiz.TeacherId);
+            quiz.StudentFullName = this.studentService.GetFullName(quiz.StudentId);
+            quiz.StudentClassName = this.schoolClassService.GetClassNameByStudentId(quiz.StudentId);
+
             return new GetQuizResult
             {
                 IsSuccessful = true,
                 Message = string.Empty,
                 Model = quiz,
             };
+
+            //public async Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id)
+            //{
+            //    var quiz = await this.db.Quizzes.FindAsync(id);
+            //    if (quiz == null)
+            //    {
+            //        return null;
+            //    }
+
+            //    return JsonSerializer.Deserialize<IEnumerable<AnswersViewModel>>(quiz.Answers, new JsonSerializerOptions
+            //    {
+            //        PropertyNameCaseInsensitive = true,
+            //    });
+            //}
+
         }
-
-        //public async Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id)
-        //{
-        //    var quiz = await this.db.Quizzes.FindAsync(id);
-        //    if (quiz == null)
-        //    {
-        //        return null;
-        //    }
-
-        //    return JsonSerializer.Deserialize<IEnumerable<AnswersViewModel>>(quiz.Answers, new JsonSerializerOptions
-        //    {
-        //        PropertyNameCaseInsensitive = true,
-        //    });
-        //}
-
-
 
         public IEnumerable<ReviewQuizViewModel> GetReviewQuizModel(Guid quizId, int studentId)
         {
@@ -345,3 +360,4 @@
         }
     }
 }
+
