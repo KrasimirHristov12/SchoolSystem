@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<NotificationViewModel>
 <li class="nav-item notifications-display">
-    <a class="nav-link text-dark" role="button">Известия</a>
+    <a class="nav-link text-dark" role="button">Известия (<span class="notifications-count">@Model.Where(n => n.IsNew).Count()</span>)</a>
 </li>
 
 <div class="notifications-container d-none border">

@@ -10,6 +10,7 @@
     using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.GradingScale;
+    using SchoolSystem.Services.Data.Notifications;
     using SchoolSystem.Services.Data.Questions;
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Data.Students;
@@ -25,8 +26,9 @@
         private readonly IStudentService studentService;
         private readonly ITeacherService teacherService;
         private readonly ISchoolClassService schoolClassService;
+        private readonly INotificationsService notificationsService;
 
-        public QuizzesService(ApplicationDbContext db, IQuestionsService questionsService, IGradingScaleService gradingScale, IStudentService studentService, ITeacherService teacherService, ISchoolClassService schoolClassService)
+        public QuizzesService(ApplicationDbContext db, IQuestionsService questionsService, IGradingScaleService gradingScale, IStudentService studentService, ITeacherService teacherService, ISchoolClassService schoolClassService, INotificationsService notificationsService)
         {
             this.db = db;
             this.questionsService = questionsService;
@@ -34,6 +36,7 @@
             this.studentService = studentService;
             this.teacherService = teacherService;
             this.schoolClassService = schoolClassService;
+            this.notificationsService = notificationsService;
         }
 
         public async Task AddAsync(QuizzesInputModel model, int teacherId)
@@ -77,6 +80,8 @@
             await this.db.SaveChangesAsync();
 
             await this.gradingScale.AddAsync(quiz.Id, model.ScaleRangeForPoor, model.ScaleRangeForFair, model.ScaleRangeForGood, model.ScaleRangeForVeryGood, model.ScaleRangeForExcellent);
+
+            await this.SendNotificationAsync(model.ClassesId, teacherId, model.Name);
         }
 
         public IEnumerable<DisplayQuizzesViewModel> GetMine(int studentId, string date)
@@ -358,6 +363,24 @@
 
             return points;
         }
+
+        private async Task SendNotificationAsync(IEnumerable<int?> classesIds, int teacherId, string quizName)
+        {
+            var studentsUserIds = new List<string>();
+            var teacherFullName = this.teacherService.GetTeacherFullName(teacherId);
+            foreach (var classId in classesIds)
+            {
+                var studentsInThisClass = this.db.Students.Where(st => st.ClassId == classId).Select(st => st.Id).ToList();
+                foreach (var studentId in studentsInThisClass)
+                {
+                    var studentUserId = this.studentService.GetUserId(studentId);
+                    studentsUserIds.Add(studentUserId);
+                }
+            }
+
+            string message = string.Format(GlobalConstants.Notification.TestAdded, teacherFullName, quizName);
+            await this.notificationsService.AddAsync(NotificationType.AddedTest, studentsUserIds, message);
+        }
+
     }
 }
-

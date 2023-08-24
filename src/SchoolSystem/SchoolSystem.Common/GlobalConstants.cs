@@ -177,7 +177,8 @@ namespace SchoolSystem.Common
         {
             public const int NotificationMessageMaxLength = 100;
             public const string AddedGrade = "Добавена е нова оценка от {0}.";
-            public const string TestTaken = "{0} от {1} предаде тест {2}.";
+            public const string TestTaken = "{0} от {1} предаде тест '{2}'.";
+            public const string TestAdded = "{0} добави нов тест '{1}'";
         }
 
         public static class ErrorMessage

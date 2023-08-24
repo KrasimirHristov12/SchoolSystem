@@ -7,5 +7,7 @@
         public NotificationType Type { get; set; }
 
         public string Message { get; set; }
+
+        public bool IsNew { get; set; }
     }
 }

@@ -42,6 +42,12 @@
             return userId;
         }
 
+        public IEnumerable<string> GetUserIdsOfAllStudentsInAClass(int classId)
+        {
+            var studentIds = this.db.Students.Where(s => s.ClassId == classId).Select(s => s.UserId).ToList();
+            return studentIds;
+        }
+
         public StudentInformationViewModel GetStudentInformation(int studentId)
         {
             var student = this.db.Students.Where(s => s.Id == studentId)

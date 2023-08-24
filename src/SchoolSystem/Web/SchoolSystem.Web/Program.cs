@@ -6,6 +6,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,7 @@
     using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Services.Mapping;
     using SchoolSystem.Services.Messaging;
+    using SchoolSystem.Web.Hubs;
     using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.WebServices;
 
@@ -73,7 +75,7 @@
             services.AddControllersWithViews(
                 options =>
                 {
-                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                    //options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 
                 }).AddRazorRuntimeCompilation();
             services.AddRazorPages();
@@ -99,6 +101,9 @@
             services.AddTransient<IQuestionsService, QuestionsService>();
             services.AddTransient<IGradingScaleService, GradingScaleService>();
             services.AddTransient<INotificationsService, NotificationsService>();
+            services.AddSingleton<IUserIdProvider, UserIdProviderCustom>();
+
+            services.AddSignalR();
         }
 
         private static void Configure(WebApplication app)
@@ -132,7 +137,7 @@
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.MapHub<NotificationsHub>("/notificationsHub");
             app.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
             app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();

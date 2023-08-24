@@ -13,6 +13,7 @@
         public Notification()
         {
             this.Receivers = new HashSet<NotificationsReceivers>();
+            this.IsNew = true;
         }
 
         public Guid Id { get; set; }
@@ -32,5 +33,7 @@
         public bool IsDeleted { get; set; }
 
         public DateTime? DeletedOn { get; set; }
+
+        public bool IsNew { get; set; }
     }
 }

@@ -63,15 +63,46 @@
             return true;
         }
 
-        public IEnumerable<NotificationViewModel> GetNotifications(string userId)
+        public IEnumerable<NotificationViewModel> GetNotifications(string userId, bool getNewOnesOnly)
         {
-            var notifications = this.db.Notifications.Where(n => n.Receivers.Any(u => u.ReceiverId == userId)).Select(n => new NotificationViewModel
-            {
-                Type = n.Type,
-                Message = n.Message,
-            }).ToList();
+            var notifications = this.db.Notifications.Where(n => n.Receivers.Any(u => u.ReceiverId == userId)).OrderByDescending(n => n.CreatedOn);
+            var notificationsViewModel = new List<NotificationViewModel>();
 
-            return notifications;
+            if (getNewOnesOnly)
+            {
+                notificationsViewModel = notifications.Where(n => n.IsNew).Select(n => new NotificationViewModel
+                {
+                    Type = n.Type,
+                    Message = n.Message,
+                    IsNew = n.IsNew,
+                }).ToList();
+            }
+            else
+            {
+                notificationsViewModel = notifications.Select(n => new NotificationViewModel
+                {
+                    Type = n.Type,
+                    Message = n.Message,
+                    IsNew = n.IsNew,
+                }).ToList();
+            }
+
+            return notificationsViewModel;
+        }
+
+        public async Task MarkNotificationsSeenAsync(string userId)
+        {
+            var newNotifications = this.db.Notifications.Where(n => n.Receivers.Any(u => u.ReceiverId == userId) && n.IsNew);
+
+            foreach (var notification in newNotifications)
+            {
+                notification.IsNew = false;
+            }
+
+            if (newNotifications.Any())
+            {
+                await this.db.SaveChangesAsync();
+            }
         }
     }
 }

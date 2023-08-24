@@ -9,6 +9,7 @@
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using SchoolSystem.Common;
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.Grades;
@@ -19,6 +20,7 @@
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Subjects;
     using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Web.Hubs;
     using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
     using SchoolSystem.Web.WebServices;
@@ -34,9 +36,10 @@
         private readonly IGradesService gradesService;
         private readonly IGradingScaleService gradingScaleService;
         private readonly INotificationsService notificationsService;
+        private readonly IHubContext<NotificationsHub, INotificationsHub> notificationsHub;
 
         public QuizzesController(IUserService userService, ITeacherService teacherService, ISchoolClassService classService, ISubjectService subjectService,
-            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService, INotificationsService notificationsService)
+            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService, INotificationsService notificationsService, IHubContext<NotificationsHub, INotificationsHub> notificationsHub)
         {
             this.userService = userService;
             this.teacherService = teacherService;
@@ -47,6 +50,7 @@
             this.gradesService = gradesService;
             this.gradingScaleService = gradingScaleService;
             this.notificationsService = notificationsService;
+            this.notificationsHub = notificationsHub;
         }
 
         [Authorize(Roles = GlobalConstants.Student.StudentRoleName)]
@@ -97,6 +101,19 @@
             }
 
             await this.quizzesService.AddAsync(model, teacherId);
+
+            foreach (var classId in model.ClassesId)
+            {
+                if (classId != null)
+                {
+                    var receiverIds = this.studentService.GetUserIdsOfAllStudentsInAClass((int)classId); // 20 - 1
+                    foreach (var receiverId in receiverIds)
+                    {
+                        var newNotifications = this.notificationsService.GetNotifications(receiverId, true);
+                        await this.notificationsHub.Clients.User(receiverId).SendNotifications(newNotifications);
+                    }
+                }
+            }
 
             return this.Redirect("/");
         }
@@ -174,6 +191,10 @@
             {
                 return this.NotFound();
             }
+
+            var newNotifications = this.notificationsService.GetNotifications(viewModel.TeacherUserId, true);
+
+            await this.notificationsHub.Clients.User(viewModel.TeacherUserId).SendNotifications(newNotifications);
 
             return this.Redirect("/");
         }

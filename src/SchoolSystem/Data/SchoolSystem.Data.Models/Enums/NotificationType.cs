@@ -4,5 +4,6 @@
     {
         AddedGrade,
         TestTaken,
+        AddedTest,
     }
 }

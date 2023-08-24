@@ -20,7 +20,7 @@
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var userId = this.userService.GetUserId(this.UserClaimsPrincipal);
-            var notifications = this.notificationsService.GetNotifications(userId);
+            var notifications = this.notificationsService.GetNotifications(userId, false);
             return this.View(notifications);
         }
     }

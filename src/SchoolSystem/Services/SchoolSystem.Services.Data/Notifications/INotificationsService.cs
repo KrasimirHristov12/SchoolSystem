@@ -10,6 +10,8 @@
     {
         Task<bool> AddAsync(NotificationType type, IEnumerable<string> receiversIds, string message);
 
-        IEnumerable<NotificationViewModel> GetNotifications(string userId);
+        IEnumerable<NotificationViewModel> GetNotifications(string userId, bool getNewOnesOnly);
+
+        Task MarkNotificationsSeenAsync(string userId);
     }
 }
