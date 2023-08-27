@@ -108,20 +108,8 @@
     <script src="~/js/jquery.datetimepicker.full.min.js"></script>
     <script src="~/js/add-validation.js"></script>
     @await this.RenderSectionAsync("Scripts", required: false)
-    <script>
-        console.log("test");
-        $(".notifications-display").on("click", function () {
-            console.log("in");
-            if ($(".notifications-container").hasClass("d-none")) {
-                $(".notifications-container").removeClass("d-none");
-            }
-            else {
-                $(".notifications-container").addClass("d-none");
-            }
-        })
-    </script>
 
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
-    <script src="~/js/notificationsLongPolling.js"></script>
+    <script src="~/js/notifications.js"></script>
 </body>
 </html>

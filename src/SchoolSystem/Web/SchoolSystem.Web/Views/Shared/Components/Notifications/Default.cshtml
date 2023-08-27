@@ -3,7 +3,7 @@
     <a class="nav-link text-dark" role="button">Известия (<span class="notifications-count">@Model.Where(n => n.IsNew).Count()</span>)</a>
 </li>
 
-<div class="notifications-container d-none border">
+<div style="overflow-y:scroll; max-height:200px;" class="notifications-container d-none border">
     <ul>
         @if (Model.Count() > 0)
         {

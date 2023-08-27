@@ -1,5 +1,6 @@
 ﻿namespace SchoolSystem.Web.Controllers
 {
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Authorization;
@@ -29,12 +30,17 @@
             return this.Ok();
         }
 
-        [HttpGet($"{nameof(NewNotifications)}")]
-        public IActionResult NewNotifications()
+        [HttpGet($"{nameof(GetNotifications)}")]
+        public IActionResult GetNotifications(bool getNewOnesOnly, int? page, int? elementsPerPage)
         {
             var userId = this.userService.GetUserId(this.User);
-            var newNotifications = this.notificationsService.GetNotifications(userId, true);
-            return this.Ok(newNotifications);
+            var notifications = this.notificationsService.GetNotifications(userId, getNewOnesOnly, page, elementsPerPage);
+            if (notifications.Count() == 0)
+            {
+                return this.NoContent();
+            }
+
+            return this.Ok(notifications);
         }
     }
 }

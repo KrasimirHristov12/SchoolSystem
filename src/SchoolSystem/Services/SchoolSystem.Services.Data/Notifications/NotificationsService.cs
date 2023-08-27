@@ -63,10 +63,16 @@
             return true;
         }
 
-        public IEnumerable<NotificationViewModel> GetNotifications(string userId, bool getNewOnesOnly)
+        public IEnumerable<NotificationViewModel> GetNotifications(string userId, bool getNewOnesOnly, int? page = null, int? elementsPerPage = null)
         {
-            var notifications = this.db.Notifications.Where(n => n.Receivers.Any(u => u.ReceiverId == userId)).OrderByDescending(n => n.CreatedOn);
+            var notifications = this.db.Notifications.Where(n => n.Receivers.Any(u => u.ReceiverId == userId)).OrderByDescending(n => n.CreatedOn)
+                .AsQueryable();
             var notificationsViewModel = new List<NotificationViewModel>();
+
+            if (page != null && elementsPerPage != null)
+            {
+                notifications = notifications.Skip(((int)page - 1) * (int)elementsPerPage).Take((int)elementsPerPage);
+            }
 
             if (getNewOnesOnly)
             {
