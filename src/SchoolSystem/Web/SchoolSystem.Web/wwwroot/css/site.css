@@ -92,7 +92,11 @@ body {
    margin-bottom: 10px;
 }
 
-.question-form {
-
+.chat-header {
+    justify-content: space-between;
 }
 
+.chat-footer {
+    position: absolute;
+    bottom: 0;
+}

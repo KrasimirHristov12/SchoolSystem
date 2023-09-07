@@ -1,0 +1,8 @@
+﻿@model IEnumerable<UserChatViewModel>
+
+<ul class="chat-users">
+    @foreach (var user in Model)
+    {
+        <li role="button">@user.Username</li>
+    }
+</ul>

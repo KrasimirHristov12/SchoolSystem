@@ -173,6 +173,11 @@ namespace SchoolSystem.Common
             public const string DurationMaxNumberAsString = "180";
         }
 
+        public static class Chat
+        {
+            public const int MessageMaxLength = 5000;
+        }
+
         public static class Notification
         {
             public const int NotificationMessageMaxLength = 100;

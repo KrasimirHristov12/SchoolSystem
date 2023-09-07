@@ -31,14 +31,14 @@ $(".notifications-display").on("click", function () {
 });
 
 
-let currentPage = 1;
-let observer = new IntersectionObserver(function (entries) {
+let currentpage = 1;
+let liObserver = new IntersectionObserver(function (entries) {
     let lastLiEntry = entries[0];
     if (lastLiEntry.isIntersecting) {
         console.log("in");
-        currentPage++;
+        currentpage++;
         observer.unobserve(lastLiEntry.target);
-        $.get(`/api/notifications/GetNotifications?getNewOnesOnly=False&page=${currentPage}&elementsPerPage=10`, function (data, status) {
+        $.get(`/api/notifications/GetNotifications?getNewOnesOnly=False&page=${currentpage}&elementsPerPage=10`, function (data, status) {
             if (status == 'success') {
 
 
@@ -47,7 +47,7 @@ let observer = new IntersectionObserver(function (entries) {
 
                 }
 
-                observer.observe(document.querySelector(".notifications-container li:last-child"));
+                liObserver.observe(document.querySelector(".notifications-container li:last-child"));
 
             }
         })
@@ -55,7 +55,7 @@ let observer = new IntersectionObserver(function (entries) {
     }
 });
 
-observer.observe(document.querySelector(".notifications-container li:last-child"));
+liObserver.observe(document.querySelector(".notifications-container li:last-child"));
 
 
 

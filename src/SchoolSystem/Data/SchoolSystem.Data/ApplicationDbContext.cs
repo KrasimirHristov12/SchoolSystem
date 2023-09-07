@@ -49,6 +49,8 @@
 
         public DbSet<NotificationsReceivers> NotificationsReceivers { get; set; }
 
+        public DbSet<Chat> Chat { get; set; }
+
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

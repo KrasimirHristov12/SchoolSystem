@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"/>
     <link rel="stylesheet" href="~/css/quizlib.css"/>
     <link rel="stylesheet" href="~/css/jquery.datetimepicker.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
     <header>
@@ -85,10 +86,22 @@
     </header>
     
     <div class="container">
-        <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
-            @this.RenderBody()
-        </main>
+        <div class="row">
+            <div class="@(this.User.Identity.IsAuthenticated ? "col-md-8" : "")">
+                <partial name="_CookieConsentPartial" />
+                <main role="main" class="pb-3">
+                    @this.RenderBody()
+                </main>
+            </div>
+            @if (this.User.Identity.IsAuthenticated)
+            {
+                <div class="col-md-4 border">
+                    <vc:chat></vc:chat>
+                </div>
+            }
+
+        </div>
+            
     </div>
     
     <footer class="border-top footer text-muted">
@@ -111,5 +124,6 @@
 
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/notifications.js"></script>
+    <script src="~/js/chat.js"></script>
 </body>
 </html>

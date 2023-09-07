@@ -1,17 +1,20 @@
 ﻿namespace SchoolSystem.Web.WebServices
 {
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-
+    using AutoMapper;
     using Microsoft.AspNetCore.Identity;
     using SchoolSystem.Common;
     using SchoolSystem.Data;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Services.Data.SchoolClass;
+    using SchoolSystem.Web.Infrastructure.HubHelpers;
     using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Accounts;
+    using SchoolSystem.Web.ViewModels.Chat;
 
     public class UserService : IUserService
     {
@@ -152,6 +155,73 @@
         public async Task LogoutAsync()
         {
             await this.signInManager.SignOutAsync();
+        }
+
+        public IEnumerable<UserChatViewModel> GetInfoForOnlineUsers(string excludeUserId)
+        {
+            var studentsUserInfo = this.db.Students.Where(s => ConnectedUser.Ids.Contains(s.UserId) && s.UserId != excludeUserId)
+                .Select(s => new UserChatViewModel
+                {
+                    FullName = s.FirstName + " " + s.Surname + " " + s.LastName,
+                    Username = s.User.UserName,
+                }).ToList();
+
+            var teachersUserInfo = this.db.Teachers.Where(t => ConnectedUser.Ids.Contains(t.UserId) && t.UserId != excludeUserId)
+                .Select(t => new UserChatViewModel
+                {
+                    FullName = t.FirstName + " " + t.Surname + " " + t.LastName,
+                    Username = t.User.UserName,
+                }).ToList();
+
+            return studentsUserInfo.Concat(teachersUserInfo).ToList();
+        }
+
+        public async Task<string> GetUsernameByIdAsync(string userId)
+        {
+            var user = await this.userManager.FindByIdAsync(userId);
+            return user?.UserName;
+        }
+
+        public string GetFullNameById(string userId)
+        {
+            var studentFullName = this.db.Students.Where(s => s.UserId == userId).Select(s => s.FirstName + " " + s.Surname + " " + s.LastName).FirstOrDefault();
+            if (studentFullName == null)
+            {
+                var teacherFullName = this.db.Teachers.Where(t => t.UserId == userId).Select(t => t.FirstName + " " + t.Surname + " " + t.LastName).FirstOrDefault();
+
+                if (teacherFullName == null)
+                {
+                    return null;
+                }
+
+                return teacherFullName;
+            }
+
+            return studentFullName;
+        }
+
+        public string GetFullNameByUsername(string username)
+        {
+            var studentFullName = this.db.Students.Where(s => s.User.UserName == username).Select(s => s.FirstName + " " + s.Surname + " " + s.LastName).FirstOrDefault();
+            if (studentFullName == null)
+            {
+                var teacherFullName = this.db.Teachers.Where(t => t.User.UserName == username).Select(t => t.FirstName + " " + t.Surname + " " + t.LastName).FirstOrDefault();
+
+                if (teacherFullName == null)
+                {
+                    return null;
+                }
+
+                return teacherFullName;
+            }
+
+            return studentFullName;
+        }
+
+        public async Task<string> GetUserIdByUsernameAsync(string username)
+        {
+            var user = await this.userManager.FindByNameAsync(username);
+            return user?.Id;
         }
 
         private async Task<Student> CreateStudentAsync(RegisterInputModel model, ApplicationUser user)

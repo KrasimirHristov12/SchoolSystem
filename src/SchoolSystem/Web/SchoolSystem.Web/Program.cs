@@ -19,6 +19,7 @@
     using SchoolSystem.Data.Repositories;
     using SchoolSystem.Data.Seeding;
     using SchoolSystem.Services.Data;
+    using SchoolSystem.Services.Data.Chat;
     using SchoolSystem.Services.Data.Grades;
     using SchoolSystem.Services.Data.GradingScale;
     using SchoolSystem.Services.Data.Notifications;
@@ -101,6 +102,7 @@
             services.AddTransient<IQuestionsService, QuestionsService>();
             services.AddTransient<IGradingScaleService, GradingScaleService>();
             services.AddTransient<INotificationsService, NotificationsService>();
+            services.AddTransient<IChatService, ChatService>();
             services.AddSingleton<IUserIdProvider, UserIdProviderCustom>();
 
             services.AddSignalR();
@@ -138,6 +140,7 @@
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapHub<NotificationsHub>("/notificationsHub");
+            app.MapHub<ChatHub>("/chatHub");
             app.MapControllerRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
             app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
