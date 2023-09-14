@@ -2,7 +2,10 @@ var chatConnection = new signalR.HubConnectionBuilder().withUrl("/chatHub").buil
 chatConnection.start();
 
 chatConnection.on("ClientConnected", function (data) {
-    $("ul.chat-users").append(`<li role="button">${data.username}</li>`);
+    if ($("ul.chat-users").find(`li:contains(${data.username})`).length == 0) {
+        $("ul.chat-users").append(`<li role="button">${data.username}</li>`);
+    }
+    
 });
 
 chatConnection.on("ClientDisconnected", function (data) {
@@ -85,9 +88,9 @@ $("body").on("click", ".close-button", function () {
 });
 
 function createChatBox(username, fullName, distanceInRight) {
-    let chatDiv = $(`<div class="col-md-2 chat-box border" style="position: fixed; bottom: 70px; right: ${distanceInRight}px; height: 300px;">
-       <div class="chat-header d-flex"><div><div class="username"><b>${username}</b></div><div class="full-name" style="font-size: 14px;">${fullName}</div></div><div><i class="bi bi-x-lg close-button" role="button"></i></div></div>
-       <div class="chat-content" style="overflow-y: overlay; max-height: 250px;"></div>
+    let chatDiv = $(`<div class="col-md-2 chat-box border" style="position: fixed; bottom: 70px; right: ${distanceInRight}px; height: 300px; padding: 10px;">
+       <div class="chat-header d-flex border-bottom border-dark"><div><div class="username"><b>${username}</b></div><div class="full-name" style="font-size: 14px;">${fullName}</div></div><div><i class="bi bi-x-lg close-button" role="button"></i></div></div>
+       <div class="chat-content" style="overflow-y: overlay; max-height: 200px;"></div>
        <div class="chat-footer">
           <textarea rows="2" cols="30" class="chat-text-input"></textarea>
           <i class="bi bi-send" role="button" style="font-size: 20px;"></i>

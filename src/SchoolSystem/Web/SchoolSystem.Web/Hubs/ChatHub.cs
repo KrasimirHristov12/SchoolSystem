@@ -1,6 +1,7 @@
 ﻿namespace SchoolSystem.Web.Hubs
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Authorization;
@@ -21,7 +22,11 @@
 
         public override async Task OnConnectedAsync()
         {
-            ConnectedUser.Ids.Add(this.Context.UserIdentifier);
+            if (!ConnectedUser.Ids.Contains(this.Context.UserIdentifier))
+            {
+                ConnectedUser.Ids.Add(this.Context.UserIdentifier);
+            }
+
             string fullName = this.userService.GetFullNameById(this.Context.UserIdentifier);
             string username = await this.userService.GetUsernameByIdAsync(this.Context.UserIdentifier);
             if (fullName != null && username != null)
@@ -31,7 +36,8 @@
                     FullName = fullName,
                     Username = username,
                 };
-                await this.Clients.Others.SendAsync("ClientConnected", userInfo);
+                var otherUserIds = ConnectedUser.Ids.Where(id => id != this.Context.UserIdentifier);
+                await this.Clients.Users(otherUserIds).SendAsync("ClientConnected", userInfo);
             }
         }
 

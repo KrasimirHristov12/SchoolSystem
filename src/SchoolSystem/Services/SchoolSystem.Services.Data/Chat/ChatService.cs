@@ -31,7 +31,7 @@
 
             return this.db.Chat.Where(ch => ch.Id == chat.Id).Select(ch => new ChatViewModel
             {
-                FullName = ch.Sender.UserName,
+                FullName = ch.Sender.FirstName + " " + ch.Sender.LastName,
                 Username = ch.Sender.UserName,
                 Message = ch.Message,
             }).First();
@@ -42,7 +42,7 @@
             var chats = this.db.Chat.Where(ch => (ch.SenderId == senderId && ch.ReceiverId == receiverId) || (ch.SenderId == receiverId && ch.ReceiverId == senderId))
                 .Select(ch => new ChatViewModel
                 {
-                    FullName = ch.Sender.UserName,
+                    FullName = ch.Sender.FirstName + " " + ch.Sender.LastName,
                     Username = ch.Sender.UserName,
                     Message = ch.Message,
                 }).ToList();

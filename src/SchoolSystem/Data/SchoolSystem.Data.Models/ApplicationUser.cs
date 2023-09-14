@@ -3,9 +3,10 @@ namespace SchoolSystem.Data.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
 
     using Microsoft.AspNetCore.Identity;
-
+    using SchoolSystem.Common;
     using SchoolSystem.Data.Common.Models;
 
     public class ApplicationUser : IdentityUser, IAuditInfo, IDeletableEntity
@@ -28,6 +29,15 @@ namespace SchoolSystem.Data.Models
         public bool IsDeleted { get; set; }
 
         public DateTime? DeletedOn { get; set; }
+
+        [MaxLength(GlobalConstants.NameMaxLength)]
+        public string FirstName { get; set; }
+
+        [MaxLength(GlobalConstants.NameMaxLength)]
+        public string Surname { get; set; }
+
+        [MaxLength(GlobalConstants.NameMaxLength)]
+        public string LastName { get; set; }
 
         public virtual ICollection<IdentityUserRole<string>> Roles { get; set; }
 

@@ -1,6 +1,10 @@
 ﻿namespace SchoolSystem.Data.Seeding
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Numerics;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Identity;
@@ -14,6 +18,7 @@
         public async Task SeedAsync(ApplicationDbContext dbContext, IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var db = serviceProvider.GetRequiredService<ApplicationDbContext>();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var headMasterUser = new ApplicationUser
             {

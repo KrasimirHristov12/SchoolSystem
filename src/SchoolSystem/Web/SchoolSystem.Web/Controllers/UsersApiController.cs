@@ -2,7 +2,9 @@
 {
     using System.Threading.Tasks;
 
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using SchoolSystem.Data.Models;
     using SchoolSystem.Web.WebServices;
 
     [ApiController]
@@ -10,20 +12,24 @@
     public class UsersApiController : ControllerBase
     {
         private readonly IUserService userService;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public UsersApiController(IUserService userService)
+        public UsersApiController(IUserService userService, UserManager<ApplicationUser> userManager)
         {
             this.userService = userService;
+            this.userManager = userManager;
         }
 
         [Route(nameof(GetFullName))]
-        public IActionResult GetFullName(string username)
+        public async Task<IActionResult> GetFullName(string username)
         {
-            var fullName = this.userService.GetFullNameByUsername(username);
-            if (fullName == null)
+            var user = await this.userManager.FindByNameAsync(username);
+            if (user == null)
             {
                 return this.NotFound();
             }
+
+            var fullName = user.FirstName + " " + user.LastName;
 
             return this.Ok(fullName);
         }
