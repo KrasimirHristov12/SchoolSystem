@@ -4,12 +4,14 @@ chatConnection.start();
 chatConnection.on("ClientConnected", function (data) {
     if ($("ul.chat-users").find(`li:contains(${data.username})`).length == 0) {
         $("ul.chat-users").append(`<li role="button">${data.username}</li>`);
+        $(".online-users .count").text($("ul.chat-users li").length.toString());
     }
     
 });
 
 chatConnection.on("ClientDisconnected", function (data) {
     $("ul.chat-users li").remove(`:contains('${data.username}')`);
+    $(".online-users .count").text($("ul.chat-users li").length.toString());
 });
 
 chatConnection.on("VisualizeMessage", function (message, usernameOfSender) {

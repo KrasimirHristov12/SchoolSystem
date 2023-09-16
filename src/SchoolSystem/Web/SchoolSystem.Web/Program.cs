@@ -29,6 +29,7 @@
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Subjects;
     using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Services.Email;
     using SchoolSystem.Services.Mapping;
     using SchoolSystem.Services.Messaging;
     using SchoolSystem.Web.Hubs;
@@ -90,7 +91,6 @@
             services.AddScoped<IDbQueryRunner, DbQueryRunner>();
 
             // Application services
-            services.AddTransient<IEmailSender, NullMessageSender>();
             services.AddTransient<ISettingsService, SettingsService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ISchoolClassService, SchoolClassService>();
@@ -103,6 +103,7 @@
             services.AddTransient<IGradingScaleService, GradingScaleService>();
             services.AddTransient<INotificationsService, NotificationsService>();
             services.AddTransient<IChatService, ChatService>();
+            services.AddTransient<SchoolSystem.Services.Email.IEmailSender, SchoolSystem.Services.Email.EmailSender>();
             services.AddSingleton<IUserIdProvider, UserIdProviderCustom>();
 
             services.AddSignalR();

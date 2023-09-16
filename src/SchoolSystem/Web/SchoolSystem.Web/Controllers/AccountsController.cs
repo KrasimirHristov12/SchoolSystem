@@ -5,9 +5,11 @@
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using SchoolSystem.Common;
     using SchoolSystem.Data;
     using SchoolSystem.Services.Data.SchoolClass;
+    using SchoolSystem.Services.Email;
     using SchoolSystem.Web.ViewModels.Accounts;
     using SchoolSystem.Web.WebServices;
 
@@ -16,12 +18,16 @@
         private readonly ApplicationDbContext db;
         private readonly IUserService userService;
         private readonly ISchoolClassService classService;
+        private readonly IEmailSender emailSender;
+        private readonly IConfiguration config;
 
-        public AccountsController(ApplicationDbContext db, IUserService userService, ISchoolClassService classService)
+        public AccountsController(ApplicationDbContext db, IUserService userService, ISchoolClassService classService, IEmailSender emailSender, IConfiguration config)
         {
             this.db = db;
             this.userService = userService;
             this.classService = classService;
+            this.emailSender = emailSender;
+            this.config = config;
         }
 
         public IActionResult Register()
@@ -65,9 +71,11 @@
                     return this.View(model);
                 }
 
+                await this.emailSender.SendAsync(this.config["GmailSmtp:Email"].ToString(), this.config["GmailSmtp:AppPassword"].ToString(), model.Email, model.FirstName + " " + model.LastName,  GlobalConstants.Email.SuccessfullyRegisteredSubject,
+                    string.Format(GlobalConstants.Email.SuccessfullyRegisteredMessage, model.FirstName));
+
                 return this.RedirectToAction(nameof(this.Login));
             }
-
             return this.Forbid();
         }
 

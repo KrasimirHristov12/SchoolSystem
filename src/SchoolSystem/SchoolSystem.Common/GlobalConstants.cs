@@ -186,6 +186,13 @@ namespace SchoolSystem.Common
             public const string TestAdded = "{0} добави нов тест '{1}'";
         }
 
+        public static class Email
+        {
+            public const string SuccessfullyRegisteredSubject = "Успешна регистрация.";
+
+            public const string SuccessfullyRegisteredMessage = "Здравейте, {0}<br/>Вие се регистрирахте успешно в нашия сайт!<br/><br/>Поздрави,<br/>Баш Шефа от името на дев екипа";
+        }
+
         public static class ErrorMessage
         {
             public const string RequiredErrorMessage = "Това поле е задължително.";

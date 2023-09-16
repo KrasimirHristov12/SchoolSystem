@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<UserChatViewModel>
-
+<h5>Чат</h5>
+<h7 class="online-users">На линия (<span class="count">@(Model.Count())</span>)</h7>
 <ul class="chat-users">
     @foreach (var user in Model)
     {
