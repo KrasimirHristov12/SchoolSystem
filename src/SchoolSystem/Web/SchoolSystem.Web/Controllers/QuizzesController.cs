@@ -10,6 +10,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
+    using Microsoft.Extensions.Configuration;
     using SchoolSystem.Common;
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.Grades;
@@ -20,6 +21,7 @@
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Subjects;
     using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Services.Email;
     using SchoolSystem.Web.Hubs;
     using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
@@ -37,9 +39,11 @@
         private readonly IGradingScaleService gradingScaleService;
         private readonly INotificationsService notificationsService;
         private readonly IHubContext<NotificationsHub, INotificationsHub> notificationsHub;
+        private readonly IEmailSender emailSender;
+        private readonly IConfiguration config;
 
         public QuizzesController(IUserService userService, ITeacherService teacherService, ISchoolClassService classService, ISubjectService subjectService,
-            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService, INotificationsService notificationsService, IHubContext<NotificationsHub, INotificationsHub> notificationsHub)
+            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService, INotificationsService notificationsService, IHubContext<NotificationsHub, INotificationsHub> notificationsHub, IEmailSender emailSender, IConfiguration config)
         {
             this.userService = userService;
             this.teacherService = teacherService;
@@ -51,6 +55,8 @@
             this.gradingScaleService = gradingScaleService;
             this.notificationsService = notificationsService;
             this.notificationsHub = notificationsHub;
+            this.emailSender = emailSender;
+            this.config = config;
         }
 
         [Authorize(Roles = GlobalConstants.Student.StudentRoleName)]
@@ -191,6 +197,10 @@
             {
                 return this.NotFound();
             }
+
+            string studentEmail = await this.userService.GetEmailByUserIdAsync(userId);
+            string studentFullName = await this.userService.GetFullNameByUserIdAsync(userId);
+            await this.emailSender.SendAsync(this.config["GmailSmtp:Email"].ToString(), this.config["GmailSmtp:AppPassword"].ToString(), studentEmail, studentFullName, GlobalConstants.Email.AddedGradeSubject, string.Format(GlobalConstants.Email.AddedGradeMessage, viewModel.SubjectName, viewModel.TeacherFullName));
 
             var newNotifications = this.notificationsService.GetNotifications(viewModel.TeacherUserId, true);
 

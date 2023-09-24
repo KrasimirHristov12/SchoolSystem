@@ -8,7 +8,7 @@
     @for (int i = 0; i < names.Count; i++)
     {
         <div>
-            <input type="checkbox" id="@(this.ViewBag.Type)-@i" value="@ids[i]" />
+            <input type="checkbox" id="@(this.ViewBag.Type)-@i" value="@(this.ViewBag.Type !=  "gradesValues" ? ids[i] : "")" />
             <label for="@(this.ViewBag.Type)-@i">@names[i]</label>
         </div>
     }

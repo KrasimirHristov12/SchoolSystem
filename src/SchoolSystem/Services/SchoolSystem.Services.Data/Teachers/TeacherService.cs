@@ -3,32 +3,27 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using SchoolSystem.Data;
+    using SchoolSystem.Data.Common.Repositories;
+    using SchoolSystem.Data.Models;
     using SchoolSystem.Web.ViewModels.Teachers;
 
     public class TeacherService : ITeacherService
     {
-        private readonly ApplicationDbContext db;
+        private readonly IDeletableEntityRepository<Teacher> teacherRepo;
 
-        public TeacherService(ApplicationDbContext db)
+        public TeacherService(IDeletableEntityRepository<Teacher> teacherRepo)
         {
-            this.db = db;
+            this.teacherRepo = teacherRepo;
         }
 
         public int GetTeacherIdByUserId(string userId)
         {
-            var teacher = this.db.Teachers.FirstOrDefault(t => t.UserId == userId);
-            if (teacher == null)
-            {
-                return -1;
-            }
-
-            return teacher.Id;
+            return this.teacherRepo.AllAsNoTracking().Where(t => t.UserId == userId).Select(t => t.Id).FirstOrDefault();
         }
 
         public IEnumerable<TeacherViewModel> GetAllTeachers()
         {
-            return this.db.Teachers.Select(t => new TeacherViewModel
+            return this.teacherRepo.AllAsNoTracking().Select(t => new TeacherViewModel
             {
                 Id = t.Id,
                 FullName = $"{t.FirstName} {t.Surname} {t.LastName}",
@@ -37,7 +32,7 @@
 
         public TeacherInformationViewModel GetTeacherInformation(int teacherId)
         {
-            var teacher = this.db.Teachers.Where(t => t.Id == teacherId)
+            var teacher = this.teacherRepo.AllAsNoTracking().Where(t => t.Id == teacherId)
                 .Select(t => new TeacherInformationViewModel
                 {
                     FullName = t.FirstName + " " + t.Surname + " " + t.LastName,
@@ -52,14 +47,12 @@
 
         public string GetTeacherFullName(int teacherId)
         {
-            var teacherFullName = this.db.Teachers.Where(t => t.Id == teacherId).Select(t => t.FirstName + " " + t.Surname + " " + t.LastName).FirstOrDefault();
-            return teacherFullName;
+            return this.teacherRepo.AllAsNoTracking().Where(t => t.Id == teacherId).Select(t => t.FirstName + " " + t.Surname + " " + t.LastName).FirstOrDefault();
         }
 
         public string GetUserId(int teacherId)
         {
-            var userId = this.db.Teachers.Where(t => t.Id == teacherId).Select(t => t.UserId).FirstOrDefault();
-            return userId;
+            return this.teacherRepo.AllAsNoTracking().Where(t => t.Id == teacherId).Select(t => t.UserId).FirstOrDefault();
         }
     }
 }

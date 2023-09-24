@@ -5,23 +5,24 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using SchoolSystem.Data;
+    using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Web.ViewModels.GradingScale;
 
     public class GradingScaleService : IGradingScaleService
     {
-        private readonly ApplicationDbContext db;
+        private readonly IDeletableEntityRepository<Quiz> quizzesRepo;
+        private readonly IDeletableEntityRepository<GradingScale> scalesRepo;
 
-        public GradingScaleService(ApplicationDbContext db)
+        public GradingScaleService(IDeletableEntityRepository<Quiz> quizzesRepo, IDeletableEntityRepository<GradingScale> scalesRepo)
         {
-            this.db = db;
+            this.quizzesRepo = quizzesRepo;
+            this.scalesRepo = scalesRepo;
         }
 
         public async Task<bool> AddAsync(Guid quizId, string gradingScaleForPoor, string gradingScaleForFair, string gradingScaleForGood, string gradingScaleForVeryGood, string gradingScaleForExcellent)
         {
-            var quiz = await this.db.Quizzes.FindAsync(quizId);
-            if (quiz == null)
+            if (!this.quizzesRepo.AllAsNoTracking().Any(q => q.Id == quizId))
             {
                 return false;
             }
@@ -66,8 +67,8 @@
                 MinimumPointsForExcellent = minPointsForExcellent,
                 MaximumPointsForExcellent = maxPointsForExcellent,
             };
-            this.db.GradingScales.Add(gradingScale);
-            await this.db.SaveChangesAsync();
+            await this.scalesRepo.AddAsync(gradingScale);
+            await this.scalesRepo.SaveChangesAsync();
             return true;
         }
 
@@ -78,30 +79,16 @@
 
         public GradingScaleViewModel GetGradingScale(Guid quizId)
         {
-            var gradingScale = this.db.GradingScales.Where(g => g.QuizId == quizId).FirstOrDefault();
-
-            if (gradingScale == null)
+            var gradingScale = this.scalesRepo.AllAsNoTracking().Where(g => g.QuizId == quizId).Select(g => new GradingScaleViewModel
             {
-                return null;
-            }
+                ScaleRangeForPoor = $"{g.MinimumPointForPoor}-{g.MaximumPointsForPoor}",
+                ScaleRangeForFair = $"{g.MinimumPointsForFair}-{g.MaximumPointsForFair}",
+                ScaleRangeForGood = $"{g.MinimumPointsForGood}-{g.MaximumPointsForGood}",
+                ScaleRangeForVeryGood = $"{g.MinimumPointsForVeryGood}-{g.MaximumPointsForVeryGood}",
+                ScaleRangeForExcellent = $"{g.MinimumPointsForExcellent}-{g.MaximumPointsForExcellent}",
+            }).FirstOrDefault();
 
-            string gradingScaleForPoor = $"{gradingScale.MinimumPointForPoor}-{gradingScale.MaximumPointsForPoor}";
-            string gradingScaleForFair = $"{gradingScale.MinimumPointsForFair}-{gradingScale.MaximumPointsForFair}";
-            string gradingScaleForGood = $"{gradingScale.MinimumPointsForGood}-{gradingScale.MaximumPointsForGood}";
-            string gradingScaleForVeryGood = $"{gradingScale.MinimumPointsForVeryGood}-{gradingScale.MaximumPointsForVeryGood}";
-            string gradingScaleForExcellent = $"{gradingScale.MinimumPointsForExcellent}-{gradingScale.MaximumPointsForExcellent}";
-
-            var gradingScaleViewModel = new GradingScaleViewModel
-            {
-                ScaleRangeForPoor = gradingScaleForPoor,
-                ScaleRangeForFair = gradingScaleForFair,
-                ScaleRangeForGood = gradingScaleForGood,
-                ScaleRangeForVeryGood = gradingScaleForVeryGood,
-                ScaleRangeForExcellent = gradingScaleForExcellent,
-            };
-
-            return gradingScaleViewModel;
-
+            return gradingScale;
         }
     }
 }

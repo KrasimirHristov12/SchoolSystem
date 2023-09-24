@@ -5,22 +5,20 @@
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
-    using SchoolSystem.Common;
-    using SchoolSystem.Data;
+    using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Web.ViewModels.Notifications;
 
     public class NotificationsService : INotificationsService
     {
-        private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IDeletableEntityRepository<Notification> notificationsRepo;
 
-        public NotificationsService(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
+        public NotificationsService(UserManager<ApplicationUser> userManager, IDeletableEntityRepository<Notification> notificationsRepo)
         {
-            this.db = db;
             this.userManager = userManager;
+            this.notificationsRepo = notificationsRepo;
         }
 
         public async Task<bool> AddAsync(NotificationType type, IEnumerable<string> receiversIds, string message)
@@ -48,7 +46,7 @@
                 Message = message,
             };
 
-            this.db.Notifications.Add(notification);
+            await this.notificationsRepo.AddAsync(notification);
             foreach (var receiverId in receiversIds)
             {
                 notification.Receivers.Add(new NotificationsReceivers
@@ -58,14 +56,14 @@
                 });
             }
 
-            await this.db.SaveChangesAsync();
+            await this.notificationsRepo.SaveChangesAsync();
 
             return true;
         }
 
         public IEnumerable<NotificationViewModel> GetNotifications(string userId, bool getNewOnesOnly, int? page = null, int? elementsPerPage = null)
         {
-            var notifications = this.db.Notifications.Where(n => n.Receivers.Any(u => u.ReceiverId == userId)).OrderByDescending(n => n.CreatedOn)
+            var notifications = this.notificationsRepo.AllAsNoTracking().Where(n => n.Receivers.Any(u => u.ReceiverId == userId)).OrderByDescending(n => n.CreatedOn)
                 .AsQueryable();
             var notificationsViewModel = new List<NotificationViewModel>();
 
@@ -98,7 +96,7 @@
 
         public async Task MarkNotificationsSeenAsync(string userId)
         {
-            var newNotifications = this.db.Notifications.Where(n => n.Receivers.Any(u => u.ReceiverId == userId) && n.IsNew);
+            var newNotifications = this.notificationsRepo.All().Where(n => n.Receivers.Any(u => u.ReceiverId == userId) && n.IsNew);
 
             foreach (var notification in newNotifications)
             {
@@ -107,7 +105,7 @@
 
             if (newNotifications.Any())
             {
-                await this.db.SaveChangesAsync();
+                await this.notificationsRepo.SaveChangesAsync();
             }
         }
     }

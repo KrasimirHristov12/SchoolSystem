@@ -4,20 +4,21 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using SchoolSystem.Data;
+    using SchoolSystem.Data.Common.Repositories;
+    using SchoolSystem.Data.Models;
 
     public class QuestionsService : IQuestionsService
     {
-        private readonly ApplicationDbContext db;
+        private readonly IDeletableEntityRepository<Question> questionsRepo;
 
-        public QuestionsService(ApplicationDbContext db)
+        public QuestionsService(IDeletableEntityRepository<Question> questionsRepo)
         {
-            this.db = db;
+            this.questionsRepo = questionsRepo;
         }
 
         public IEnumerable<Guid> GetIdsByQuizId(Guid quizId)
         {
-            return this.db.Questions.Where(q => q.QuizId == quizId).Select(q => q.Id).ToList();
+            return this.questionsRepo.AllAsNoTracking().Where(q => q.QuizId == quizId).Select(q => q.Id).ToList();
         }
     }
 }

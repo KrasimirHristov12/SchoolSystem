@@ -31,6 +31,8 @@
 
         public int SubjectId { get; set; }
 
+        public string SubjectName { get; set; }
+
         public DateTime DateTaken { get; set; }
 
         public DateTime QuizEnd => this.DateTaken.AddMinutes(this.Duration);

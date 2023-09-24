@@ -4,17 +4,18 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using SchoolSystem.Data;
+
+    using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Web.ViewModels.Chat;
 
     public class ChatService : IChatService
     {
-        private readonly ApplicationDbContext db;
+        private readonly IDeletableEntityRepository<Chat> chatRepo;
 
-        public ChatService(ApplicationDbContext db)
+        public ChatService(IDeletableEntityRepository<Chat> chatRepo)
         {
-            this.db = db;
+            this.chatRepo = chatRepo;
         }
 
         public async Task<ChatViewModel> AddAsync(AddChatInputModel model)
@@ -26,10 +27,10 @@
                 Message = model.Message,
             };
 
-            this.db.Chat.Add(chat);
-            await this.db.SaveChangesAsync();
+            await this.chatRepo.AddAsync(chat);
+            await this.chatRepo.SaveChangesAsync();
 
-            return this.db.Chat.Where(ch => ch.Id == chat.Id).Select(ch => new ChatViewModel
+            return this.chatRepo.AllAsNoTracking().Where(ch => ch.Id == chat.Id).Select(ch => new ChatViewModel
             {
                 FullName = ch.Sender.FirstName + " " + ch.Sender.LastName,
                 Username = ch.Sender.UserName,
@@ -39,7 +40,7 @@
 
         public IEnumerable<ChatViewModel> GetChats(string senderId, string receiverId)
         {
-            var chats = this.db.Chat.Where(ch => (ch.SenderId == senderId && ch.ReceiverId == receiverId) || (ch.SenderId == receiverId && ch.ReceiverId == senderId))
+            var chats = this.chatRepo.AllAsNoTracking().Where(ch => (ch.SenderId == senderId && ch.ReceiverId == receiverId) || (ch.SenderId == receiverId && ch.ReceiverId == senderId))
                 .Select(ch => new ChatViewModel
                 {
                     FullName = ch.Sender.FirstName + " " + ch.Sender.LastName,

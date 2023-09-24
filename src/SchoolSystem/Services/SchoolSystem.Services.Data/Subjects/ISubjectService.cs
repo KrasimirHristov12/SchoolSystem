@@ -12,8 +12,6 @@
 
         IEnumerable<SubjectViewModel> GetAllTaughtForTeacher(int teacherId);
 
-        Task<IEnumerable<SubjectViewModel>> GetAllAvailableForTeacherAsync(int teacherId);
-
         Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId);
 
     }

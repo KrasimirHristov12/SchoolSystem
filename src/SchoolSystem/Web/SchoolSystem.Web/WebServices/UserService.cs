@@ -62,8 +62,8 @@
             {
                 if (model.IsClassTeacher)
                 {
-                    teacherClassName = await this.schoolClassService.GetClassNameById((int)model.TeacherClassId);
-                    if (teacherClassName == string.Empty)
+                    teacherClassName = this.schoolClassService.GetClassNameById((int)model.TeacherClassId);
+                    if (teacherClassName == null)
                     {
                         return new CRUDResult()
                         {
@@ -222,6 +222,23 @@
         {
             var user = await this.userManager.FindByNameAsync(username);
             return user?.Id;
+        }
+
+        public async Task<string> GetEmailByUserIdAsync(string userId)
+        {
+            var user = await this.userManager.FindByIdAsync(userId);
+            return user?.Email;
+        }
+
+        public async Task<string> GetFullNameByUserIdAsync(string userId)
+        {
+            var user = await this.userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user.FirstName + " " + user.LastName;
         }
 
         private async Task<Student> CreateStudentAsync(RegisterInputModel model, ApplicationUser user)

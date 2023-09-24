@@ -6,22 +6,25 @@
 
     using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Common;
-    using SchoolSystem.Data;
+    using SchoolSystem.Data.Common.Repositories;
+    using SchoolSystem.Data.Models;
     using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Subjects;
 
     public class SubjectService : ISubjectService
     {
-        private readonly ApplicationDbContext db;
+        private readonly IDeletableEntityRepository<Subject> subjectsRepo;
+        private readonly IDeletableEntityRepository<Teacher> teachersRepo;
 
-        public SubjectService(ApplicationDbContext db)
+        public SubjectService(IDeletableEntityRepository<Subject> subjectsRepo, IDeletableEntityRepository<Teacher> teachersRepo)
         {
-            this.db = db;
+            this.subjectsRepo = subjectsRepo;
+            this.teachersRepo = teachersRepo;
         }
 
         public IEnumerable<SubjectViewModel> GetAllTaughtForTeacher(int teacherId)
         {
-            return this.db.Subjects.Where(s => s.Teachers.Any(t => t.Id == teacherId))
+            return this.subjectsRepo.AllAsNoTracking().Where(s => s.Teachers.Any(t => t.Id == teacherId))
                 .Select(s => new SubjectViewModel
                 {
                     Id = s.Id,
@@ -29,19 +32,9 @@
                 }).ToList();
         }
 
-        public async Task<IEnumerable<SubjectViewModel>> GetAllAvailableForTeacherAsync(int teacherId)
-        {
-            return await this.db.Subjects.Where(s => !s.Teachers.Any(t => t.Id == teacherId))
-                .Select(s => new SubjectViewModel
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                }).ToListAsync();
-        }
-
         public async Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId)
         {
-            var teacher = this.db.Teachers.Include(t => t.Subjects).First(t => t.Id == teacherId);
+            var teacher = this.teachersRepo.All().Include(t => t.Subjects).First(t => t.Id == teacherId);
             var results = new List<CRUDResult>();
 
             foreach (var subjectId in subjectIds)
@@ -54,7 +47,7 @@
                         ErrorMessages = new List<string>(),
                     };
 
-                    var subject = this.db.Subjects.FirstOrDefault(c => c.Id == subjectId);
+                    var subject = this.subjectsRepo.All().FirstOrDefault(c => c.Id == subjectId);
 
                     if (subjectIds.Where(s => s == subjectId).Count() > 1)
                     {
@@ -87,7 +80,7 @@
 
             if (results.All(r => r.Succeeded))
             {
-                await this.db.SaveChangesAsync();
+                await this.subjectsRepo.SaveChangesAsync();
             }
 
             return results;
@@ -95,7 +88,7 @@
 
         public IEnumerable<SubjectViewModel> GetAllSubjects()
         {
-            return this.db.Subjects.Select(s => new SubjectViewModel
+            return this.subjectsRepo.AllAsNoTracking().Select(s => new SubjectViewModel
             {
                 Id = s.Id,
                 Name = s.Name,

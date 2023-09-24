@@ -3,7 +3,9 @@
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    public class StudentsQuizzes
+    using SchoolSystem.Data.Common.Models;
+
+    public class StudentsQuizzes : IAuditInfo, IDeletableEntity
     {
         public int Id { get; set; }
 
@@ -21,5 +23,12 @@
 
         public int Points { get; set; }
 
+        public DateTime CreatedOn { get; set; }
+
+        public DateTime? ModifiedOn { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public DateTime? DeletedOn { get; set; }
     }
 }

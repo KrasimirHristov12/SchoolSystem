@@ -191,6 +191,10 @@ namespace SchoolSystem.Common
             public const string SuccessfullyRegisteredSubject = "Успешна регистрация.";
 
             public const string SuccessfullyRegisteredMessage = "Здравейте, {0}<br/>Вие се регистрирахте успешно в нашия сайт!<br/><br/>Поздрави,<br/>Баш Шефа от името на дев екипа";
+
+            public const string AddedGradeSubject = "Имате добавена нова оценка";
+
+            public const string AddedGradeMessage = "Здравейте,<br/>Имате нова оценка по <b><u>{0}</u></b> от <b>{1}</b>";
         }
 
         public static class ErrorMessage
@@ -298,6 +302,10 @@ namespace SchoolSystem.Common
             public const string SubjectAlreadyInTeacherList = "Този предмет е част от списъка на учителя.";
 
             public const string AtLeastOneSubjectShouldBeSelected = "Трябва да е избран поне 1 предмет. В момента не е избран нито един.";
+
+            public const string TeacherNotInClass = "Не преподавате на този клас.";
+
+            public const string TeacherDoesNotExist = "Учителят не съществува в системата.";
         }
     }
 }

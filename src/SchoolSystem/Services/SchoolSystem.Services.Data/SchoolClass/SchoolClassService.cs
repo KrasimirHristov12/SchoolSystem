@@ -7,6 +7,7 @@
     using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Common;
     using SchoolSystem.Data;
+    using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Migrations;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Services.Data.Teachers;
@@ -15,16 +16,20 @@
 
     public class SchoolClassService : ISchoolClassService
     {
-        private readonly ApplicationDbContext db;
+        private readonly IDeletableEntityRepository<Teacher> teachersRepo;
+        private readonly IDeletableEntityRepository<SchoolClass> classesRepo;
+        private readonly IDeletableEntityRepository<Student> studentsRepo;
 
-        public SchoolClassService(ApplicationDbContext db)
+        public SchoolClassService(IDeletableEntityRepository<Teacher> teachersRepo, IDeletableEntityRepository<SchoolClass> classesRepo, IDeletableEntityRepository<Student> studentsRepo)
         {
-            this.db = db;
+            this.teachersRepo = teachersRepo;
+            this.classesRepo = classesRepo;
+            this.studentsRepo = studentsRepo;
         }
 
         public IEnumerable<ClassViewModel> GetAllClasses()
         {
-            return this.db.Classes.Select(c => new ClassViewModel
+            return this.classesRepo.AllAsNoTracking().Select(c => new ClassViewModel
             {
                 Id = c.Id,
                 Name = c.Name,
@@ -33,7 +38,7 @@
 
         public IEnumerable<ClassViewModel> GetAllClassesForTeacher(int teacherId)
         {
-            return this.db.Classes.Where(c => c.Teachers.Any(t => t.Id == teacherId))
+            return this.classesRepo.AllAsNoTracking().Where(c => c.Teachers.Any(t => t.Id == teacherId))
                 .Select(c => new ClassViewModel
                 {
                     Id = c.Id,
@@ -43,7 +48,7 @@
 
         public IEnumerable<ClassViewModel> GetAllClassesNotForTeacher(int teacherId)
         {
-            return this.db.Classes.Where(c => !c.Teachers.Any(t => t.Id == teacherId))
+            return this.classesRepo.AllAsNoTracking().Where(c => !c.Teachers.Any(t => t.Id == teacherId))
                  .Select(c => new ClassViewModel
                  {
                      Id = c.Id,
@@ -53,28 +58,35 @@
 
         public IEnumerable<ClassViewModel> GetAllFreeClasses()
         {
-            return this.db.Classes.Where(c => !c.Teachers.Any(t => t.ClassName == c.Name)).Select(c => new ClassViewModel
+            return this.classesRepo.AllAsNoTracking().Where(c => !c.Teachers.Any(t => t.ClassName == c.Name)).Select(c => new ClassViewModel
             {
                 Id = c.Id,
                 Name = c.Name,
             }).ToList();
         }
 
-        public async Task<string> GetClassNameById(int id)
+        public string GetClassNameById(int id)
         {
-            var foundClass = await this.db.Classes.FindAsync(id);
-            if (foundClass == null)
-            {
-                return string.Empty;
-            }
+            string className = this.classesRepo.AllAsNoTracking().Where(c => c.Id == id).Select(c => c.Name)
+                .FirstOrDefault();
 
-            return foundClass.Name;
+            return className;
         }
 
         public async Task<List<CRUDResult>> AddClassesToTeacher(IList<int?> classesIds, int teacherId)
         {
-            var teacher = this.db.Teachers.Include(t => t.Classes).First(t => t.Id == teacherId);
+            var teacher = this.teachersRepo.All().Include(t => t.Classes).FirstOrDefault(t => t.Id == teacherId);
+
             var results = new List<CRUDResult>();
+
+            if (teacher == null)
+            {
+                results.Add(new CRUDResult
+                {
+                    Succeeded = false,
+                    ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.TeacherDoesNotExist },
+                });
+            }
 
             foreach (var classId in classesIds)
             {
@@ -86,7 +98,7 @@
                         ErrorMessages = new List<string>(),
                     };
 
-                    var schoolClass = this.db.Classes.FirstOrDefault(c => c.Id == classId);
+                    var schoolClass = this.classesRepo.All().FirstOrDefault(c => c.Id == classId);
 
                     if (classesIds.Where(c => c == classId).Count() > 1)
                     {
@@ -119,7 +131,7 @@
 
             if (results.All(r => r.Succeeded))
             {
-                await this.db.SaveChangesAsync();
+                await this.teachersRepo.SaveChangesAsync();
             }
 
             return results;
@@ -127,7 +139,7 @@
 
         public string GetClassNameByStudentId(int studentId)
         {
-            var className = this.db.Students.Where(s => s.Id == studentId).Select(s => s.Class.Name).FirstOrDefault();
+            var className = this.studentsRepo.AllAsNoTracking().Where(s => s.Id == studentId).Select(s => s.Class.Name).FirstOrDefault();
             return className;
 
         }

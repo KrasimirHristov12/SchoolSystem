@@ -27,5 +27,9 @@
         string GetFullNameByUsername(string username);
 
         Task<string> GetUserIdByUsernameAsync(string username);
+
+        Task<string> GetEmailByUserIdAsync(string userId);
+
+        Task<string> GetFullNameByUserIdAsync(string userId);
     }
 }

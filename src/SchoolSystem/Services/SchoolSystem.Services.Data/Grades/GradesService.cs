@@ -8,8 +8,7 @@
 
     using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Common;
-    using SchoolSystem.Data;
-    using SchoolSystem.Data.Migrations;
+    using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
     using SchoolSystem.Services.Data.GradingScale;
@@ -22,15 +21,23 @@
 
     public class GradesService : IGradesService
     {
-        private readonly ApplicationDbContext db;
+        private readonly IDeletableEntityRepository<Grade> gradesRepo;
+        private readonly IDeletableEntityRepository<Student> studentsRepo;
+        private readonly IDeletableEntityRepository<SchoolClass> classesRepo;
+        private readonly IDeletableEntityRepository<Teacher> teachersRepo;
+        private readonly IDeletableEntityRepository<Subject> subjectsRepo;
         private readonly IGradingScaleService gradingScaleService;
         private readonly ITeacherService teacherService;
         private readonly INotificationsService notificationsService;
         private readonly IStudentService studentService;
 
-        public GradesService(ApplicationDbContext db, IGradingScaleService gradingScaleService, ITeacherService teacherService, INotificationsService notificationsService, IStudentService studentService)
+        public GradesService(IDeletableEntityRepository<Grade> gradesRepo, IDeletableEntityRepository<Student> studentsRepo, IDeletableEntityRepository<SchoolClass> classesRepo, IDeletableEntityRepository<Teacher> teachersRepo, IDeletableEntityRepository<Subject> subjectsRepo, IGradingScaleService gradingScaleService, ITeacherService teacherService, INotificationsService notificationsService, IStudentService studentService)
         {
-            this.db = db;
+            this.gradesRepo = gradesRepo;
+            this.studentsRepo = studentsRepo;
+            this.classesRepo = classesRepo;
+            this.teachersRepo = teachersRepo;
+            this.subjectsRepo = subjectsRepo;
             this.gradingScaleService = gradingScaleService;
             this.teacherService = teacherService;
             this.notificationsService = notificationsService;
@@ -39,7 +46,7 @@
 
         public DisplayGradesViewModel GetForStudent(int studentId, int page)
         {
-            var allGradesForStudent = this.db.Grades.Where(g => g.StudentId == studentId).Include(g => g.Teacher).Include(g => g.Subject);
+            var allGradesForStudent = this.gradesRepo.AllAsNoTracking().Where(g => g.StudentId == studentId).Include(g => g.Teacher).Include(g => g.Subject);
             var model = new DisplayGradesViewModel();
             var cultureInfo = new CultureInfo("bg-BG");
             var teachersSet = new HashSet<string>();
@@ -59,7 +66,6 @@
             {
                 1, 2,
             };
-
 
             foreach (var g in allGradesForStudent)
             {
@@ -81,7 +87,7 @@
                 gradesIdsSet.Add((int)g.Value);
             }
 
-            var totalGradesForStudent = this.db.Grades.Where(g => g.StudentId == studentId).Count();
+            var totalGradesForStudent = this.gradesRepo.AllAsNoTracking().Where(g => g.StudentId == studentId).Count();
 
             var grades = allGradesForStudent.Skip((page - 1) * 10).Take(10).Select(g => new GradesViewModel
             {
@@ -133,7 +139,7 @@
         public DisplayGradesViewModel GetFilteredGrades(int page, int studentId, IEnumerable<int> teacherIds = null, IEnumerable<int> subjectIds = null, IEnumerable<int> reasonIds = null, ICollection<int> gradesValues = null, int? date = null)
         {
             var cultureInfo = new CultureInfo("bg-BG");
-            var gradesFromDb = this.db.Grades.Where(g => g.StudentId == studentId);
+            var gradesFromDb = this.gradesRepo.AllAsNoTracking().Where(g => g.StudentId == studentId);
             if (teacherIds != null && teacherIds.Any())
             {
                 gradesFromDb = gradesFromDb.Where(g => teacherIds.Contains(g.TeacherId));
@@ -191,10 +197,7 @@
 
         public async Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId, string userId)
         {
-            var selectedStudent = this.db.Students.Include(s => s.Grades).FirstOrDefault(st => st.Id == model.StudentId);
-            var selectedClass = this.db.Classes.Include(c => c.Students).FirstOrDefault(c => c.Id == model.ClassId);
-            var selectedSubject = this.db.Subjects.FirstOrDefault(s => s.Id == model.SubjectId);
-            var teacher = this.db.Teachers.Include(t => t.Subjects).First(t => t.Id == teacherId);
+            var selectedStudent = this.studentsRepo.All().Where(s => s.Id == model.StudentId).FirstOrDefault();
 
             if (selectedStudent == null)
             {
@@ -205,7 +208,7 @@
                 };
             }
 
-            if (selectedClass == null)
+            if (!this.classesRepo.AllAsNoTracking().Any(c => c.Id == model.ClassId))
             {
                 return new CRUDResult
                 {
@@ -214,7 +217,7 @@
                 };
             }
 
-            if (selectedSubject == null)
+            if (!this.subjectsRepo.AllAsNoTracking().Any(s => s.Id == model.SubjectId))
             {
                 return new CRUDResult
                 {
@@ -223,7 +226,7 @@
                 };
             }
 
-            if (!selectedClass.Students.Any(s => s.Id == selectedStudent.Id))
+            if (!this.classesRepo.AllAsNoTracking().Any(c => c.Id == model.ClassId && c.Students.Any(s => s.Id == model.StudentId)))
             {
                 return new CRUDResult
                 {
@@ -232,12 +235,21 @@
                 };
             }
 
-            if (!teacher.Subjects.Any(s => s.Id == model.SubjectId))
+            if (!this.subjectsRepo.AllAsNoTracking().Any(s => s.Id == model.SubjectId && s.Teachers.Any(t => t.Id == teacherId)))
             {
                 return new CRUDResult
                 {
                     Succeeded = false,
                     ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.SubjectNotInTeacherList },
+                };
+            }
+
+            if (!this.teachersRepo.AllAsNoTracking().Any(t => t.Id == teacherId && t.Classes.Any(c => c.Id == model.ClassId)))
+            {
+                return new CRUDResult
+                {
+                    Succeeded = false,
+                    ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.TeacherNotInClass },
                 };
             }
 
@@ -248,7 +260,8 @@
                 Reason = (GradeReason)model.Reason,
                 Value = (double)model.Value,
             });
-            await this.db.SaveChangesAsync();
+
+            await this.gradesRepo.SaveChangesAsync();
 
             var studentUserId = this.studentService.GetUserId((int)model.StudentId);
             var receiversIds = new List<string>
@@ -286,17 +299,17 @@
 
         public async Task<bool> AddAfterQuizIsTakenAsync(TakeQuizViewModel model, int pointsEarned, IEnumerable<string> scaleRanges)
         {
-            if (!this.db.Teachers.Any(t => t.Id == model.TeacherId))
+            if (!this.teachersRepo.AllAsNoTracking().Any(t => t.Id == model.TeacherId))
             {
                 return false;
             }
 
-            if (!this.db.Students.Any(s => s.Id == model.StudentId))
+            if (!this.studentsRepo.AllAsNoTracking().Any(s => s.Id == model.StudentId))
             {
                 return false;
             }
 
-            if (!this.db.Subjects.Any(s => s.Id == model.SubjectId))
+            if (!this.subjectsRepo.AllAsNoTracking().Any(s => s.Id == model.SubjectId))
             {
                 return false;
             }
@@ -311,9 +324,9 @@
                 Value = markNumber,
             };
 
-            this.db.Grades.Add(markObj);
+            await this.gradesRepo.AddAsync(markObj);
 
-            await this.db.SaveChangesAsync();
+            await this.gradesRepo.SaveChangesAsync();
 
             var takenNotificationMessage = string.Format(GlobalConstants.Notification.TestTaken, model.StudentFullName, model.StudentClassName, model.QuizName);
             await this.notificationsService.AddAsync(NotificationType.TestTaken, new List<string> { model.TeacherUserId }, takenNotificationMessage);
