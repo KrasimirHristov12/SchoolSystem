@@ -8,11 +8,11 @@
 
     public interface ISchoolClassService
     {
-        IEnumerable<ClassViewModel> GetAllClasses();
+        IEnumerable<T> GetAllClasses<T>();
 
-        IEnumerable<ClassViewModel> GetAllFreeClasses();
+        IEnumerable<T> GetAllFreeClasses<T>();
 
-        IEnumerable<ClassViewModel> GetAllClassesForTeacher(int teacherId);
+        IEnumerable<T> GetAllClassesForTeacher<T>(int teacherId);
 
         string GetClassNameById(int id);
 

@@ -25,7 +25,7 @@
         {
             var model = new SubjectsInputModel
             {
-                Subjects = this.subjectService.GetAllSubjects(),
+                Subjects = this.subjectService.GetAllSubjects<SubjectViewModel>(),
                 Teachers = this.teacherService.GetAllTeachers(),
             };
 
@@ -35,7 +35,7 @@
         [HttpPost]
         public async Task<IActionResult> Add(SubjectsInputModel model)
         {
-            model.Subjects = this.subjectService.GetAllSubjects();
+            model.Subjects = this.subjectService.GetAllSubjects<SubjectViewModel>();
             model.Teachers = this.teacherService.GetAllTeachers();
             if (!this.ModelState.IsValid)
             {

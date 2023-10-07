@@ -8,8 +8,8 @@
     using SchoolSystem.Common;
     using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
+    using SchoolSystem.Services.Mapping;
     using SchoolSystem.Web.ViewModels;
-    using SchoolSystem.Web.ViewModels.Subjects;
 
     public class SubjectService : ISubjectService
     {
@@ -22,14 +22,9 @@
             this.teachersRepo = teachersRepo;
         }
 
-        public IEnumerable<SubjectViewModel> GetAllTaughtForTeacher(int teacherId)
+        public IEnumerable<T> GetAllTaughtForTeacher<T>(int teacherId)
         {
-            return this.subjectsRepo.AllAsNoTracking().Where(s => s.Teachers.Any(t => t.Id == teacherId))
-                .Select(s => new SubjectViewModel
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                }).ToList();
+            return this.subjectsRepo.AllAsNoTracking().Where(s => s.Teachers.Any(t => t.Id == teacherId)).To<T>().ToList();
         }
 
         public async Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId)
@@ -86,13 +81,9 @@
             return results;
         }
 
-        public IEnumerable<SubjectViewModel> GetAllSubjects()
+        public IEnumerable<T> GetAllSubjects<T>()
         {
-            return this.subjectsRepo.AllAsNoTracking().Select(s => new SubjectViewModel
-            {
-                Id = s.Id,
-                Name = s.Name,
-            }).ToList();
+            return this.subjectsRepo.AllAsNoTracking().To<T>().ToList();
         }
     }
 }

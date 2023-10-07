@@ -15,6 +15,8 @@
     using SchoolSystem.Services.Data.Notifications;
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Services.Mapping;
+    using SchoolSystem.Web.Infrastructure.ExtensionMethods;
     using SchoolSystem.Web.ViewModels;
     using SchoolSystem.Web.ViewModels.Grades;
     using SchoolSystem.Web.ViewModels.Quizzes;
@@ -44,10 +46,10 @@
             this.studentService = studentService;
         }
 
-        public DisplayGradesViewModel GetForStudent(int studentId, int page)
+        public DisplayGradesViewModel<T> GetForStudent<T>(int studentId, int page)
         {
             var allGradesForStudent = this.gradesRepo.AllAsNoTracking().Where(g => g.StudentId == studentId).Include(g => g.Teacher).Include(g => g.Subject);
-            var model = new DisplayGradesViewModel();
+            var model = new DisplayGradesViewModel<T>();
             var cultureInfo = new CultureInfo("bg-BG");
             var teachersSet = new HashSet<string>();
             var subjectsSet = new HashSet<string>();
@@ -73,7 +75,6 @@
                 int teacherId = g.Teacher.Id;
                 string subjectName = g.Subject.Name;
                 int subjectId = g.Subject.Id;
-                string reasonAsString = this.GetReasonNameByReasonEnum(g.Reason);
                 int reasonId = (int)g.Reason;
                 string grade = g.Value.ToString("F2");
                 int gradeId = g.Id;
@@ -81,7 +82,7 @@
                 teachersIdsSet.Add(teacherId);
                 subjectsSet.Add(subjectName);
                 subjectsIdsSet.Add(subjectId);
-                reasonsSet.Add(reasonAsString);
+                reasonsSet.Add(g.Reason.GetDisplayName());
                 reasonsIdsSet.Add(reasonId);
                 gradesSet.Add(grade);
                 gradesIdsSet.Add((int)g.Value);
@@ -89,19 +90,7 @@
 
             var totalGradesForStudent = this.gradesRepo.AllAsNoTracking().Where(g => g.StudentId == studentId).Count();
 
-            var grades = allGradesForStudent.Skip((page - 1) * 10).Take(10).Select(g => new GradesViewModel
-            {
-                TeacherName = g.Teacher.FirstName + " " + g.Teacher.LastName,
-                Date = g.CreatedOn.Date.ToString("d", cultureInfo),
-                SubjectName = g.Subject.Name,
-                Reason = g.Reason,
-                Value = g.Value.ToString("F2"),
-            }).ToList();
-
-            foreach (var g in grades)
-            {
-                g.ReasonAsString = this.GetReasonNameByReasonEnum(g.Reason);
-            }
+            var grades = allGradesForStudent.Skip((page - 1) * 10).Take(10).To<T>().ToList();
 
             model.Filter = new FilterGradesViewModel();
             model.Filter.Teachers = new TeachersFilterViewModel
@@ -136,7 +125,7 @@
             return model;
         }
 
-        public DisplayGradesViewModel GetFilteredGrades(int page, int studentId, IEnumerable<int> teacherIds = null, IEnumerable<int> subjectIds = null, IEnumerable<int> reasonIds = null, ICollection<int> gradesValues = null, int? date = null)
+        public DisplayGradesViewModel<T> GetFilteredGrades<T>(int page, int studentId, IEnumerable<int> teacherIds = null, IEnumerable<int> subjectIds = null, IEnumerable<int> reasonIds = null, ICollection<int> gradesValues = null, int? date = null)
         {
             var cultureInfo = new CultureInfo("bg-BG");
             var gradesFromDb = this.gradesRepo.AllAsNoTracking().Where(g => g.StudentId == studentId);
@@ -171,21 +160,11 @@
 
             var filteredCount = gradesFromDb.Count();
 
-            var gradesList = gradesFromDb.Skip((page - 1) * 10).Take(10).Select(g => new GradesViewModel
-            {
-                TeacherName = g.Teacher.FirstName + " " + g.Teacher.LastName,
-                Date = g.CreatedOn.Date.ToString("d", cultureInfo),
-                SubjectName = g.Subject.Name,
-                Reason = g.Reason,
-                Value = g.Value.ToString("F2"),
-            }).ToList();
+            var gradesList = gradesFromDb.Skip((page - 1) * 10)
+                .Take(10).To<T>()
+                .ToList();
 
-            foreach (var g in gradesList)
-            {
-                g.ReasonAsString = this.GetReasonNameByReasonEnum(g.Reason);
-            }
-
-            return new DisplayGradesViewModel
+            return new DisplayGradesViewModel<T>
             {
                 Grades = gradesList,
                 TotalGrades = filteredCount,
@@ -328,24 +307,13 @@
 
             await this.gradesRepo.SaveChangesAsync();
 
-            var takenNotificationMessage = string.Format(GlobalConstants.Notification.TestTaken, model.StudentFullName, model.StudentClassName, model.QuizName);
+            var takenNotificationMessage = string.Format(GlobalConstants.Notification.TestTaken, model.StudentFullName, model.StudentClassName, model.Name);
             await this.notificationsService.AddAsync(NotificationType.TestTaken, new List<string> { model.TeacherUserId }, takenNotificationMessage);
 
             var addedNotificationMessage = string.Format(GlobalConstants.Notification.AddedGrade, model.TeacherFullName);
             await this.notificationsService.AddAsync(NotificationType.AddedGrade, new List<string> { model.StudentUserId }, addedNotificationMessage);
 
             return true;
-        }
-
-        public string GetReasonNameByReasonEnum(GradeReason grade)
-        {
-            var enumDisplayDict = new Dictionary<GradeReason, string>();
-
-            enumDisplayDict[GradeReason.Oral] = GlobalConstants.Grade.OralReason;
-            enumDisplayDict[GradeReason.Quiz] = GlobalConstants.Grade.QuizReason;
-            enumDisplayDict[GradeReason.Participation] = GlobalConstants.Grade.ParticipationReason;
-            enumDisplayDict[GradeReason.Other] = GlobalConstants.Grade.OtherReason;
-            return enumDisplayDict[grade];
         }
     }
 }

@@ -5,6 +5,7 @@
 
     using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
+    using SchoolSystem.Services.Mapping;
     using SchoolSystem.Web.ViewModels.Teachers;
 
     public class TeacherService : ITeacherService
@@ -30,18 +31,9 @@
             }).ToList();
         }
 
-        public TeacherInformationViewModel GetTeacherInformation(int teacherId)
+        public T GetTeacherInformation<T>(int teacherId)
         {
-            var teacher = this.teacherRepo.AllAsNoTracking().Where(t => t.Id == teacherId)
-                .Select(t => new TeacherInformationViewModel
-                {
-                    FullName = t.FirstName + " " + t.Surname + " " + t.LastName,
-                    YearsOfExperience = t.YearsOfExperience,
-                    IsClassTeacher = t.IsClassTeacher,
-                    ClassName = t.ClassName,
-                    SubjectsTaught = string.Join(", ", t.Subjects.Select(s => s.Name).ToList()),
-                    ClassesTaught = string.Join(", ", t.Classes.Select(c => c.Name).ToList()),
-                }).FirstOrDefault();
+            var teacher = this.teacherRepo.AllAsNoTracking().Where(t => t.Id == teacherId).To<T>().FirstOrDefault();
             return teacher;
         }
 

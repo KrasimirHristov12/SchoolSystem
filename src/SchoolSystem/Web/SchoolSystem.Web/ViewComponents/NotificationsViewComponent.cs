@@ -4,6 +4,7 @@
 
     using Microsoft.AspNetCore.Mvc;
     using SchoolSystem.Services.Data.Notifications;
+    using SchoolSystem.Web.ViewModels.Notifications;
     using SchoolSystem.Web.WebServices;
 
     public class NotificationsViewComponent : ViewComponent
@@ -20,7 +21,7 @@
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var userId = this.userService.GetUserId(this.UserClaimsPrincipal);
-            var notifications = this.notificationsService.GetNotifications(userId, false, 1, 10);
+            var notifications = this.notificationsService.GetNotifications<NotificationViewModel>(userId, false, 1, 10);
             return this.View(notifications);
         }
     }

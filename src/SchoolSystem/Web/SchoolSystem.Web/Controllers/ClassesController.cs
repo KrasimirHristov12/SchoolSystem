@@ -27,7 +27,7 @@
             var model = new ClassInputModel()
             {
                 Teachers = this.teacherService.GetAllTeachers(),
-                Classes = this.classService.GetAllClasses(),
+                Classes = this.classService.GetAllClasses<ClassViewModel>(),
             };
             return this.View(model);
         }
@@ -35,7 +35,7 @@
         [HttpPost]
         public async Task<IActionResult> Add(ClassInputModel model)
         {
-            model.Classes = this.classService.GetAllClasses();
+            model.Classes = this.classService.GetAllClasses<ClassViewModel>();
             model.Teachers = this.teacherService.GetAllTeachers();
             if (!this.ModelState.IsValid)
             {

@@ -11,9 +11,9 @@
     {
         Task AddAsync(QuizzesInputModel model, int teacherId);
 
-        IEnumerable<DisplayQuizzesViewModel> GetMine(int studentId, string date);
+        IEnumerable<T> GetMine<T>(int studentId, string date);
 
-        GetQuizResult GetQuiz(Guid id, int studentId);
+        GetQuizResult<T> GetQuiz<T>(Guid id, int studentId);
 
         //Task<IEnumerable<AnswersViewModel>> GetAnswersAsync(Guid id);
 

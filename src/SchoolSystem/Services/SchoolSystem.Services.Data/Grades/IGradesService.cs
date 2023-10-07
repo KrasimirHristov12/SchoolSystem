@@ -12,14 +12,12 @@
     {
         Task<CRUDResult> AddAsync(GradesInputModel model, int teacherId, string userId);
 
-        DisplayGradesViewModel GetForStudent(int studentId, int page);
+        DisplayGradesViewModel<T> GetForStudent<T>(int studentId, int page);
 
-        DisplayGradesViewModel GetFilteredGrades(int page, int studentId, IEnumerable<int> teacherIds = null, IEnumerable<int> subjectIds = null, IEnumerable<int> reasonIds = null, ICollection<int> gradesValues = null, int? date = null);
+        DisplayGradesViewModel<T> GetFilteredGrades<T>(int page, int studentId, IEnumerable<int> teacherIds = null, IEnumerable<int> subjectIds = null, IEnumerable<int> reasonIds = null, ICollection<int> gradesValues = null, int? date = null);
 
         Task<bool> AddAfterQuizIsTakenAsync(TakeQuizViewModel model, int pointsEarned, IEnumerable<string> scaleRanges);
 
         int GetMarkByPointsEarnedAndGradingScale(int pointsEarned, IEnumerable<string> scaleRanges);
-
-        string GetReasonNameByReasonEnum(GradeReason grade);
     }
 }

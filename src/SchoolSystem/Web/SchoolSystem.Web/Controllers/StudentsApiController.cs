@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Mvc;
     using SchoolSystem.Common;
     using SchoolSystem.Services.Data.Students;
+    using SchoolSystem.Web.ViewModels.Students;
 
     [ApiController]
     [Route("api/students")]

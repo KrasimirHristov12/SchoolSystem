@@ -105,7 +105,6 @@
             services.AddTransient<IChatService, ChatService>();
             services.AddTransient<SchoolSystem.Services.Email.IEmailSender, SchoolSystem.Services.Email.EmailSender>();
             services.AddSingleton<IUserIdProvider, UserIdProviderCustom>();
-
             services.AddSignalR();
         }
 

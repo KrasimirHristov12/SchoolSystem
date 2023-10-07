@@ -6,6 +6,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using SchoolSystem.Services.Data.Notifications;
+    using SchoolSystem.Web.ViewModels.Notifications;
     using SchoolSystem.Web.WebServices;
 
     [ApiController]
@@ -34,7 +35,7 @@
         public IActionResult GetNotifications(bool getNewOnesOnly, int? page, int? elementsPerPage)
         {
             var userId = this.userService.GetUserId(this.User);
-            var notifications = this.notificationsService.GetNotifications(userId, getNewOnesOnly, page, elementsPerPage);
+            var notifications = this.notificationsService.GetNotifications<NotificationViewModel>(userId, getNewOnesOnly, page, elementsPerPage);
             if (notifications.Count() == 0)
             {
                 return this.NoContent();

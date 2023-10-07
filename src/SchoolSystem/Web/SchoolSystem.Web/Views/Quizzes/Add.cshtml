@@ -20,13 +20,15 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="ClassesId"></label>
-        <select asp-for="ClassesId" class="form-select" asp-items="@(new SelectList(Model.ViewModel.Classes, "Id", "Name"))" data-bs-toggle="tooltip" data-bs-placement="top"
-                data-bs-custom-class="custom-tooltip"
-                data-bs-title="Може да изберете повече от един клас.">
-        </select>
-        <div>
-            <span asp-validation-for="ClassesId" class="text-danger"></span>
+        <label>Класове:</label>
+        <div class="border border-2 p-2">
+            @foreach (var currentClass in Model.ViewModel.Classes)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" id="ClassesIds_@currentClass.Id" name="ClassesIds" type="checkbox" value="@currentClass.Id" />
+                    <label class="form-check-label" for="ClassesIds_@currentClass.Id">@currentClass.Name</label>
+                </div>
+            }
         </div>
     </div>
 
@@ -150,7 +152,7 @@
                             <th style="text-align: center;">
                                 Маркирай като верен отговор
                                 <div>
-                                    <span asp-validation-for="@Model.Questions[i].Answers.IsFirstAnswerCorrect" class="text-danger"></span>
+                                    <span asp-validation-for="@Model.Questions[i].IsFirstAnswerCorrect" class="text-danger"></span>
                                 </div>
 
 
@@ -159,40 +161,40 @@
                         <tr>
                             <td><label for="option_a">А)</label></td>
                             <td class="option_a_container">
-                                <input asp-for="@Model.Questions[i].Answers.FirstAnswerContent" class="form-control ms-2" />
+                                <input asp-for="@Model.Questions[i].FirstAnswerContent" class="form-control ms-2" />
 
                                 <div>
-                                    <span asp-validation-for="@Model.Questions[i].Answers.FirstAnswerContent" class="text-danger"></span>
+                                    <span asp-validation-for="@Model.Questions[i].FirstAnswerContent" class="text-danger"></span>
                                 </div>
                             </td>
 
                             <td>
-                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].Answers.IsFirstAnswerCorrect" /></div>
+                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].IsFirstAnswerCorrect" /></div>
                             </td>
                         </tr>
                         <tr>
                             <td><label for="option_b">Б)</label></td>
                             <td class="option_b_container">
-                                <input asp-for="@Model.Questions[i].Answers.SecondAnswerContent" class="form-control ms-2" />
+                                <input asp-for="@Model.Questions[i].SecondAnswerContent" class="form-control ms-2" />
                                 <div>
-                                    <span asp-validation-for="@Model.Questions[i].Answers.SecondAnswerContent" class="text-danger"></span>
+                                    <span asp-validation-for="@Model.Questions[i].SecondAnswerContent" class="text-danger"></span>
                                 </div>
                             </td>
                             <td>
-                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].Answers.IsSecondAnswerCorrect" /></div>
+                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].IsSecondAnswerCorrect" /></div>
                             </td>
                         </tr>
                         <tr>
                             <td><label for="option_c">В)</label></td>
                             <td class="option_c_container">
-                                <input asp-for="@Model.Questions[i].Answers.ThirdAnswerContent" class="form-control ms-2" />
+                                <input asp-for="@Model.Questions[i].ThirdAnswerContent" class="form-control ms-2" />
                                 <div>
-                                    <span asp-validation-for="@Model.Questions[i].Answers.ThirdAnswerContent" class="text-danger"></span>
+                                    <span asp-validation-for="@Model.Questions[i].ThirdAnswerContent" class="text-danger"></span>
                                 </div>
                             </td>
 
                             <td>
-                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].Answers.IsThirdAnswerCorrect" /></div>
+                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].IsThirdAnswerCorrect" /></div>
                             </td>
 
 
@@ -200,13 +202,13 @@
                         <tr>
                             <td><label for="option_d">Г)</label></td>
                             <td class="option_d_container">
-                                <input asp-for="@Model.Questions[i].Answers.FourthAnswerContent" class="form-control ms-2" />
+                                <input asp-for="@Model.Questions[i].FourthAnswerContent" class="form-control ms-2" />
                                 <div>
-                                    <span asp-validation-for="@Model.Questions[i].Answers.FourthAnswerContent" class="text-danger"></span>
+                                    <span asp-validation-for="@Model.Questions[i].FourthAnswerContent" class="text-danger"></span>
                                 </div>
                             </td>
                             <td>
-                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].Answers.IsFourthAnswerCorrect" /></div>
+                                <div style="text-align:center;"><input type="checkbox" class="checkboxes" asp-for="@Model.Questions[i].IsFourthAnswerCorrect" /></div>
                             </td>
 
                         </tr>

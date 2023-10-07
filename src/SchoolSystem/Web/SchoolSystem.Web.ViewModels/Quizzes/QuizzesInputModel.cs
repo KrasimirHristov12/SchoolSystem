@@ -27,7 +27,7 @@
 
         [RequiredWithErrorMessage]
         [Display(Name = GlobalConstants.Student.StudentClassDisplay)]
-        public IEnumerable<int?> ClassesId { get; set; }
+        public IEnumerable<int?> ClassesIds { get; set; }
 
         [RequiredWithErrorMessage]
         [Display(Name = GlobalConstants.Quiz.TypeDisplay)]

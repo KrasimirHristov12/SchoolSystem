@@ -23,8 +23,11 @@
     using SchoolSystem.Services.Data.Teachers;
     using SchoolSystem.Services.Email;
     using SchoolSystem.Web.Hubs;
+    using SchoolSystem.Web.ViewModels.Classes;
+    using SchoolSystem.Web.ViewModels.Notifications;
     using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
+    using SchoolSystem.Web.ViewModels.Subjects;
     using SchoolSystem.Web.WebServices;
 
     public class QuizzesController : Controller
@@ -40,10 +43,13 @@
         private readonly INotificationsService notificationsService;
         private readonly IHubContext<NotificationsHub, INotificationsHub> notificationsHub;
         private readonly IEmailSender emailSender;
+        private readonly ISchoolClassService schoolClassService;
         private readonly IConfiguration config;
 
         public QuizzesController(IUserService userService, ITeacherService teacherService, ISchoolClassService classService, ISubjectService subjectService,
-            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService, INotificationsService notificationsService, IHubContext<NotificationsHub, INotificationsHub> notificationsHub, IEmailSender emailSender, IConfiguration config)
+            IQuizzesService quizzesService, IStudentService studentService, IGradesService gradesService, IGradingScaleService gradingScaleService, INotificationsService notificationsService, IHubContext<NotificationsHub, INotificationsHub> notificationsHub, IEmailSender emailSender,
+            ISchoolClassService schoolClassService,
+            IConfiguration config)
         {
             this.userService = userService;
             this.teacherService = teacherService;
@@ -56,6 +62,7 @@
             this.notificationsService = notificationsService;
             this.notificationsHub = notificationsHub;
             this.emailSender = emailSender;
+            this.schoolClassService = schoolClassService;
             this.config = config;
         }
 
@@ -70,7 +77,7 @@
             string userId = this.userService.GetUserId(this.User);
             int studentId = this.studentService.GetIdByUserId(userId);
 
-            var mineQuizzes = this.quizzesService.GetMine(studentId, date);
+            var mineQuizzes = this.quizzesService.GetMine<DisplayQuizzesViewModel>(studentId, date);
             return this.View(mineQuizzes);
         }
 
@@ -82,8 +89,8 @@
             var model = new QuizzesInputModel();
             model.ViewModel = new QuizzesViewModel
             {
-                Subjects = this.subjectService.GetAllTaughtForTeacher(teacherId),
-                Classes = this.classService.GetAllClassesForTeacher(teacherId),
+                Subjects = this.subjectService.GetAllTaughtForTeacher<SubjectViewModel>(teacherId),
+                Classes = this.classService.GetAllClassesForTeacher<ClassViewModel>(teacherId),
             };
             model.Questions = new List<QuestionsInputModel>();
             model.Questions.Add(new QuestionsInputModel());
@@ -100,22 +107,22 @@
             {
                 model.ViewModel = new QuizzesViewModel
                 {
-                    Subjects = this.subjectService.GetAllTaughtForTeacher(teacherId),
-                    Classes = this.classService.GetAllClassesForTeacher(teacherId),
+                    Subjects = this.subjectService.GetAllTaughtForTeacher<SubjectViewModel>(teacherId),
+                    Classes = this.classService.GetAllClassesForTeacher<ClassViewModel>(teacherId),
                 };
                 return this.View(model);
             }
 
             await this.quizzesService.AddAsync(model, teacherId);
 
-            foreach (var classId in model.ClassesId)
+            foreach (var classId in model.ClassesIds)
             {
                 if (classId != null)
                 {
-                    var receiverIds = this.studentService.GetUserIdsOfAllStudentsInAClass((int)classId); // 20 - 1
+                    var receiverIds = this.studentService.GetUserIdsOfAllStudentsInAClass((int)classId);
                     foreach (var receiverId in receiverIds)
                     {
-                        var newNotifications = this.notificationsService.GetNotifications(receiverId, true);
+                        var newNotifications = this.notificationsService.GetNotifications<NotificationViewModel>(receiverId, true);
                         await this.notificationsHub.Clients.User(receiverId).SendNotifications(newNotifications);
                     }
                 }
@@ -129,13 +136,19 @@
         {
             var userId = this.userService.GetUserId(this.User);
             var studentId = this.studentService.GetIdByUserId(userId);
-            var quiz = this.quizzesService.GetQuiz(id, studentId);
-            if (!quiz.IsSuccessful)
+            var result = this.quizzesService.GetQuiz<TakeQuizViewModel>(id, studentId);
+            if (!result.IsSuccessful)
             {
-                return this.Content(quiz.Message);
+                return this.Content(result.Message);
             }
 
-            return this.View(quiz.Model);
+            result.Model.StudentUserId = this.studentService.GetUserId(result.Model.StudentId);
+            result.Model.TeacherUserId = this.teacherService.GetUserId(result.Model.TeacherId);
+            result.Model.TeacherFullName = this.teacherService.GetTeacherFullName(result.Model.TeacherId);
+            result.Model.StudentFullName = this.studentService.GetFullName(result.Model.StudentId);
+            result.Model.StudentClassName = this.schoolClassService.GetClassNameByStudentId(result.Model.StudentId);
+
+            return this.View(result.Model);
         }
 
         [HttpPost]
@@ -144,26 +157,33 @@
         {
             var userId = this.userService.GetUserId(this.User);
             var studentId = this.studentService.GetIdByUserId(userId);
-            var quiz = this.quizzesService.GetQuiz(id, studentId);
-            if (!quiz.IsSuccessful)
+            var result = this.quizzesService.GetQuiz<TakeQuizViewModel>(id, studentId);
+
+            if (!result.IsSuccessful)
             {
-                return this.Content(quiz.Message);
+                return this.Content(result.Message);
             }
+
+            result.Model.StudentUserId = userId;
+            result.Model.TeacherUserId = this.teacherService.GetUserId(result.Model.TeacherId);
+            result.Model.TeacherFullName = this.teacherService.GetTeacherFullName(result.Model.TeacherId);
+            result.Model.StudentFullName = this.studentService.GetFullName(result.Model.StudentId);
+            result.Model.StudentClassName = this.schoolClassService.GetClassNameByStudentId(result.Model.StudentId);
 
             var scaleRange = this.gradingScaleService.GetGradingScale(id);
             var scaleRangeAsList = new List<string>
             {
                 scaleRange.ScaleRangeForPoor, scaleRange.ScaleRangeForFair, scaleRange.ScaleRangeForGood, scaleRange.ScaleRangeForVeryGood, scaleRange.ScaleRangeForExcellent,
             };
-            var viewModel = quiz.Model;
-            for (int i = 0; i < quiz.Model.Questions.Count; i++)
+            var viewModel = result.Model;
+            for (int i = 0; i < result.Model.Questions.Count; i++)
             {
-                model[i].Title = quiz.Model.Questions[i].Title;
-                model[i].FirstAnswerContent = quiz.Model.Questions[i].FirstAnswerContent;
-                model[i].SecondAnswerContent = quiz.Model.Questions[i].SecondAnswerContent;
-                model[i].ThirdAnswerContent = quiz.Model.Questions[i].ThirdAnswerContent;
-                model[i].FourthAnswerContent = quiz.Model.Questions[i].FourthAnswerContent;
-                model[i].Type = quiz.Model.Questions[i].Type;
+                model[i].Title = result.Model.Questions[i].Title;
+                model[i].FirstAnswerContent = result.Model.Questions[i].FirstAnswerContent;
+                model[i].SecondAnswerContent = result.Model.Questions[i].SecondAnswerContent;
+                model[i].ThirdAnswerContent = result.Model.Questions[i].ThirdAnswerContent;
+                model[i].FourthAnswerContent = result.Model.Questions[i].FourthAnswerContent;
+                model[i].Type = result.Model.Questions[i].Type;
             }
 
             viewModel.Questions = model;
@@ -201,8 +221,7 @@
             string studentEmail = await this.userService.GetEmailByUserIdAsync(userId);
             string studentFullName = await this.userService.GetFullNameByUserIdAsync(userId);
             await this.emailSender.SendAsync(this.config["GmailSmtp:Email"].ToString(), this.config["GmailSmtp:AppPassword"].ToString(), studentEmail, studentFullName, GlobalConstants.Email.AddedGradeSubject, string.Format(GlobalConstants.Email.AddedGradeMessage, viewModel.SubjectName, viewModel.TeacherFullName));
-
-            var newNotifications = this.notificationsService.GetNotifications(viewModel.TeacherUserId, true);
+            var newNotifications = this.notificationsService.GetNotifications<NotificationViewModel>(viewModel.TeacherUserId, true);
 
             await this.notificationsHub.Clients.User(viewModel.TeacherUserId).SendNotifications(newNotifications);
 

@@ -6,13 +6,10 @@
 
     using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Common;
-    using SchoolSystem.Data;
     using SchoolSystem.Data.Common.Repositories;
-    using SchoolSystem.Data.Migrations;
     using SchoolSystem.Data.Models;
-    using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Services.Mapping;
     using SchoolSystem.Web.ViewModels;
-    using SchoolSystem.Web.ViewModels.Classes;
 
     public class SchoolClassService : ISchoolClassService
     {
@@ -27,42 +24,19 @@
             this.studentsRepo = studentsRepo;
         }
 
-        public IEnumerable<ClassViewModel> GetAllClasses()
+        public IEnumerable<T> GetAllClasses<T>()
         {
-            return this.classesRepo.AllAsNoTracking().Select(c => new ClassViewModel
-            {
-                Id = c.Id,
-                Name = c.Name,
-            });
+            return this.classesRepo.AllAsNoTracking().To<T>();
         }
 
-        public IEnumerable<ClassViewModel> GetAllClassesForTeacher(int teacherId)
+        public IEnumerable<T> GetAllClassesForTeacher<T>(int teacherId)
         {
-            return this.classesRepo.AllAsNoTracking().Where(c => c.Teachers.Any(t => t.Id == teacherId))
-                .Select(c => new ClassViewModel
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                }).ToList();
+            return this.classesRepo.AllAsNoTracking().Where(c => c.Teachers.Any(t => t.Id == teacherId)).To<T>().ToList();
         }
 
-        public IEnumerable<ClassViewModel> GetAllClassesNotForTeacher(int teacherId)
+        public IEnumerable<T> GetAllFreeClasses<T>()
         {
-            return this.classesRepo.AllAsNoTracking().Where(c => !c.Teachers.Any(t => t.Id == teacherId))
-                 .Select(c => new ClassViewModel
-                 {
-                     Id = c.Id,
-                     Name = c.Name,
-                 }).ToList();
-        }
-
-        public IEnumerable<ClassViewModel> GetAllFreeClasses()
-        {
-            return this.classesRepo.AllAsNoTracking().Where(c => !c.Teachers.Any(t => t.ClassName == c.Name)).Select(c => new ClassViewModel
-            {
-                Id = c.Id,
-                Name = c.Name,
-            }).ToList();
+            return this.classesRepo.AllAsNoTracking().Where(c => !c.Teachers.Any(t => t.ClassName == c.Name)).To<T>().ToList();
         }
 
         public string GetClassNameById(int id)
@@ -141,7 +115,6 @@
         {
             var className = this.studentsRepo.AllAsNoTracking().Where(s => s.Id == studentId).Select(s => s.Class.Name).FirstOrDefault();
             return className;
-
         }
     }
 }

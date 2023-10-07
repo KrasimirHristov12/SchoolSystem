@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
     using SchoolSystem.Common;
     using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
@@ -15,6 +14,7 @@
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Services.Mapping;
     using SchoolSystem.Web.ViewModels.Questions;
     using SchoolSystem.Web.ViewModels.Quizzes;
 
@@ -30,10 +30,9 @@
         private readonly IGradingScaleService gradingScaleService;
         private readonly IStudentService studentService;
         private readonly ITeacherService teacherService;
-        private readonly ISchoolClassService schoolClassService;
         private readonly INotificationsService notificationsService;
 
-        public QuizzesService(IDeletableEntityRepository<SchoolClass> classesRepo, IDeletableEntityRepository<Student> studentsRepo, IDeletableEntityRepository<Quiz> quizzesRepo, IDeletableEntityRepository<StudentsQuizzes> studentsQuizzesRepo, IDeletableEntityRepository<Question> questionsRepo, IDeletableEntityRepository<StudentQuizzesQuestionAnswer> studentQuizzesQuestionAnswersRepo, IQuestionsService questionsService, IGradingScaleService gradingScaleService, IStudentService studentService, ITeacherService teacherService, ISchoolClassService schoolClassService, INotificationsService notificationsService)
+        public QuizzesService(IDeletableEntityRepository<SchoolClass> classesRepo, IDeletableEntityRepository<Student> studentsRepo, IDeletableEntityRepository<Quiz> quizzesRepo, IDeletableEntityRepository<StudentsQuizzes> studentsQuizzesRepo, IDeletableEntityRepository<Question> questionsRepo, IDeletableEntityRepository<StudentQuizzesQuestionAnswer> studentQuizzesQuestionAnswersRepo, IQuestionsService questionsService, IGradingScaleService gradingScaleService, IStudentService studentService, ITeacherService teacherService, INotificationsService notificationsService)
         {
             this.classesRepo = classesRepo;
             this.studentsRepo = studentsRepo;
@@ -45,13 +44,13 @@
             this.gradingScaleService = gradingScaleService;
             this.studentService = studentService;
             this.teacherService = teacherService;
-            this.schoolClassService = schoolClassService;
             this.notificationsService = notificationsService;
         }
 
         public async Task AddAsync(QuizzesInputModel model, int teacherId)
         {
-            var classes = this.classesRepo.All().Where(c => model.ClassesId.Contains(c.Id)).ToList();
+            var classes = this.classesRepo.All().Where(c => model.ClassesIds.Contains(c.Id)).ToList();
+
             var quiz = new Quiz()
             {
                 SubjectId = (int)model.SubjectId,
@@ -67,20 +66,7 @@
 
             foreach (var q in model.Questions)
             {
-                var question = new Question
-                {
-                    Title = q.Title,
-                    Type = (QuestionType)q.QuestionType,
-                    Points = (int)q.Points,
-                    FirstAnswerContent = q.Answers.FirstAnswerContent,
-                    IsFirstAnswerCorrect = q.Answers.IsFirstAnswerCorrect,
-                    SecondAnswerContent = q.Answers.SecondAnswerContent,
-                    IsSecondAnswerCorrect = q.Answers.IsSecondAnswerCorrect,
-                    ThirdAnswerContent = q.Answers.ThirdAnswerContent,
-                    IsThirdAnswerCorrect = q.Answers.IsThirdAnswerCorrect,
-                    FourthAnswerContent = q.Answers.FourthAnswerContent,
-                    IsFourthAnswerCorrect = q.Answers.IsFourthAnswerCorrect,
-                };
+                var question = q.Map<Question>();
 
                 questions.Add(question);
             }
@@ -91,60 +77,35 @@
 
             await this.gradingScaleService.AddAsync(quiz.Id, model.ScaleRangeForPoor, model.ScaleRangeForFair, model.ScaleRangeForGood, model.ScaleRangeForVeryGood, model.ScaleRangeForExcellent);
 
-            await this.SendNotificationAsync(model.ClassesId, teacherId, model.Name);
+            await this.SendNotificationAsync(model.ClassesIds, teacherId, model.Name);
         }
 
-        public IEnumerable<DisplayQuizzesViewModel> GetMine(int studentId, string date)
+        public IEnumerable<T> GetMine<T>(int studentId, string date)
         {
             var studentClassId = this.classesRepo.All().Where(c => c.Students.Any(s => s.Id == studentId)).Select(c => c.Id).FirstOrDefault();
             if (studentClassId == 0)
             {
-                return new List<DisplayQuizzesViewModel>();
+                return new List<T>();
             }
 
-            var foundQuizzes = this.quizzesRepo.AllAsNoTracking().Where(q => q.Classes.Any(c => c.Id == studentClassId) && DateTime.Compare(q.DateTaken.Date, DateTime.Parse(date)) == 0).Select(q => new DisplayQuizzesViewModel
+            var foundQuizzes = this.quizzesRepo.AllAsNoTracking().Where(q => q.Classes.Any(c => c.Id == studentClassId) && DateTime.Compare(q.DateTaken.Date, DateTime.Parse(date)) == 0).To<T>(new
             {
-                Id = q.Id,
-                Name = q.Name,
-                DateTaken = q.DateTaken,
-                Duration = (int)q.Duration.TotalMinutes,
-                SubjectName = q.Subject.Name,
-                TeacherName = $"{q.Teacher.FirstName} {q.Teacher.LastName}",
-                IsTaken = this.studentsQuizzesRepo.AllAsNoTracking().Where(sq => sq.StudentId == studentId && sq.QuizId == q.Id).Select(sq => sq.IsTaken).FirstOrDefault(),
-                Points = this.studentsQuizzesRepo.AllAsNoTracking().Where(sq => sq.StudentId == studentId && sq.QuizId == q.Id).Select(sq => sq.Points).FirstOrDefault(),
+                studentId = studentId,
             }).ToList();
 
             return foundQuizzes;
         }
 
-        public GetQuizResult GetQuiz(Guid id, int studentId)
+        public GetQuizResult<T> GetQuiz<T>(Guid id, int studentId)
         {
-            var quiz = this.quizzesRepo.AllAsNoTracking().Where(q => q.Id == id).Select(q => new TakeQuizViewModel
+            var quiz = this.quizzesRepo.AllAsNoTracking().Where(q => q.Id == id).To<T>(new
             {
-                Id = id,
-                TeacherId = q.TeacherId,
-                QuizName = q.Name,
-                StudentId = studentId,
-                SubjectId = q.SubjectId,
-                SubjectName = q.Subject.Name,
-                Questions = this.questionsRepo.AllAsNoTracking().Where(qu => qu.QuizId == id).Select(qu => new TakeQuestionsViewModel
-                {
-                    Id = qu.Id,
-                    Title = qu.Title,
-                    Type = qu.Type,
-                    FirstAnswerContent = qu.FirstAnswerContent,
-                    SecondAnswerContent = qu.SecondAnswerContent,
-                    ThirdAnswerContent = qu.ThirdAnswerContent,
-                    FourthAnswerContent = qu.FourthAnswerContent,
-                    Points = qu.Points,
-                }).ToList(),
-                Duration = (int)q.Duration.TotalMinutes,
-                DateTaken = q.DateTaken,
+                studentId = studentId,
             }).FirstOrDefault();
 
             if (quiz == null)
             {
-                return new GetQuizResult
+                return new GetQuizResult<T>
                 {
                     IsSuccessful = false,
                     Message = GlobalConstants.ErrorMessage.QuizDoesNotExist,
@@ -153,7 +114,7 @@
 
             if (this.studentsQuizzesRepo.AllAsNoTracking().Any(sq => sq.QuizId == id && sq.StudentId == studentId))
             {
-                return new GetQuizResult
+                return new GetQuizResult<T>
                 {
                     IsSuccessful = false,
                     Message = GlobalConstants.ErrorMessage.QuizAlreadyTaken,
@@ -178,13 +139,8 @@
             //         : string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetMinutes, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalMinutes)),
             //     };
             // }
-            quiz.StudentUserId = this.studentService.GetUserId(quiz.StudentId);
-            quiz.TeacherUserId = this.teacherService.GetUserId(quiz.TeacherId);
-            quiz.TeacherFullName = this.teacherService.GetTeacherFullName(quiz.TeacherId);
-            quiz.StudentFullName = this.studentService.GetFullName(quiz.StudentId);
-            quiz.StudentClassName = this.schoolClassService.GetClassNameByStudentId(quiz.StudentId);
 
-            return new GetQuizResult
+            return new GetQuizResult<T>
             {
                 IsSuccessful = true,
                 Message = string.Empty,

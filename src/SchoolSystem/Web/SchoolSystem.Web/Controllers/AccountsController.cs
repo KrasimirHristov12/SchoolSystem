@@ -11,6 +11,7 @@
     using SchoolSystem.Services.Data.SchoolClass;
     using SchoolSystem.Services.Email;
     using SchoolSystem.Web.ViewModels.Accounts;
+    using SchoolSystem.Web.ViewModels.Classes;
     using SchoolSystem.Web.WebServices;
 
     public class AccountsController : Controller
@@ -36,8 +37,8 @@
             {
                 var model = new RegisterInputModel
                 {
-                    Classes = this.classService.GetAllClasses(),
-                    FreeClasses = this.classService.GetAllFreeClasses(),
+                    Classes = this.classService.GetAllClasses<ClassViewModel>(),
+                    FreeClasses = this.classService.GetAllFreeClasses<ClassViewModel>(),
                 };
 
                 return this.View(model);
@@ -52,8 +53,8 @@
         {
             if (!this.User.Identity.IsAuthenticated)
             {
-                model.Classes = this.classService.GetAllClasses();
-                model.FreeClasses = this.classService.GetAllFreeClasses();
+                model.Classes = this.classService.GetAllClasses<ClassViewModel>();
+                model.FreeClasses = this.classService.GetAllFreeClasses<ClassViewModel>();
 
                 if (!this.ModelState.IsValid)
                 {

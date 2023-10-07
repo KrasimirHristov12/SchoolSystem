@@ -8,6 +8,7 @@
     public class Chat : IDeletableEntity, IAuditInfo
     {
         public int Id { get; set; }
+
         [Required]
         [MaxLength(GlobalConstants.Chat.MessageMaxLength)]
         public string Message { get; set; }

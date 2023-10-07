@@ -7,8 +7,8 @@
 
     public interface IChatService
     {
-        Task<ChatViewModel> AddAsync(AddChatInputModel model);
+        Task<T> AddAsync<T>(AddChatInputModel model);
 
-        IEnumerable<ChatViewModel> GetChats(string senderId, string receiverId);
+        IEnumerable<T> GetChats<T>(string senderId, string receiverId);
     }
 }

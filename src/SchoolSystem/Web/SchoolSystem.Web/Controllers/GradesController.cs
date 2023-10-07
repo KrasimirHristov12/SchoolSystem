@@ -14,7 +14,9 @@
     using SchoolSystem.Services.Data.Students;
     using SchoolSystem.Services.Data.Subjects;
     using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Web.ViewModels.Classes;
     using SchoolSystem.Web.ViewModels.Grades;
+    using SchoolSystem.Web.ViewModels.Subjects;
     using SchoolSystem.Web.WebServices;
 
     [Authorize]
@@ -42,7 +44,7 @@
         {
             var userId = this.userService.GetUserId(this.User);
             var studentId = this.studentService.GetIdByUserId(userId);
-            var grades = this.gradesService.GetForStudent(studentId, page);
+            var grades = this.gradesService.GetForStudent<GradesViewModel>(studentId, page);
             return this.View(grades);
         }
 
@@ -56,8 +58,8 @@
             {
                 GradeModel = new AddGradeViewModel
                 {
-                    Classes = this.classService.GetAllClassesForTeacher(teacherId),
-                    Subjects = this.subjectService.GetAllTaughtForTeacher(teacherId),
+                    Classes = this.classService.GetAllClassesForTeacher<ClassViewModel>(teacherId),
+                    Subjects = this.subjectService.GetAllTaughtForTeacher<SubjectViewModel>(teacherId),
                     Students = this.studentService.GetAll(),
                 },
             };
@@ -72,8 +74,8 @@
             var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             model.GradeModel = new AddGradeViewModel
             {
-                Classes = this.classService.GetAllClassesForTeacher(teacherId),
-                Subjects = this.subjectService.GetAllTaughtForTeacher(teacherId),
+                Classes = this.classService.GetAllClassesForTeacher<ClassViewModel>(teacherId),
+                Subjects = this.subjectService.GetAllTaughtForTeacher<SubjectViewModel>(teacherId),
                 Students = this.studentService.GetAll(),
             };
 

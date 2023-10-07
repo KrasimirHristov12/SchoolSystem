@@ -8,6 +8,7 @@
     using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
+    using SchoolSystem.Services.Mapping;
     using SchoolSystem.Web.ViewModels.Notifications;
 
     public class NotificationsService : INotificationsService
@@ -61,11 +62,11 @@
             return true;
         }
 
-        public IEnumerable<NotificationViewModel> GetNotifications(string userId, bool getNewOnesOnly, int? page = null, int? elementsPerPage = null)
+        public IEnumerable<T> GetNotifications<T>(string userId, bool getNewOnesOnly, int? page = null, int? elementsPerPage = null)
         {
             var notifications = this.notificationsRepo.AllAsNoTracking().Where(n => n.Receivers.Any(u => u.ReceiverId == userId)).OrderByDescending(n => n.CreatedOn)
                 .AsQueryable();
-            var notificationsViewModel = new List<NotificationViewModel>();
+            var notificationsViewModel = new List<T>();
 
             if (page != null && elementsPerPage != null)
             {
@@ -74,21 +75,11 @@
 
             if (getNewOnesOnly)
             {
-                notificationsViewModel = notifications.Where(n => n.IsNew).Select(n => new NotificationViewModel
-                {
-                    Type = n.Type,
-                    Message = n.Message,
-                    IsNew = n.IsNew,
-                }).ToList();
+                notificationsViewModel = notifications.Where(n => n.IsNew).To<T>().ToList();
             }
             else
             {
-                notificationsViewModel = notifications.Select(n => new NotificationViewModel
-                {
-                    Type = n.Type,
-                    Message = n.Message,
-                    IsNew = n.IsNew,
-                }).ToList();
+                notificationsViewModel = notifications.To<T>().ToList();
             }
 
             return notificationsViewModel;

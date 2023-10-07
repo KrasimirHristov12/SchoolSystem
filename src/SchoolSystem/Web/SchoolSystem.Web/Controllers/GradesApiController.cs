@@ -7,6 +7,7 @@
     using SchoolSystem.Common;
     using SchoolSystem.Services.Data.Grades;
     using SchoolSystem.Services.Data.Students;
+    using SchoolSystem.Web.ViewModels.Grades;
     using SchoolSystem.Web.WebServices;
 
     [ApiController]
@@ -30,7 +31,7 @@
         public IActionResult Get([FromQuery]IEnumerable<int> teachersIds, [FromQuery] IEnumerable<int> subjectsIds, [FromQuery]IEnumerable<int> reasonsIds, [FromQuery]ICollection<int> gradesValues, [FromQuery]int? date, [FromQuery]int page)
         {
             int studentId = this.studentService.GetIdByUserId(this.userService.GetUserId(this.User));
-            var g = this.gradesService.GetFilteredGrades(page, studentId, teachersIds, subjectsIds, reasonsIds, gradesValues, date);
+            var g = this.gradesService.GetFilteredGrades<GradesViewModel>(page, studentId, teachersIds, subjectsIds, reasonsIds, gradesValues, date);
             return this.Ok(g);
         }
     }

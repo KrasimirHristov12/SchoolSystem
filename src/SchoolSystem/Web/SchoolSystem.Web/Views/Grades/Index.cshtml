@@ -1,4 +1,4 @@
-﻿@model DisplayGradesViewModel
+﻿@model DisplayGradesViewModel<GradesViewModel>
 
 @{
     this.ViewData["Title"] = "Бележник";
@@ -17,11 +17,11 @@
     @foreach (var grade in Model.Grades)
     {
         <tr>
-            <td>@grade.TeacherName</td>
+            <td>@grade.TeacherFirstName @grade.TeacherLastName</td>
             <td>@grade.SubjectName</td>
             <td>@grade.ReasonAsString</td>
-            <td>@grade.Value</td>
-            <td>@grade.Date</td>
+            <td>@grade.Value.ToString("F2")</td>
+            <td>@grade.CreatedOnDate</td>
         </tr>
     }
 
@@ -53,11 +53,11 @@
                     for (const grade of data.grades) {
                         $('table tbody').append(`
                                     <tr>
-                                        <td>${grade.teacherName}</td>
+                                        <td>${grade.teacherFirstName} ${grade.teacherLastName}</td>
                                         <td>${grade.subjectName}</td>
                                         <td>${grade.reasonAsString}</td>
-                                        <td>${grade.value}</td>
-                                        <td>${grade.date}</td>
+                                        <td>${grade.value.toFixed(2)}</td>
+                                        <td>${grade.createdOnDate}</td>
                                     </tr>`)
                         let allPages = $(".page-item").filter(function (index) {
                             return !$(".page-item").eq(index).hasClass("prev") && !$(".page-item").eq(index).hasClass("next");

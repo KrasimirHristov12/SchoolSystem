@@ -1,6 +1,9 @@
 ﻿namespace SchoolSystem.Web.ViewModels.Subjects
 {
-    public class SubjectViewModel
+    using SchoolSystem.Data.Models;
+    using SchoolSystem.Services.Mapping;
+
+    public class SubjectViewModel : IMapFrom<Subject>
     {
         public int Id { get; set; }
 

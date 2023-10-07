@@ -1,6 +1,9 @@
 ﻿namespace SchoolSystem.Web.ViewModels.Classes
 {
-    public class ClassViewModel
+    using SchoolSystem.Data.Models;
+    using SchoolSystem.Services.Mapping;
+
+    public class ClassViewModel : IMapFrom<SchoolClass>
     {
         public int Id { get; set; }
 

@@ -4,13 +4,12 @@
     using System.Threading.Tasks;
 
     using SchoolSystem.Web.ViewModels;
-    using SchoolSystem.Web.ViewModels.Subjects;
 
     public interface ISubjectService
     {
-        IEnumerable<SubjectViewModel> GetAllSubjects();
+        IEnumerable<T> GetAllSubjects<T>();
 
-        IEnumerable<SubjectViewModel> GetAllTaughtForTeacher(int teacherId);
+        IEnumerable<T> GetAllTaughtForTeacher<T>(int teacherId);
 
         Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId);
 

@@ -4,6 +4,7 @@
 
     using Microsoft.AspNetCore.Mvc;
     using SchoolSystem.Services.Data.Teachers;
+    using SchoolSystem.Web.ViewModels.Teachers;
 
     public class TeacherInformationViewComponent : ViewComponent
     {
@@ -16,7 +17,7 @@
 
         public async Task<IViewComponentResult> InvokeAsync(int? teacherId)
         {
-            var teacherInfo = this.teacherService.GetTeacherInformation((int)teacherId);
+            var teacherInfo = this.teacherService.GetTeacherInformation<TeacherInformationViewModel>((int)teacherId);
             return this.View(teacherInfo);
         }
     }

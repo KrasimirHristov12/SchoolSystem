@@ -1,17 +1,14 @@
 ﻿namespace SchoolSystem.Web.ViewModels.Questions
 {
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Linq;
     using System.Web.Mvc;
 
-    using SchoolSystem.Common;
+    using SchoolSystem.Data.Models;
     using SchoolSystem.Data.Models.Enums;
-    using SchoolSystem.Web.ViewModels.Answers;
+    using SchoolSystem.Services.Mapping;
 
     [Bind(Exclude = $"{nameof(Title)},{nameof(Type)},{nameof(Points)},{nameof(FirstAnswerContent)},{nameof(SecondAnswerContent)},${nameof(ThirdAnswerContent)},{nameof(FourthAnswerContent)}")]
-    public class TakeQuestionsViewModel
+    public class TakeQuestionsViewModel : IMapFrom<Question>
     {
         public Guid Id { get; set; }
 
