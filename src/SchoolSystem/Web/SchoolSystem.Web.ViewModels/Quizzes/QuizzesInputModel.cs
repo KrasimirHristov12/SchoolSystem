@@ -26,7 +26,7 @@
         public int? SubjectId { get; set; }
 
         [RequiredWithErrorMessage]
-        [Display(Name = GlobalConstants.Student.StudentClassDisplay)]
+        [Display(Name = GlobalConstants.SchoolClass.StudentClassDisplay)]
         public IEnumerable<int?> ClassesIds { get; set; }
 
         [RequiredWithErrorMessage]

@@ -18,6 +18,7 @@ namespace SchoolSystem.Data.Models
             this.Claims = new HashSet<IdentityUserClaim<string>>();
             this.Logins = new HashSet<IdentityUserLogin<string>>();
             this.Notifications = new HashSet<NotificationsReceivers>();
+            this.ContactMessages = new HashSet<ContactInfo>();
         }
 
         // Audit info
@@ -46,5 +47,7 @@ namespace SchoolSystem.Data.Models
         public virtual ICollection<IdentityUserLogin<string>> Logins { get; set; }
 
         public virtual ICollection<NotificationsReceivers> Notifications { get; set; }
+
+        public virtual ICollection<ContactInfo> ContactMessages { get; set; }
     }
 }

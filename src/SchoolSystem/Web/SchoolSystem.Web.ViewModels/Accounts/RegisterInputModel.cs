@@ -63,7 +63,7 @@
         [Display(Name = GlobalConstants.ConfirmPasswordDisplay)]
         public string ConfirmPassword { get; set; }
 
-        [Display(Name = GlobalConstants.Teacher.IsTeacherDisplay)]
+        [Display(Name = GlobalConstants.Teacher.UserType)]
         [RequiredWithErrorMessage]
         public TeacherStudent? TeacherStudent { get; set; }
 
@@ -76,7 +76,7 @@
         [Display(Name = GlobalConstants.Teacher.TeacherYearsOfExperienceDisplay)]
         public int? TeacherYearsOfExperience { get; set; }
 
-        [Display(Name = GlobalConstants.Student.StudentClassDisplay)]
+        [Display(Name = GlobalConstants.SchoolClass.ClassDisplay)]
         public int? StudentClassId { get; set; }
 
         public IEnumerable<ClassViewModel> Classes { get; set; }

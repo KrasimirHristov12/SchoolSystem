@@ -77,6 +77,7 @@
 
                 return this.RedirectToAction(nameof(this.Login));
             }
+
             return this.Forbid();
         }
 
@@ -91,7 +92,7 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginInputModel model)
+        public async Task<IActionResult> Login(LoginInputModel model, string ReturnUrl)
         {
             if (!this.User.Identity.IsAuthenticated)
             {
@@ -105,6 +106,11 @@
                 {
                     this.ModelState.AddModelError(string.Empty, GlobalConstants.ErrorMessage.LoginErrorMessage);
                     return this.View(model);
+                }
+
+                if (!string.IsNullOrEmpty(ReturnUrl) && this.Url.IsLocalUrl(ReturnUrl))
+                {
+                    return this.Redirect(ReturnUrl);
                 }
 
                 return this.Redirect("/");

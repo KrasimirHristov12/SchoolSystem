@@ -11,41 +11,48 @@
 <div class="container">
     <div class="row">
 
-        @foreach (var quiz in Model)
+        @if (Model.Count() == 0)
         {
+            <h5>Няма намерени тестове за тази дата!</h5>
+        }
+        else
+        {
+            @foreach (var quiz in Model)
+            {
 
-            <div class="card col-lg-4 col-md-3 col-sm-2" style="margin: 10px;">
-                <div class="card-body">
-                    <h5 class="card-title">@quiz.Name</h5>
-                    <ul style="font-size: 14px;" class="fst-italic">
-                        <li>Дата и час на провеждане: @TimeZoneInfo.ConvertTimeFromUtc(quiz.DateTaken, TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time")).ToString("f",new CultureInfo("bg-BG"))</li>
-                        <li>Продължителност: @quiz.DurationTotalMinutes минути</li>
-                        <li>Учител: @quiz.TeacherFirstName @quiz.TeacherLastName</li>
-                    </ul>
-                    @if (quiz.IsTaken == null && DateTime.UtcNow >= quiz.DateTaken && DateTime.UtcNow < quiz.DateTaken.AddMinutes(quiz.DurationTotalMinutes))
-                    {
-                        <a asp-action="Take" asp-route-id="@quiz.Id" class="card-link">Започни изпит</a>
-                    }
+                <div class="card col-lg-4 col-md-3 col-sm-2" style="margin: 10px;">
+                    <div class="card-body">
+                        <h5 class="card-title">@quiz.Name</h5>
+                        <ul style="font-size: 14px;" class="fst-italic">
+                            <li>Дата и час на провеждане: @TimeZoneInfo.ConvertTimeFromUtc(quiz.DateTaken, TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time")).ToString("f",new CultureInfo("bg-BG"))</li>
+                            <li>Продължителност: @quiz.DurationTotalMinutes минути</li>
+                            <li>Учител: @quiz.TeacherFirstName @quiz.TeacherLastName</li>
+                        </ul>
+                        @if (quiz.IsTaken == null && DateTime.UtcNow >= quiz.DateTaken && DateTime.UtcNow < quiz.DateTaken.AddMinutes(quiz.DurationTotalMinutes))
+                        {
+                            <a asp-action="Take" asp-route-id="@quiz.Id" class="card-link">Започни изпит</a>
+                        }
 
-                    else if (quiz.IsTaken == null && DateTime.Compare(DateTime.UtcNow, quiz.DateTaken.AddMinutes(quiz.DurationTotalMinutes)) < 0)
-                    {
-                        <span>
-                            @(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalHours >= 1 ? string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetHours, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalHours))
-                                : string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetMinutes, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalMinutes))) - @quiz.Id
-                        </span>
-                    }
-                    else if (quiz.IsTaken == null && DateTime.Compare(DateTime.UtcNow, quiz.DateTaken.AddMinutes(quiz.DurationTotalMinutes)) >= 0)
-                    {
-                        <span>@GlobalConstants.ErrorMessage.QuizDue - @quiz.Id</span>
-                    }
-                    else
-                    {
-                        <span>Имате @quiz.Points точки - @quiz.Id</span>
-                    }
+                        else if (quiz.IsTaken == null && DateTime.Compare(DateTime.UtcNow, quiz.DateTaken.AddMinutes(quiz.DurationTotalMinutes)) < 0)
+                        {
+                            <span>
+                                @(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalHours >= 1 ? string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetHours, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalHours))
+                                    : string.Format(GlobalConstants.ErrorMessage.QuizNotStartedYetMinutes, Math.Round(quiz.DateTaken.Subtract(DateTime.UtcNow).TotalMinutes))) - @quiz.Id
+                            </span>
+                        }
+                        else if (quiz.IsTaken == null && DateTime.Compare(DateTime.UtcNow, quiz.DateTaken.AddMinutes(quiz.DurationTotalMinutes)) >= 0)
+                        {
+                            <span>@GlobalConstants.ErrorMessage.QuizDue - @quiz.Id</span>
+                        }
+                        else
+                        {
+                            <span>Имате @quiz.Points точки - @quiz.Id</span>
+                        }
 
+                    </div>
                 </div>
-            </div>
 
+            }
         }
     </div>
 </div>

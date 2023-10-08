@@ -12,7 +12,7 @@
         [RequiredWithErrorMessage]
         public int? SubjectId { get; set; }
 
-        [Display(Name = GlobalConstants.Student.StudentClassDisplay)]
+        [Display(Name = GlobalConstants.SchoolClass.ClassDisplay)]
         [RequiredWithErrorMessage]
         public int? ClassId { get; set; }
 

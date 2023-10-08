@@ -51,6 +51,8 @@
 
         public DbSet<Chat> Chat { get; set; }
 
+        public DbSet<ContactInfo> ContactInfo { get; set; }
+
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

@@ -1,0 +1,20 @@
+﻿@model ContactInputModel
+
+@{
+    this.ViewData["Title"] = "Контактна форма";
+}
+
+<div>
+    <h5 class="text-center">@this.ViewData["Title"]</h5>
+    <form method="post">
+        <div>
+            <label asp-for="Message"></label>
+            <textarea asp-for="Message" class="form-control"></textarea>
+            <span asp-validation-for="Message" class="text-danger"></span>
+        </div>
+
+        <div class="mt-2">
+            <button class="btn btn-primary">Изпрати</button>
+        </div>
+    </form>
+</div>

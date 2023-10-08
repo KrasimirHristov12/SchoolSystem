@@ -6,7 +6,7 @@
 
     public enum TeacherStudent
     {
-        [Display(Name = GlobalConstants.Student.StudentDisplay)]
+        [Display(Name = GlobalConstants.Student.StudentTypeDisplay)]
         Student,
         [Display(Name = GlobalConstants.Teacher.TeacherDisplay)]
         Teacher,

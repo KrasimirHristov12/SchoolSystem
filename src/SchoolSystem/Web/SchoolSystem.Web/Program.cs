@@ -20,6 +20,7 @@
     using SchoolSystem.Data.Seeding;
     using SchoolSystem.Services.Data;
     using SchoolSystem.Services.Data.Chat;
+    using SchoolSystem.Services.Data.Contact;
     using SchoolSystem.Services.Data.Grades;
     using SchoolSystem.Services.Data.GradingScale;
     using SchoolSystem.Services.Data.Notifications;
@@ -103,6 +104,7 @@
             services.AddTransient<IGradingScaleService, GradingScaleService>();
             services.AddTransient<INotificationsService, NotificationsService>();
             services.AddTransient<IChatService, ChatService>();
+            services.AddTransient<IContactService, ContactService>();
             services.AddTransient<SchoolSystem.Services.Email.IEmailSender, SchoolSystem.Services.Email.EmailSender>();
             services.AddSingleton<IUserIdProvider, UserIdProviderCustom>();
             services.AddSignalR();

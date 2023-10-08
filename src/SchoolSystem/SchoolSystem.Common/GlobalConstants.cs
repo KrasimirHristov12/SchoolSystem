@@ -49,7 +49,7 @@ namespace SchoolSystem.Common
             public const string TeacherRoleName = "Teacher";
             public const int MinYearsOfExperience = 1;
             public const int MaxYearsOfExperience = 40;
-            public const string IsTeacherDisplay = "Учител ли сте?";
+            public const string UserType = "Тип:";
             public const string TeacherDisplay = "Учител";
             public const string IsClassTeacherDisplay = "Класен ръководител ли сте?";
             public const string TeacherClassNameDisplay = "На кой клас сте класен ръководител?";
@@ -60,7 +60,7 @@ namespace SchoolSystem.Common
         {
             public const string StudentRoleName = "Student";
             public const string StudentDisplay = "Ученик:";
-            public const string StudentClassDisplay = "Класове:";
+            public const string StudentTypeDisplay = "Ученик";
             public const string RankingDisplay = "Ranking";
         }
 
@@ -73,6 +73,8 @@ namespace SchoolSystem.Common
         {
             public const int ClassMinLength = 2;
             public const int ClassMaxLength = 3;
+            public const string StudentClassDisplay = "Класове:";
+            public const string ClassDisplay = "Клас:";
         }
 
         public static class Subject
@@ -195,6 +197,15 @@ namespace SchoolSystem.Common
             public const string AddedGradeSubject = "Имате добавена нова оценка";
 
             public const string AddedGradeMessage = "Здравейте,<br/>Имате нова оценка по <b><u>{0}</u></b> от <b>{1}</b>";
+
+            public const string NewContactMessageSubject = "Ново съобщение от {0}.";
+        }
+
+        public static class Contact
+        {
+            public const string MessageDisplay = "Съобщение:";
+
+            public const int MessageMinLength = 50;
         }
 
         public static class ErrorMessage
@@ -211,17 +222,19 @@ namespace SchoolSystem.Common
 
             public const string EmailAlreadyTaken = "Вече има потребител с този имейл адрес";
 
-            public const string PasswordErrorMessage = "Паролата трябва да бъде между {2} и {1} символи.";
+            public const string PasswordErrorMessage = "Паролата трябва да бъде между {2} и {1} символа.";
 
             public const string PasswordRequirementsErrorMessage = "Паролата трябва да съдържа числа, малки и големи букви";
 
             public const string ComparePasswordErrorMessage = "Полетата за парола и потвърди парола трябва да съдържат една и съща стойност.";
 
-            public const string FirstNameErrorMessage = "Името трябва да съдържа между {2} и {1} символи.";
+            public const string FirstNameErrorMessage = "Името трябва да съдържа между {2} и {1} символа.";
 
-            public const string SurnameErrorMessage = "Презимето трябва да съдържа между {2} и {1} символи.";
+            public const string SurnameErrorMessage = "Презимето трябва да съдържа между {2} и {1} символа.";
 
-            public const string LastNameErrorMessage = "Фамилията трябва да съдържа между {2} и {1} символи.";
+            public const string LastNameErrorMessage = "Фамилията трябва да съдържа между {2} и {1} символа.";
+
+            public const string ContactMessageErrorMessage = "Съобщението трябва да съдържа поне {1} символа.";
 
             public const string PhoneNumberErrorMessage = "Въведеното не е валиден български номер.";
 
@@ -306,6 +319,8 @@ namespace SchoolSystem.Common
             public const string TeacherNotInClass = "Не преподавате на този клас.";
 
             public const string TeacherDoesNotExist = "Учителят не съществува в системата.";
+
+            public const string UserDoesNotExist = "Потребителят не съществува!";
         }
     }
 }
