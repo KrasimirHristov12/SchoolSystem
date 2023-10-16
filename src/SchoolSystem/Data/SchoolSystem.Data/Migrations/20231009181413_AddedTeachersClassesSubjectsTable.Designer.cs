@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolSystem.Data;
 
@@ -11,9 +12,11 @@ using SchoolSystem.Data;
 namespace SchoolSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231009181413_AddedTeachersClassesSubjectsTable")]
+    partial class AddedTeachersClassesSubjectsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -964,43 +967,6 @@ namespace SchoolSystem.Data.Migrations
                     b.ToTable("Teachers");
                 });
 
-            modelBuilder.Entity("SchoolSystem.Data.Models.TeachersClasses", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClassId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassId");
-
-                    b.HasIndex("IsDeleted");
-
-                    b.HasIndex("TeacherId");
-
-                    b.ToTable("TeachersClasses");
-                });
-
             modelBuilder.Entity("SchoolSystem.Data.Models.TeachersClassesSubjects", b =>
                 {
                     b.Property<int>("Id")
@@ -1292,41 +1258,22 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SchoolSystem.Data.Models.TeachersClasses", b =>
-                {
-                    b.HasOne("SchoolSystem.Data.Models.SchoolClass", "Class")
-                        .WithMany("TeachersClasses")
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SchoolSystem.Data.Models.Teacher", "Teacher")
-                        .WithMany("TeachersClasses")
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Class");
-
-                    b.Navigation("Teacher");
-                });
-
             modelBuilder.Entity("SchoolSystem.Data.Models.TeachersClassesSubjects", b =>
                 {
                     b.HasOne("SchoolSystem.Data.Models.SchoolClass", "Class")
-                        .WithMany("TeachersClassesSubjects")
+                        .WithMany()
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SchoolSystem.Data.Models.Subject", "Subject")
-                        .WithMany("TeachersClassesSubjects")
+                        .WithMany()
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SchoolSystem.Data.Models.Teacher", "Teacher")
-                        .WithMany("TeachersClassesSubjects")
+                        .WithMany()
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1366,10 +1313,6 @@ namespace SchoolSystem.Data.Migrations
             modelBuilder.Entity("SchoolSystem.Data.Models.SchoolClass", b =>
                 {
                     b.Navigation("Students");
-
-                    b.Navigation("TeachersClasses");
-
-                    b.Navigation("TeachersClassesSubjects");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Student", b =>
@@ -1384,8 +1327,6 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Grades");
 
                     b.Navigation("Quizzes");
-
-                    b.Navigation("TeachersClassesSubjects");
                 });
 
             modelBuilder.Entity("SchoolSystem.Data.Models.Teacher", b =>
@@ -1393,10 +1334,6 @@ namespace SchoolSystem.Data.Migrations
                     b.Navigation("Grades");
 
                     b.Navigation("Quizzes");
-
-                    b.Navigation("TeachersClasses");
-
-                    b.Navigation("TeachersClassesSubjects");
                 });
 #pragma warning restore 612, 618
         }

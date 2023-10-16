@@ -53,6 +53,10 @@
 
         public DbSet<ContactInfo> ContactInfo { get; set; }
 
+        public DbSet<TeachersClasses> TeachersClasses { get; set; }
+
+        public DbSet<TeachersClassesSubjects> TeachersClassesSubjects { get; set; }
+
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
