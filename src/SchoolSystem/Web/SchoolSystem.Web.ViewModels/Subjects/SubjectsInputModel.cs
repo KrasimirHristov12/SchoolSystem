@@ -6,9 +6,10 @@
     using System.Web.Mvc;
 
     using SchoolSystem.Common;
+    using SchoolSystem.Web.ViewModels.Classes;
     using SchoolSystem.Web.ViewModels.Teachers;
 
-    [Bind(Exclude = $"{nameof(Subjects)},{nameof(Teachers)}")]
+    [Bind(Exclude = $"{nameof(Subjects)},{nameof(Teachers)},{nameof(Classes)}")]
     public class SubjectsInputModel : IValidatableObject
     {
         public IList<int?> SubjectsIds { get; set; }
@@ -19,6 +20,11 @@
         public IEnumerable<SubjectViewModel> Subjects { get; set; }
 
         public IEnumerable<TeacherViewModel> Teachers { get; set; }
+
+        public IEnumerable<ClassViewModel> Classes { get; set; }
+
+        [Display(Name = GlobalConstants.SchoolClass.ClassDisplay)]
+        public int ClassId { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

@@ -32,8 +32,9 @@
         private readonly ITeacherService teacherService;
         private readonly INotificationsService notificationsService;
         private readonly IStudentService studentService;
+        private readonly IDeletableEntityRepository<TeachersClassesSubjects> teachersClassesSubjectsRepo;
 
-        public GradesService(IDeletableEntityRepository<Grade> gradesRepo, IDeletableEntityRepository<Student> studentsRepo, IDeletableEntityRepository<SchoolClass> classesRepo, IDeletableEntityRepository<Teacher> teachersRepo, IDeletableEntityRepository<Subject> subjectsRepo, IGradingScaleService gradingScaleService, ITeacherService teacherService, INotificationsService notificationsService, IStudentService studentService)
+        public GradesService(IDeletableEntityRepository<Grade> gradesRepo, IDeletableEntityRepository<Student> studentsRepo, IDeletableEntityRepository<SchoolClass> classesRepo, IDeletableEntityRepository<Teacher> teachersRepo, IDeletableEntityRepository<Subject> subjectsRepo, IGradingScaleService gradingScaleService, ITeacherService teacherService, INotificationsService notificationsService, IStudentService studentService, IDeletableEntityRepository<TeachersClassesSubjects> teachersClassesSubjectsRepo)
         {
             this.gradesRepo = gradesRepo;
             this.studentsRepo = studentsRepo;
@@ -44,6 +45,7 @@
             this.teacherService = teacherService;
             this.notificationsService = notificationsService;
             this.studentService = studentService;
+            this.teachersClassesSubjectsRepo = teachersClassesSubjectsRepo;
         }
 
         public DisplayGradesViewModel<T> GetForStudent<T>(int studentId, int page)
@@ -214,16 +216,7 @@
                 };
             }
 
-            if (!this.subjectsRepo.AllAsNoTracking().Any(s => s.Id == model.SubjectId && s.Teachers.Any(t => t.Id == teacherId)))
-            {
-                return new CRUDResult
-                {
-                    Succeeded = false,
-                    ErrorMessages = new List<string> { GlobalConstants.ErrorMessage.SubjectNotInTeacherList },
-                };
-            }
-
-            if (!this.teachersRepo.AllAsNoTracking().Any(t => t.Id == teacherId && t.Classes.Any(c => c.Id == model.ClassId)))
+            if (!this.teachersClassesSubjectsRepo.AllAsNoTracking().Any(x => x.TeacherId == teacherId && x.ClassId == model.ClassId))
             {
                 return new CRUDResult
                 {

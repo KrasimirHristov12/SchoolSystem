@@ -24,8 +24,8 @@
         {
             configuration.CreateMap<Teacher, TeacherInformationViewModel>()
                 .ForMember(vm => vm.FullName, opt => opt.MapFrom(dm => dm.FirstName + " " + dm.Surname + " " + dm.LastName))
-                .ForMember(vm => vm.SubjectsTaught, opt => opt.MapFrom(dm => string.Join(", ", dm.Subjects.Select(s => s.Name).ToList())))
-                .ForMember(vm => vm.ClassesTaught, opt => opt.MapFrom(dm => string.Join(", ", dm.Classes.Select(c => c.Name).ToList())));
+                .ForMember(vm => vm.SubjectsTaught, opt => opt.MapFrom(dm => string.Join(", ", dm.TeachersClassesSubjects.Select(s => s.Subject.Name).ToHashSet())))
+                .ForMember(vm => vm.ClassesTaught, opt => opt.MapFrom(dm => string.Join(", ", dm.TeachersClassesSubjects.Select(c => c.Class.Name).ToHashSet())));
 
         }
     }

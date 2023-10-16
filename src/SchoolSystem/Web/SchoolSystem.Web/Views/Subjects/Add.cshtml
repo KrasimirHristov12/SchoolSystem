@@ -1,7 +1,13 @@
 ﻿@model SubjectsInputModel
 
+
 <form method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <label asp-for="ClassId"></label>
+    <select class="form-select class-dropdown" asp-for="ClassId" asp-items="@(new SelectList(Model.Classes, "Id", "Name"))"></select>
+    <span asp-validation-for="ClassId" class="text-danger"></span>
+    <label asp-for="TeacherId"></label>
+    <select class="form-select teacher-dropdown" asp-for="TeacherId" asp-items="@(new SelectList(Model.Teachers, "Id", "FullName"))"></select>
     @for (int i = 0; i < 10; i++)
     {
         <div class="subjects-container mb-3 @(i > 0 ? "d-none" : "")">
@@ -24,8 +30,6 @@
         </div>
     }
     <a class="add-more" style="cursor: pointer">Добавяне на още предмети</a><br />
-    <label asp-for="TeacherId"></label>
-    <select class="form-select" asp-for="TeacherId" asp-items="@(new SelectList(Model.Teachers, "Id", "FullName"))"></select>
     <div class="btn-container mt-2">
         <button class="btn btn-primary" type="submit">Запамети</button>
     </div>
@@ -49,6 +53,25 @@
                 }
 
             });
+
+            $(".class-dropdown").on("change", function () {
+                let selectedClass = $(this).val();
+                $.get(`/api/teachers/AllTeachers?classId=${selectedClass}`, function (data, status) {
+                    if (status == 'success') {
+                        $(".teacher-dropdown").empty();
+                        for (const teacher of data) {
+                            $(".teacher-dropdown").append(`<option value="${teacher.id}">${teacher.fullName}</option>`);
+                        }
+                    }
+
+                });
+            }).trigger("change");
+
+            $(".teacher-dropdown").on("change", function () {
+                let selectedTeacher = $(this).val();
+
+            })
+            .trigger("change")
 
 
         });

@@ -12,7 +12,7 @@
 
         IEnumerable<T> GetAllFreeClasses<T>();
 
-        IEnumerable<T> GetAllClassesForTeacher<T>(int teacherId);
+        IEnumerable<ClassViewModel> GetAllClassesForTeacher(int teacherId);
 
         string GetClassNameById(int id);
 

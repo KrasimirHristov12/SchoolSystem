@@ -58,7 +58,7 @@
             {
                 GradeModel = new AddGradeViewModel
                 {
-                    Classes = this.classService.GetAllClassesForTeacher<ClassViewModel>(teacherId),
+                    Classes = this.classService.GetAllClassesForTeacher(teacherId),
                     Subjects = this.subjectService.GetAllTaughtForTeacher<SubjectViewModel>(teacherId),
                     Students = this.studentService.GetAll(),
                 },
@@ -74,7 +74,7 @@
             var teacherId = this.teacherService.GetTeacherIdByUserId(userId);
             model.GradeModel = new AddGradeViewModel
             {
-                Classes = this.classService.GetAllClassesForTeacher<ClassViewModel>(teacherId),
+                Classes = this.classService.GetAllClassesForTeacher(teacherId),
                 Subjects = this.subjectService.GetAllTaughtForTeacher<SubjectViewModel>(teacherId),
                 Students = this.studentService.GetAll(),
             };

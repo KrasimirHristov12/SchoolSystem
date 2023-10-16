@@ -11,10 +11,10 @@
     {
         public Teacher()
         {
-            this.Classes = new HashSet<SchoolClass>();
-            this.Subjects = new HashSet<Subject>();
             this.Grades = new HashSet<Grade>();
             this.Quizzes = new HashSet<Quiz>();
+            this.TeachersClassesSubjects = new HashSet<TeachersClassesSubjects>();
+            this.TeachersClasses = new HashSet<TeachersClasses>();
         }
 
         public int Id { get; set; }
@@ -51,13 +51,13 @@
 
         public string ClassName { get; set; }
 
-        public ICollection<SchoolClass> Classes { get; set; }
-
-        public ICollection<Subject> Subjects { get; set; }
-
         public ICollection<Grade> Grades { get; set; }
 
         public ICollection<Quiz> Quizzes { get; set; }
+
+        public ICollection<TeachersClasses> TeachersClasses { get; set; }
+
+        public ICollection<TeachersClassesSubjects> TeachersClassesSubjects { get; set; }
 
         public DateTime CreatedOn { get; set; }
 

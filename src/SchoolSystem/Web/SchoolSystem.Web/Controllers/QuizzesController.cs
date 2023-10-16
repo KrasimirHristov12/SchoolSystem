@@ -90,7 +90,7 @@
             model.ViewModel = new QuizzesViewModel
             {
                 Subjects = this.subjectService.GetAllTaughtForTeacher<SubjectViewModel>(teacherId),
-                Classes = this.classService.GetAllClassesForTeacher<ClassViewModel>(teacherId),
+                Classes = this.classService.GetAllClassesForTeacher(teacherId),
             };
             model.Questions = new List<QuestionsInputModel>();
             model.Questions.Add(new QuestionsInputModel());
@@ -108,7 +108,7 @@
                 model.ViewModel = new QuizzesViewModel
                 {
                     Subjects = this.subjectService.GetAllTaughtForTeacher<SubjectViewModel>(teacherId),
-                    Classes = this.classService.GetAllClassesForTeacher<ClassViewModel>(teacherId),
+                    Classes = this.classService.GetAllClassesForTeacher(teacherId),
                 };
                 return this.View(model);
             }

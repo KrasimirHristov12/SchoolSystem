@@ -14,22 +14,21 @@
     public class SubjectService : ISubjectService
     {
         private readonly IDeletableEntityRepository<Subject> subjectsRepo;
-        private readonly IDeletableEntityRepository<Teacher> teachersRepo;
+        private readonly IDeletableEntityRepository<TeachersClassesSubjects> teachersClassesSubjectsRepo;
 
-        public SubjectService(IDeletableEntityRepository<Subject> subjectsRepo, IDeletableEntityRepository<Teacher> teachersRepo)
+        public SubjectService(IDeletableEntityRepository<Subject> subjectsRepo, IDeletableEntityRepository<TeachersClassesSubjects> teachersClassesSubjectsRepo)
         {
             this.subjectsRepo = subjectsRepo;
-            this.teachersRepo = teachersRepo;
+            this.teachersClassesSubjectsRepo = teachersClassesSubjectsRepo;
         }
 
         public IEnumerable<T> GetAllTaughtForTeacher<T>(int teacherId)
         {
-            return this.subjectsRepo.AllAsNoTracking().Where(s => s.Teachers.Any(t => t.Id == teacherId)).To<T>().ToList();
+            return this.subjectsRepo.AllAsNoTracking().Where(s => s.TeachersClassesSubjects.Any(t => t.Id == teacherId)).To<T>().ToList();
         }
 
-        public async Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId)
+        public async Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId, int classId)
         {
-            var teacher = this.teachersRepo.All().Include(t => t.Subjects).First(t => t.Id == teacherId);
             var results = new List<CRUDResult>();
 
             foreach (var subjectId in subjectIds)
@@ -42,19 +41,17 @@
                         ErrorMessages = new List<string>(),
                     };
 
-                    var subject = this.subjectsRepo.All().FirstOrDefault(c => c.Id == subjectId);
-
                     if (subjectIds.Where(s => s == subjectId).Count() > 1)
                     {
                         result.ErrorMessages.Add(GlobalConstants.ErrorMessage.SubjectShouldBeUnique);
                     }
 
-                    if (subject == null)
+                    if (!this.subjectsRepo.AllAsNoTracking().Any(s => s.Id == subjectId))
                     {
                         result.ErrorMessages.Add(GlobalConstants.ErrorMessage.SubjectDoesNotExist);
                     }
 
-                    if (teacher.Subjects.Any(s => s.Id == subjectId))
+                    if (this.teachersClassesSubjectsRepo.AllAsNoTracking().Any(x => x.TeacherId == teacherId && x.SubjectId == subjectId && x.ClassId == classId))
                     {
                         result.ErrorMessages.Add(GlobalConstants.ErrorMessage.SubjectAlreadyInTeacherList);
                     }
@@ -62,7 +59,12 @@
                     if (result.ErrorMessages.Count == 0)
                     {
                         result.Succeeded = true;
-                        teacher.Subjects.Add(subject);
+                        await this.teachersClassesSubjectsRepo.AddAsync(new TeachersClassesSubjects
+                        {
+                            ClassId = classId,
+                            SubjectId = (int)subjectId,
+                            TeacherId = teacherId,
+                        });
                     }
 
                     results.Add(result);
@@ -75,7 +77,7 @@
 
             if (results.All(r => r.Succeeded))
             {
-                await this.subjectsRepo.SaveChangesAsync();
+                await this.teachersClassesSubjectsRepo.SaveChangesAsync();
             }
 
             return results;

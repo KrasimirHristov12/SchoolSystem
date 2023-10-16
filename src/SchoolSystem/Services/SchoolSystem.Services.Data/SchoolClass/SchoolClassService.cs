@@ -4,39 +4,49 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using Microsoft.EntityFrameworkCore;
     using SchoolSystem.Common;
     using SchoolSystem.Data.Common.Repositories;
     using SchoolSystem.Data.Models;
     using SchoolSystem.Services.Mapping;
     using SchoolSystem.Web.ViewModels;
+    using SchoolSystem.Web.ViewModels.Classes;
 
     public class SchoolClassService : ISchoolClassService
     {
         private readonly IDeletableEntityRepository<Teacher> teachersRepo;
+        private readonly IDeletableEntityRepository<TeachersClasses> teachersClassesRepo;
         private readonly IDeletableEntityRepository<SchoolClass> classesRepo;
         private readonly IDeletableEntityRepository<Student> studentsRepo;
 
-        public SchoolClassService(IDeletableEntityRepository<Teacher> teachersRepo, IDeletableEntityRepository<SchoolClass> classesRepo, IDeletableEntityRepository<Student> studentsRepo)
+        public SchoolClassService(IDeletableEntityRepository<Teacher> teachersRepo, IDeletableEntityRepository<TeachersClasses> teachersClassesRepo,IDeletableEntityRepository<SchoolClass> classesRepo, IDeletableEntityRepository<Student> studentsRepo)
         {
             this.teachersRepo = teachersRepo;
+            this.teachersClassesRepo = teachersClassesRepo;
             this.classesRepo = classesRepo;
             this.studentsRepo = studentsRepo;
         }
 
         public IEnumerable<T> GetAllClasses<T>()
         {
-            return this.classesRepo.AllAsNoTracking().To<T>();
+            return this.classesRepo.AllAsNoTracking().To<T>().ToList();
         }
 
-        public IEnumerable<T> GetAllClassesForTeacher<T>(int teacherId)
+        public IEnumerable<ClassViewModel> GetAllClassesForTeacher(int teacherId)
         {
-            return this.classesRepo.AllAsNoTracking().Where(c => c.Teachers.Any(t => t.Id == teacherId)).To<T>().ToList();
+            return this.teachersClassesRepo.AllAsNoTracking().Where(x => x.TeacherId == teacherId)
+                .Select(x => new ClassViewModel
+                {
+                    Id = x.ClassId,
+                    Name = x.Class.Name,
+                }).ToList();
         }
 
         public IEnumerable<T> GetAllFreeClasses<T>()
         {
-            return this.classesRepo.AllAsNoTracking().Where(c => !c.Teachers.Any(t => t.ClassName == c.Name)).To<T>().ToList();
+            var allTakenClasses = this.teachersRepo.AllAsNoTracking().Where(t => t.IsClassTeacher).Select(t => t.ClassName).ToList();
+
+            return this.classesRepo.AllAsNoTracking().Where(c => !allTakenClasses.Contains(c.Name)).To<T>().ToList();
+
         }
 
         public string GetClassNameById(int id)
@@ -49,11 +59,8 @@
 
         public async Task<List<CRUDResult>> AddClassesToTeacher(IList<int?> classesIds, int teacherId)
         {
-            var teacher = this.teachersRepo.All().Include(t => t.Classes).FirstOrDefault(t => t.Id == teacherId);
-
             var results = new List<CRUDResult>();
-
-            if (teacher == null)
+            if (!this.teachersRepo.AllAsNoTracking().Any(t => t.Id == teacherId))
             {
                 results.Add(new CRUDResult
                 {
@@ -79,12 +86,12 @@
                         result.ErrorMessages.Add(GlobalConstants.ErrorMessage.ClassShouldBeUnique);
                     }
 
-                    if (schoolClass == null)
+                    if (!this.classesRepo.AllAsNoTracking().Any(c => c.Id == classId))
                     {
                         result.ErrorMessages.Add(GlobalConstants.ErrorMessage.ClassDoesNotExist);
                     }
 
-                    if (teacher.Classes.Any(c => c.Id == classId))
+                    if (this.teachersClassesRepo.AllAsNoTracking().Any(x => x.TeacherId == teacherId && x.ClassId == classId))
                     {
                         result.ErrorMessages.Add(GlobalConstants.ErrorMessage.ClassAlreadyInTeacherList);
                     }
@@ -92,7 +99,11 @@
                     if (result.ErrorMessages.Count == 0)
                     {
                         result.Succeeded = true;
-                        teacher.Classes.Add(schoolClass);
+                        await this.teachersClassesRepo.AddAsync(new TeachersClasses
+                        {
+                            ClassId = (int)classId,
+                            TeacherId = teacherId,
+                        });
                     }
 
                     results.Add(result);
@@ -105,7 +116,7 @@
 
             if (results.All(r => r.Succeeded))
             {
-                await this.teachersRepo.SaveChangesAsync();
+                await this.teachersClassesRepo.SaveChangesAsync();
             }
 
             return results;

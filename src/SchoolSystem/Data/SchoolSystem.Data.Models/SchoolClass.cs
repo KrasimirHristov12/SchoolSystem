@@ -12,8 +12,9 @@
         public SchoolClass()
         {
             this.Students = new HashSet<Student>();
-            this.Teachers = new HashSet<Teacher>();
             this.Quizzes = new HashSet<Quiz>();
+            this.TeachersClassesSubjects = new HashSet<TeachersClassesSubjects>();
+            this.TeachersClasses = new HashSet<TeachersClasses>();
         }
 
         public int Id { get; set; }
@@ -24,9 +25,11 @@
 
         public ICollection<Student> Students { get; set; }
 
-        public ICollection<Teacher> Teachers { get; set; }
-
         public ICollection<Quiz> Quizzes { get; set; }
+
+        public ICollection<TeachersClassesSubjects> TeachersClassesSubjects { get; set; }
+
+        public ICollection<TeachersClasses> TeachersClasses { get; set; }
 
         public bool IsDeleted { get; set; }
 

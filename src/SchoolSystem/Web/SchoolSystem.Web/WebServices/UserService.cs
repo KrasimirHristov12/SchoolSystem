@@ -273,8 +273,11 @@
                 User = user,
             };
             await this.db.Teachers.AddAsync(teacher);
-            var foundClass = await this.db.Classes.FindAsync(teacherClassId);
-            teacher.Classes.Add(foundClass);
+            await this.db.TeachersClasses.AddAsync(new TeachersClasses
+            {
+                TeacherId = teacher.Id,
+                ClassId = teacherClassId,
+            });
             await this.db.SaveChangesAsync();
             return teacher;
         }

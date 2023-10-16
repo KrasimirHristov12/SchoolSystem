@@ -11,7 +11,7 @@
 
         IEnumerable<T> GetAllTaughtForTeacher<T>(int teacherId);
 
-        Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId);
+        Task<List<CRUDResult>> AddSubjectsToTeacherAsync(IList<int?> subjectIds, int teacherId, int classId);
 
     }
 }

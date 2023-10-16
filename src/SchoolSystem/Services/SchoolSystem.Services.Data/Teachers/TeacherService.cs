@@ -46,5 +46,12 @@
         {
             return this.teacherRepo.AllAsNoTracking().Where(t => t.Id == teacherId).Select(t => t.UserId).FirstOrDefault();
         }
+
+        public IEnumerable<T> GetAllTeacherForClass<T>(int classId)
+        {
+            return this.teacherRepo.AllAsNoTracking()
+                .Where(t => t.TeachersClasses.Any(x => x.ClassId == classId))
+                .To<T>().ToList();
+        }
     }
 }

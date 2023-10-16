@@ -10,6 +10,8 @@
 
         IEnumerable<TeacherViewModel> GetAllTeachers();
 
+        IEnumerable<T> GetAllTeacherForClass<T>(int classId);
+
         T GetTeacherInformation<T>(int teacherId);
 
         string GetUserId(int teacherId);

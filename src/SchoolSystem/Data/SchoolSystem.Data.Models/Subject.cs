@@ -11,9 +11,9 @@
     {
         public Subject()
         {
-            this.Teachers = new HashSet<Teacher>();
             this.Grades = new HashSet<Grade>();
             this.Quizzes = new HashSet<Quiz>();
+            this.TeachersClassesSubjects = new HashSet<TeachersClassesSubjects>();
         }
 
         public int Id { get; set; }
@@ -22,11 +22,11 @@
         [MaxLength(GlobalConstants.Subject.SubjectMaxLength)]
         public string Name { get; set; }
 
-        public ICollection<Teacher> Teachers { get; set; }
-
         public ICollection<Grade> Grades { get; set; }
 
         public ICollection<Quiz> Quizzes { get; set; }
+
+        public ICollection<TeachersClassesSubjects> TeachersClassesSubjects { get; set; }
 
         public bool IsDeleted { get; set; }
 
